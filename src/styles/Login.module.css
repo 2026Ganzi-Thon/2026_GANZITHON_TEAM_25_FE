@@ -1,0 +1,97 @@
+/* Login.module.css */
+.wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #F3F0EA;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 28rem; 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 1.5rem 2rem 1.5rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  width: 28%;
+  height: auto; 
+  margin-bottom: 1rem;
+}
+
+.subCopy {
+  font-size: min(4.5vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.5;
+  color: #1F2937;
+  margin-bottom: 2.5rem;
+}
+
+.highlight {
+  color: #B59A7A; 
+}
+
+.alpacaImage {
+  width: 60%;
+  height: auto; 
+  margin-bottom: 0.6rem;
+}
+
+.description {
+  font-size: min(3vw, 0.75rem);
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+/* 하단 버튼 및 링크 영역 */
+.bottomSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6rem;
+}
+
+.signupText {
+  font-size: min(3vw, 0.75rem);
+  color: #9CA3AF;
+}
+
+.signupLink {
+  color: #B59C7D;
+  text-decoration: underline;
+  margin-left: 0.25rem;
+  cursor: pointer;
+}
+
+.submitButton {
+  width: 92%;
+  padding: 1rem;
+  background-color: #315C59; 
+  color: #ffffff;
+  font-size: min(4.5vw, 1.125rem);
+  font-weight: bold;
+  border: none;
+  border-radius: 25px; 
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.submitButton:hover {
+  background-color: #344A47;
+}
