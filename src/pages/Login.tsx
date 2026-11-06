@@ -4,9 +4,8 @@ import logoImg from '../assets/images/mongle-logo.png';
 import alpacaImg from '../assets/images/alpaca.png';
 
 
-type LoginProps = {
-  /** 로그인하기 버튼 클릭 */
-  onLoginClick?: () => void
+interface LoginProps {
+  onLoginClick: () => void;
 }
 
 export default function Login({ onLoginClick }: LoginProps) {
