@@ -1,0 +1,16 @@
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.header-actions__button {
+  width: 44px;
+  height: 43px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-round-button);
+  transition: transform 0.15s ease;
+}
+
+.header-actions__button:active {
+  transform: scale(0.94);
+}

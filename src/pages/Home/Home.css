@@ -1,0 +1,217 @@
+/* Figma: 홈 - 내 마음 정리 대화 (171:3223) 외 3종, 402 × 874 */
+.home {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100svh;
+  overflow: hidden;
+  background-color: var(--color-home);
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--color-text);
+}
+
+/* ── 우측 상단 버튼 ── */
+.home__actions {
+  position: absolute;
+  top: calc(43px + env(safe-area-inset-top));
+  right: 29px;
+  z-index: 2;
+}
+
+/* ── 해 ── */
+.home__sun {
+  position: relative;
+  flex: none;
+  width: 188px;
+  height: 188px;
+  margin-top: calc(65px + env(safe-area-inset-top));
+}
+
+.home__sun-glow {
+  position: absolute;
+  top: 17.8px;
+  left: 17.8px;
+}
+
+.home__sun-image {
+  position: relative;
+  width: 188px;
+  height: 188px;
+  object-fit: cover;
+}
+
+/* ── 안내 문구 ── */
+.home__guide {
+  position: relative;
+  margin-top: -17px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── 몽글이 무대 ── */
+.home__stage {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 88px; /* 몽글이 바닥 ~ 입력창 간격 */
+}
+
+.home__mongle-wrap {
+  position: relative;
+  width: 242px;
+  height: 242px;
+}
+
+.home__mongle-shadow {
+  position: absolute;
+  top: 203.6px;
+  left: 30.6px;
+  pointer-events: none;
+}
+
+.home__mongle {
+  position: absolute;
+  inset: 0;
+  border-radius: 40%;
+  transition: transform 0.2s ease;
+}
+
+.home__mongle:active {
+  transform: scale(0.97);
+}
+
+.home__mongle-body {
+  width: 242px;
+  height: 242px;
+  object-fit: cover;
+}
+
+.home__mongle-eyes {
+  position: absolute;
+  top: 39.9px;
+  left: 46px;
+  width: 81.07px;
+  height: 26.62px;
+  object-fit: cover;
+}
+
+/* ── 말풍선 · 선택지 ── */
+.home__greeting,
+.home__choice {
+  position: absolute;
+  z-index: 1;
+  white-space: nowrap;
+  animation: home-bubble-in 0.2s ease;
+}
+
+.home__greeting {
+  top: -56px;
+  left: 38px;
+  padding: 12px 38px;
+  border-radius: 33px;
+  background: var(--color-white);
+  box-shadow: 3px 3px 8.1px rgba(0, 0, 0, 0.2);
+  color: #000;
+  font-family: 'MemomentKkukkukk', var(--font-sans);
+  font-size: 12px;
+}
+
+.home__choice {
+  border-style: solid;
+  border-color: var(--color-point);
+  background: var(--color-white);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.home__choice--organize {
+  top: 0;
+  left: 140px;
+  width: 144.9px;
+  padding: 11.3px 0;
+  border-width: 0.38px;
+  border-radius: 21.1px;
+  box-shadow: 0 3px 8.7px rgba(0, 0, 0, 0.14);
+  font-size: 10.6px;
+}
+
+.home__choice--rest {
+  top: 67px;
+  left: -49px;
+  width: 84.2px;
+  height: 32px;
+  border-width: 0.35px;
+  border-radius: 19.8px;
+  box-shadow: 0 2.8px 8.1px rgba(0, 0, 0, 0.14);
+  font-size: 9.9px;
+}
+
+.home__choice:active {
+  transform: scale(0.96);
+}
+
+/* ── 입력창 ── */
+.home__composer {
+  display: flex;
+  gap: 11px;
+  width: 100%;
+  padding: 0 27px calc(60px + env(safe-area-inset-bottom)) 23px;
+}
+
+.home__input {
+  flex: 1;
+  min-width: 0;
+  height: 55px;
+  padding: 0 20px;
+  border: 1px solid var(--color-point);
+  border-radius: 26px;
+  background: var(--color-white);
+  box-shadow: 0 4px 11.4px rgba(0, 0, 0, 0.16);
+  font-size: 16px;
+  transition: opacity 0.2s ease;
+}
+
+.home__input::placeholder {
+  color: var(--color-text);
+  opacity: 0.5;
+}
+
+.home__input:focus-visible {
+  outline: none;
+  border-color: var(--color-main);
+}
+
+.home__send {
+  position: relative;
+  flex: none;
+  width: 55px;
+  height: 55px;
+}
+
+.home__send-icon {
+  position: absolute;
+  top: -7.4px;
+  left: -11.4px;
+  max-width: none;
+}
+
+/* 말없이 쉬기 모드: 입력창은 흐리게 (Figma 171:3338) */
+.home--rest .home__input {
+  border-color: var(--color-main);
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+@keyframes home-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+}
