@@ -3,7 +3,7 @@ import closeIcon from '../../../assets/icons/close-sound.svg'
 import soundOnIcon from '../../../assets/icons/sound-on.svg'
 import Overlay from '../../../components/Overlay/Overlay'
 import { NATURE_SOUND_OPTIONS, type NatureSound } from '../natureSounds'
-import './SoundSheet.css'
+import '../../../styles/SoundSheet.css'
 
 type SoundSheetProps = {
   sound: NatureSound

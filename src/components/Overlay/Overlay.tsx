@@ -1,5 +1,5 @@
 import { useEffect, type MouseEvent, type ReactNode } from 'react'
-import './Overlay.css'
+import '../../styles/Overlay.css'
 
 type OverlayProps = {
   /** center: 가운데 모달(자연음) / bottom: 하단 시트(메뉴) */

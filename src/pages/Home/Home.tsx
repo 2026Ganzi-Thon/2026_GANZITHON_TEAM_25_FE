@@ -11,7 +11,7 @@ import HeaderActions from '../../components/HeaderActions/HeaderActions'
 import SoundSheet from './components/SoundSheet'
 import type { NatureSound } from './natureSounds'
 import MenuSheet from './components/MenuSheet'
-import './Home.css'
+import '../../styles/Home.css'
 
 /** talk: 대화 모드(기본) / rest: 말없이 쉬기 모드 */
 type HomeMode = 'talk' | 'rest'

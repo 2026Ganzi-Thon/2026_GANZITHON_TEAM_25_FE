@@ -1,6 +1,6 @@
 import soundButton from '../../assets/icons/sound-button.svg'
 import menuButton from '../../assets/icons/menu-button.svg'
-import './HeaderActions.css'
+import '../../styles/HeaderActions.css'
 
 type HeaderActionsProps = {
   onSoundClick?: () => void

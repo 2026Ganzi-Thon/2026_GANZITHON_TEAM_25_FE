@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Home from './pages/Home/Home'
 import Login from './pages/Login'
-import './App.css'
+import './styles/App.css'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환

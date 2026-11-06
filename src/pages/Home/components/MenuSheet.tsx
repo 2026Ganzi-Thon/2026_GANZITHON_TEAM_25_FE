@@ -2,7 +2,7 @@ import chevronRight from '../../../assets/icons/chevron-right.svg'
 import closeIcon from '../../../assets/icons/close-menu.svg'
 import logoutIcon from '../../../assets/icons/logout.svg'
 import Overlay from '../../../components/Overlay/Overlay'
-import './MenuSheet.css'
+import '../../../styles/MenuSheet.css'
 
 type MenuSheetProps = {
   /** 기억한 이야기 개수 — 없으면 표시하지 않음 */
