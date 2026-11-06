@@ -1,11 +1,15 @@
-import React from 'react';
 import styles from '../styles/Login.module.css';
 
 import logoImg from '../assets/images/mongle-logo.png';
 import alpacaImg from '../assets/images/alpaca.png';
 
 
-export default function Login() {
+type LoginProps = {
+  /** 로그인하기 버튼 클릭 */
+  onLoginClick?: () => void
+}
+
+export default function Login({ onLoginClick }: LoginProps) {
   return (
     <div className={styles.wrapper}>
     <div className={styles.container}>
@@ -37,7 +41,11 @@ export default function Login() {
 
       {/* 하단 고정 영역 */}
       <div className={styles.bottomSection}>
-        <button className={styles.submitButton}>
+        <button
+          type="button"
+          className={styles.submitButton}
+          onClick={onLoginClick}
+        >
           로그인하기
         </button>
 

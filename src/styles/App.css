@@ -1,0 +1,8 @@
+/* 모바일 앱 프레임: 화면 폭 402px(Figma 기준) 안에서 중앙 정렬 */
+.app {
+  width: 100%;
+  max-width: var(--app-max-width);
+  min-height: 100svh;
+  margin: 0 auto;
+  background: var(--color-home);
+}
