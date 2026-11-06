@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Home from './pages/Home/Home'
 import Login from './pages/Login'
 import './styles/App.css'
+import Onboarding from './pages/Onboarding'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -27,8 +28,10 @@ function App() {
     <div className="app">
       {path.startsWith('/home') ? (
         <Home />
+      ) : path.toLowerCase().startsWith('/onboarding') ?(
+        <Onboarding onComplete={() => navigate('/home')} />
       ) : (
-        <Login onLoginClick={() => navigate('/home')} />
+        <Login onLoginClick={() => navigate('/onboarding')} />
       )}
     </div>
   )

@@ -1,0 +1,147 @@
+.stepContainer {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem; 
+  box-sizing: border-box;
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.iconBtn, .skipBtn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #6B7280;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.progress {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.activePill {
+  width: 1.5rem;
+  height: 0.5rem;
+  background-color: #425C59;
+  border-radius: 1rem;
+}
+
+.inactiveDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #9CA3AF;
+  border-radius: 50%;
+}
+
+.textSection {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1F2937;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+:global(.highlight) {
+  color: #B59A7A; 
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #4B5563;
+  line-height: 1.5;
+}
+
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  position: relative; 
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mongleBody {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mongleEyes {
+  position: absolute;
+  width: 33.4%; 
+  height: auto;
+  top: 17%; 
+  left: 35.6%;
+  transform: translateX(-50%); 
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.optionCard {
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB; 
+  border-radius: 1rem;
+  padding: 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.optionCard.selected {
+  background-color: #E6ECEB; 
+  border: 1px solid #425C59; 
+}
+
+.optionTitle {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1F2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.optionDesc {
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* 하단 버튼 */
+.nextButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #315C59; 
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px; 
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
