@@ -39,9 +39,13 @@ function App() {
         />
       ) : path.toLowerCase().startsWith('/onboarding') ?(
         <Onboarding onComplete={() => navigate('/home')} />
-      ) : path.toLowerCase().startsWith('/action') ? (  
+      ) : path.toLowerCase().startsWith('/action') ?(  
         <MongleAction />
-      ) : (
+      ) : path.toLowerCase().startsWith('/mind') ?(
+        <MindOrganize />
+      ) : path.toLowerCase().startsWith('/chat') ?(
+        <Chat />
+      ): (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
     </div>
