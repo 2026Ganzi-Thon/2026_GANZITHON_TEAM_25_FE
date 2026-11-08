@@ -1,5 +1,5 @@
 import { useCallback, useState, type FormEvent } from 'react'
-import backgroundNoon from '../../assets/images/home/background-noon.png'
+import backgroundNoon from '../../assets/images/background_noon_wide.png'
 import sunImage from '../../assets/images/home/sun.png'
 import mongleImage from '../../assets/images/home/mongle-default.png'
 import mongleEyesSmile from '../../assets/images/home/mongle-eyes-smile.png'
