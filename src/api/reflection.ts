@@ -21,7 +21,8 @@ export async function postReflection(
   text: string,
   selectedMemoryIds: string[] = [],
 ): Promise<ReflectionResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 600))
+  console.log('[mock] reflections 요청:', { text, selectedMemoryIds })
+  await new Promise((resolve) => setTimeout(resolve, 600))
   return {
     reply: '그런 일이 있었구나. 솔직하게 말해줘서 고마워!',
     riskDetected: false,

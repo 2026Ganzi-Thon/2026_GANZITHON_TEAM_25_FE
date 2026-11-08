@@ -76,7 +76,7 @@ function Chat({ onBack, onFinish }: ChatProps) {
         setMessage('')
 
         const { reply } = await postReflection(text, selectedMemoryIds)
-        addMessage
+        addMessage('mongle', reply)
     }
 
     /** 그만 털어놓기 — OFF거나 한 말이 없으면 바로 종료, ON이면 기억할 요약 확인 */
