@@ -3,6 +3,7 @@ import Home from './pages/Home/Home'
 import Login from './pages/Login'
 import './styles/App.css'
 import Onboarding from './pages/Onboarding'
+import MongleAction from './pages/MongleAction'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -30,6 +31,8 @@ function App() {
         <Home />
       ) : path.toLowerCase().startsWith('/onboarding') ?(
         <Onboarding onComplete={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/action') ? (  
+        <MongleAction />
       ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
