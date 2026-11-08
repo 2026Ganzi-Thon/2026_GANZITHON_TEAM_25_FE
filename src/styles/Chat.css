@@ -149,3 +149,66 @@
   left: -11.4px;
   max-width: none;
 }
+/* ── 내용 기억하기 토글 ── */
+.chat__memory {
+  position: absolute;
+  top: calc(124px + env(safe-area-inset-top));
+  right: 33px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat__memory-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* OFF (기본) */
+.chat__toggle {
+  position: relative;
+  width: 54px;
+  height: 26px;
+  border-radius: 17.25px;
+  background: var(--color-white);
+  transition: background-color 0.2s ease;
+}
+
+.chat__toggle-knob {
+  position: absolute;
+  top: 3.25px;
+  left: 4px;
+  width: 19.5px;
+  height: 19.5px;
+  border-radius: 50%;
+  background: var(--color-point);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.chat__toggle-text {
+  position: absolute;
+  top: 50%;
+  left: 27px;
+  color: var(--color-point);
+  font-size: 11.25px;
+  font-weight: 600;
+  transform: translateY(-50%);
+}
+
+/* ON */
+.chat__toggle--on {
+  background: var(--color-point);
+}
+
+.chat__toggle--on .chat__toggle-knob {
+  background: var(--color-home);
+  transform: translateX(26px);
+}
+
+.chat__toggle--on .chat__toggle-text {
+  left: 7.5px;
+  color: var(--color-home);
+}

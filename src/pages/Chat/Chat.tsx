@@ -22,7 +22,7 @@ type ChatProps = {
  */
 function Chat({ onBack }: ChatProps) {
   const [message, setMessage] = useState('')
-
+  const [remember, setRemember] = useState(false)
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const text = message.trim()
@@ -47,7 +47,22 @@ function Chat({ onBack }: ChatProps) {
         </button>
         <HeaderActions />
       </header>
-
+      <div className="chat__memory">
+  <span className="chat__memory-label" aria-hidden="true">
+    내용 기억하기
+  </span>
+  <button
+    type="button"
+    role="switch"
+    aria-checked={remember}
+    aria-label="내용 기억하기"
+    className={`chat__toggle${remember ? ' chat__toggle--on' : ''}`}
+    onClick={() => setRemember((prev) => !prev)}
+  >
+    <span className="chat__toggle-knob" />
+    <span className="chat__toggle-text">{remember ? 'ON' : 'OFF'}</span>
+  </button>
+</div>
       <div className="chat__sun" aria-hidden="true">
         <img
           className="chat__sun-glow"
