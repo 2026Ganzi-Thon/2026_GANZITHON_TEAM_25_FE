@@ -4,5 +4,6 @@
   max-width: var(--app-max-width);
   min-height: 100svh;
   margin: 0 auto;
+  padding:0;
   background: var(--color-home);
 }
