@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="app">
       {path.startsWith('/home') ? (
-        <Home />
+        <Home onOrganizeAndTalk={() => navigate('/mind')}/>
         ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave 
           onBack={() => navigate('/action')} 
@@ -39,13 +39,16 @@ function App() {
         />
       ) : path.toLowerCase().startsWith('/onboarding') ?(
         <Onboarding onComplete={() => navigate('/home')} />
-      ) : path.toLowerCase().startsWith('/action') ?(  
+      ) : path.toLowerCase().startsWith('/action') ? (  
         <MongleAction />
       ) : path.toLowerCase().startsWith('/mind') ?(
-        <MindOrganize />
+        <MindOrganize
+          onBack={() => navigate('/home')}
+          onEnd={() => navigate('/home')}
+          onGoChat={() => navigate('/chat')} />
       ) : path.toLowerCase().startsWith('/chat') ?(
         <Chat />
-      ): (
+      ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
     </div>
