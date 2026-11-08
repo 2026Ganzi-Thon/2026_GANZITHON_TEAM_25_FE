@@ -13,10 +13,15 @@ export type ReflectionResponse = {
   riskResources: RiskResource[] | null
 }
 
-/** 지금은 서버가 없어서 0.6초 뒤 고정 문구로 답하는 가짜 함수 */
-export async function postReflection(text: string): Promise<ReflectionResponse> {
-  console.log('[mock] reflections 요청:', text)
-  await new Promise((resolve) => setTimeout(resolve, 600))
+/**
+ * 지금은 서버가 없어서 0.6초 뒤 고정 문구로 답하는 가짜 함수
+ * @param selectedMemoryIds 이번 대화에 꺼낸 기억 (안 골랐으면 빈 배열)
+ */
+export async function postReflection(
+  text: string,
+  selectedMemoryIds: string[] = [],
+): Promise<ReflectionResponse> {
+    await new Promise((resolve) => setTimeout(resolve, 600))
   return {
     reply: '그런 일이 있었구나. 솔직하게 말해줘서 고마워!',
     riskDetected: false,

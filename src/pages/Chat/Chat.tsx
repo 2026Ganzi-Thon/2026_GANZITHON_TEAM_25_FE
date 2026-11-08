@@ -10,6 +10,15 @@ import arrowBack from '../../assets/icons/arrow-back.svg'
 import HeaderActions from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Chat.css'
 import { postReflection } from '../../api/reflection'
+import {
+    approveMemory,
+    createMemoryPreview,
+    getMemories,
+    type Memory,
+    type MemoryPreview,
+} from '../../api/memories'
+import RememberSheet from './components/RememberSheet'
+import MemoryPickSheet from './components/MemoryPickSheet'
 
 type Message = {
     id: number
@@ -26,6 +35,8 @@ const INTRO_TEXT = {
 type ChatProps = {
     /** 뒤로 가기 */
     onBack?: () => void
+    /** 대화 종료 (그만 털어놓기) */
+    onFinish?: () => void
 }
 
 /**
@@ -33,12 +44,19 @@ type ChatProps = {
  * - 2단계: 배경 · 어두운 막 · 해 · 몽글이 · 상단 바 · 입력창
  * - 다음 단계에서 토글(내용 기억하기), 말풍선, 하단 버튼을 추가
  */
-function Chat({ onBack }: ChatProps) {
+function Chat({ onBack, onFinish }: ChatProps) {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [remember, setRemember] = useState(false)
     const nextId = useRef(0)
     const logRef = useRef<HTMLOListElement>(null)
+    
+    // 기억 요약 후보 — 값이 있으면 "이 내용만 기억하기" 시트가 열림
+    const [preview, setPreview] = useState<MemoryPreview | null>(null)
+    // 꺼낼 기억 목록 — 값이 있으면 "꺼낼 기억 고르기" 시트가 열림
+    const [pickList, setPickList] = useState<Memory[] | null>(null)
+    // 이번 대화에 꺼낸 기억 id
+    const [selectedMemoryIds, setSelectedMemoryIds] = useState<string[]>([])
     // 새 말풍선이 생기면 맨 아래로 스크롤
     useEffect(() => {
         const log = logRef.current
@@ -57,8 +75,42 @@ function Chat({ onBack }: ChatProps) {
         addMessage('user', text)
         setMessage('')
 
-        const { reply } = await postReflection(text)
-        addMessage('mongle', reply)
+        const { reply } = await postReflection(text, selectedMemoryIds)
+        addMessage
+    }
+
+    /** 그만 털어놓기 — OFF거나 한 말이 없으면 바로 종료, ON이면 기억할 요약 확인 */
+    const handleStop = async () => {
+        const userTexts = messages
+            .filter((item) => item.from === 'user')
+            .map((item) => item.text)
+
+        if (!remember || userTexts.length === 0) {
+            onFinish?.()
+            return
+        }
+        setPreview(await createMemoryPreview(userTexts))
+    }
+
+    const handleSaveMemory = async (summary: string) => {
+        if (!preview) return
+        await approveMemory(preview.previewId, summary)
+        onFinish?.()
+    }
+
+        /** 기억 꺼내기 — 사용자가 직접 눌렀을 때만 기억 목록을 불러옴 (자동 불러오기 금지) */
+    const handleOpenPick = async () => {
+        setPickList(await getMemories())
+    }
+
+    const handleStartWith = (ids: string[]) => {
+        setSelectedMemoryIds(ids)
+        setPickList(null)
+    }
+
+    const handleStartWithout = () => {
+        setSelectedMemoryIds([])
+        setPickList(null)
     }
 
     const [introLine1, introLine2] = INTRO_TEXT[remember ? 'on' : 'off']
@@ -159,10 +211,10 @@ function Chat({ onBack }: ChatProps) {
             </ol>
 
             <div className="chat__quick">
-                <button type="button" className="chat__quick-button">
+                <button type="button" className="chat__quick-button" onClick={handleStop}>
                     그만 털어놓기
                 </button>
-                <button type="button" className="chat__quick-button">
+                <button type="button" className="chat__quick-button" onClick={handleOpenPick}>
                     기억 꺼내기
                 </button>
             </div>
@@ -186,6 +238,24 @@ function Chat({ onBack }: ChatProps) {
                     />
                 </button>
             </form>
+            {preview && (
+                <RememberSheet
+                    initialSummary={preview.draftSummary}
+                    onSkip={() => onFinish?.()}
+                    onSave={handleSaveMemory}
+                    onClose={() => setPreview(null)}
+                />
+            )}
+            
+            {pickList && (
+                <MemoryPickSheet
+                    memories={pickList}
+                    initialSelectedIds={selectedMemoryIds}
+                    onStartWith={handleStartWith}
+                    onStartWithout={handleStartWithout}
+                    onClose={() => setPickList(null)}
+                />
+            )}
         </main>
     )
 }
