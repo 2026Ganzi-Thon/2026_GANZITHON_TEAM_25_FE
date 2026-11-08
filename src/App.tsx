@@ -47,7 +47,7 @@ function App() {
           onEnd={() => navigate('/home')}
           onGoChat={() => navigate('/chat')} />
       ) : path.toLowerCase().startsWith('/chat') ?(
-        <Chat />
+        <Chat onBack={() => navigate('/mind')} />
       ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
