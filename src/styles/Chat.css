@@ -1,0 +1,288 @@
+/* Figma: 대화 - 이번만 기억하기 (171:3177), 402 × 874 */
+.chat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: var(--color-home);
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--color-text);
+}
+
+/* ── 상단 바: 뒤로가기 + 소리·메뉴 ── */
+.chat__top {
+    position: absolute;
+    top: calc(46px + env(safe-area-inset-top));
+    right: 33px;
+    left: 15px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chat__back {
+    width: 35px;
+    height: 35px;
+}
+
+/* ── 해 ── */
+.chat__sun {
+    position: relative;
+    flex: none;
+    width: 188px;
+    height: 188px;
+    margin-top: calc(65px + env(safe-area-inset-top));
+}
+
+.chat__sun-glow {
+    position: absolute;
+    top: 17.8px;
+    left: 17.8px;
+}
+
+.chat__sun-image {
+    position: relative;
+    width: 188px;
+    height: 188px;
+    object-fit: cover;
+}
+
+/* ── 몽글이 무대 ── */
+.chat__stage {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 88px;
+    /* 몽글이 바닥 ~ 입력창 간격 */
+}
+
+.chat__mongle-wrap {
+    position: relative;
+    width: 242px;
+    height: 242px;
+}
+
+.chat__mongle-shadow {
+    position: absolute;
+    top: 203.6px;
+    left: 30.6px;
+    pointer-events: none;
+}
+
+.chat__mongle {
+    position: absolute;
+    inset: 0;
+}
+
+.chat__mongle-body {
+    width: 242px;
+    height: 242px;
+    object-fit: cover;
+}
+
+.chat__mongle-eyes {
+    position: absolute;
+    top: 39.9px;
+    left: 46px;
+    width: 81.07px;
+    height: 26.62px;
+    object-fit: cover;
+}
+
+/* ── 어두운 막: 배경 · 해 · 몽글이 위, 상단 바 · 입력창 아래 ── */
+.chat__dim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+}
+
+/* ── 입력창 ── */
+.chat__composer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 11px;
+    width: 100%;
+    padding: 0 27px calc(60px + env(safe-area-inset-bottom)) 23px;
+}
+
+.chat__input {
+    flex: 1;
+    min-width: 0;
+    height: 55px;
+    padding: 0 20px;
+    border: 1px solid var(--color-point);
+    border-radius: 26px;
+    background: var(--color-white);
+    box-shadow: 0 4px 11.4px rgba(0, 0, 0, 0.16);
+    font-size: 16px;
+}
+
+.chat__input::placeholder {
+    color: var(--color-text);
+    opacity: 0.5;
+}
+
+.chat__input:focus-visible {
+    outline: none;
+    border-color: var(--color-main);
+}
+
+.chat__send {
+    position: relative;
+    flex: none;
+    width: 55px;
+    height: 55px;
+}
+
+.chat__send-icon {
+    position: absolute;
+    top: -7.4px;
+    left: -11.4px;
+    max-width: none;
+}
+
+/* ── 내용 기억하기 토글 ── */
+.chat__memory {
+    position: absolute;
+    top: calc(124px + env(safe-area-inset-top));
+    right: 33px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat__memory-label {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* OFF (기본) */
+.chat__toggle {
+    position: relative;
+    width: 54px;
+    height: 26px;
+    border-radius: 17.25px;
+    background: var(--color-white);
+    transition: background-color 0.2s ease;
+}
+
+.chat__toggle-knob {
+    position: absolute;
+    top: 3.25px;
+    left: 4px;
+    width: 19.5px;
+    height: 19.5px;
+    border-radius: 50%;
+    background: var(--color-point);
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.chat__toggle-text {
+    position: absolute;
+    top: 50%;
+    left: 27px;
+    color: var(--color-point);
+    font-size: 11.25px;
+    font-weight: 600;
+    transform: translateY(-50%);
+}
+
+/* ON */
+.chat__toggle--on {
+    background: var(--color-point);
+}
+
+.chat__toggle--on .chat__toggle-knob {
+    background: var(--color-home);
+    transform: translateX(26px);
+}
+
+.chat__toggle--on .chat__toggle-text {
+    left: 7.5px;
+    color: var(--color-home);
+}
+
+/* ── 말풍선 목록 ── */
+.chat__log {
+    position: absolute;
+    top: calc(170px + env(safe-area-inset-top));
+    right: 0;
+    bottom: calc(211px + env(safe-area-inset-bottom));
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin: 0;
+    padding: 8px 25px;
+    overflow-y: auto;
+    list-style: none;
+    scrollbar-width: none;
+}
+
+.chat__log::-webkit-scrollbar {
+    display: none;
+}
+
+/* 말풍선이 적을 때는 아래쪽부터 쌓이게 */
+.chat__log> :first-child {
+    margin-top: auto;
+}
+
+.chat__bubble {
+    max-width: calc(100% - 40px);
+    padding: 14px 25px;
+    border-radius: 21px;
+    box-shadow: 3px 3px 8.1px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+}
+
+.chat__bubble--mongle {
+    align-self: flex-start;
+    background: var(--color-main);
+    color: var(--color-home);
+}
+
+.chat__bubble--user {
+    align-self: flex-end;
+    background: var(--color-white);
+    color: var(--color-text);
+}
+
+/* ── 그만 털어놓기 · 기억 꺼내기 ── */
+.chat__quick {
+    position: absolute;
+    bottom: calc(126px + env(safe-area-inset-bottom));
+    left: 44px;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+}
+
+.chat__quick-button {
+    height: 29px;
+    padding: 0 15px;
+    border-radius: var(--radius-pill);
+    background: var(--color-home);
+    font-size: 12px;
+    transition: transform 0.1s ease;
+}
+
+.chat__quick-button:active {
+    transform: scale(0.96);
+}

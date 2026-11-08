@@ -1,0 +1,88 @@
+/* Figma: 내용 기억하기 (171:3576) · 기억 고르기 (171:3636) › 하단 시트 402 × 383 */
+.bottom-sheet {
+    position: relative;
+    width: 100%;
+    max-width: var(--app-max-width);
+    padding: 50px 32px calc(55px + env(safe-area-inset-bottom)) 27px;
+    border-radius: 46px 46px 0 0;
+    background: var(--color-home);
+    color: var(--color-text);
+    animation: bottom-sheet-up 0.25s ease;
+}
+
+.bottom-sheet__handle {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    width: 55px;
+    height: 4px;
+    border-radius: 43px;
+    background: var(--color-text);
+    opacity: 0.34;
+    transform: translateX(-50%);
+}
+
+.bottom-sheet__title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.bottom-sheet__description {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.6;
+    word-break: keep-all;
+}
+
+.bottom-sheet__body {
+    margin-top: 27px;
+}
+
+/* ── 하단 버튼 ── */
+.bottom-sheet__actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.bottom-sheet__button {
+    height: 48px;
+    padding: 0 31px;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    white-space: nowrap;
+    transition:
+        transform 0.1s ease,
+        opacity 0.15s ease;
+}
+
+.bottom-sheet__button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.bottom-sheet__button--secondary {
+    border: 0.5px solid var(--color-point);
+    background: var(--color-white);
+    box-shadow: var(--shadow-cta);
+    font-weight: 500;
+}
+
+.bottom-sheet__button--primary {
+    background: var(--color-main);
+    box-shadow: 0 4px 9.1px rgba(0, 0, 0, 0.14);
+    color: var(--color-home);
+    font-weight: 600;
+}
+
+.bottom-sheet__button:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+@keyframes bottom-sheet-up {
+    from {
+        transform: translateY(100%);
+    }
+}
