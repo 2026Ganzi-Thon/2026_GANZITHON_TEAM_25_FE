@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import './styles/App.css'
 import Onboarding from './pages/Onboarding'
 import MongleAction from './pages/MongleAction'
+import Shave from './pages/Shave';
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -29,6 +30,11 @@ function App() {
     <div className="app">
       {path.startsWith('/home') ? (
         <Home />
+        ) : path.toLowerCase().startsWith('/shave') ? (
+        <Shave 
+          onBack={() => navigate('/action')} 
+          onComplete={() => navigate('/home')} 
+        />
       ) : path.toLowerCase().startsWith('/onboarding') ?(
         <Onboarding onComplete={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/action') ? (  

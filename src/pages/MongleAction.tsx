@@ -22,6 +22,11 @@ export default function MongleAction() {
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0); 
 
+  const handleGoToShave = () => {
+    window.history.pushState(null, '', '/shave'); 
+    window.dispatchEvent(new PopStateEvent('popstate')); 
+  };
+
   const handleAction = (newMode: Mode) => {
     setMode(newMode);
     setAnimKey(prev => prev + 1); // 클릭할 때마다 key가 바뀌어 애니메이션 재시작
@@ -105,7 +110,7 @@ export default function MongleAction() {
         {/* 6. 하단 버튼 영역 */}
         <div className={styles.bottomSection}>
           <div className={styles.pillButtons}>
-            <button className={styles.pillBtn}>털 깎으며 정리하기</button>
+            <button className={styles.pillBtn} onClick={handleGoToShave}>털 깎으며 정리하기</button>
             <button className={styles.pillBtn}>다음 활동 보기</button>
           </div>
           <button className={styles.textLinkBtn}>여기서 끝내기</button>
