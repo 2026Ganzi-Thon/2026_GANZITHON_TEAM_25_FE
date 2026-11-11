@@ -7,7 +7,8 @@ import MongleAction from './pages/MongleAction'
 import Shave from './pages/Shave';
 import MindOrganize from './pages/MindOrganize/MindOrganize'
 import Chat from './pages/Chat/Chat'
-
+import MongleNext from './pages/Next';
+import MongleHelp from './pages/Help';
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
  * - /     → 첫화면(로그인)
@@ -28,14 +29,25 @@ function App() {
     setPath(to)
   }
 
-  return (
+return (
     <div className="app">
-      {path.startsWith('/home') ? (
+      {path.startsWith('/home') ? (  
         <Home onOrganizeAndTalk={() => navigate('/mind')} />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
           onBack={() => navigate('/action')}
           onComplete={() => navigate('/home')}
+          onNextActivity={() => navigate('/next')} 
+        />
+      ) : path.toLowerCase().startsWith('/next') ? (
+        <MongleNext 
+          onBack={() => navigate('/action')}
+          onHelp={() => navigate('/help')} 
+          onMind={() => navigate('/mind')}
+        />
+      ) : path.toLowerCase().startsWith('/help') ? (
+        <MongleHelp 
+          onBack={() => navigate('/next')} 
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
@@ -45,16 +57,18 @@ function App() {
         <MindOrganize
           onBack={() => navigate('/home')}
           onEnd={() => navigate('/home')}
-          onGoChat={() => navigate('/chat')} />
+          onGoChat={() => navigate('/chat')} 
+        />
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
           onBack={() => navigate('/mind')}
-          onFinish={() => navigate('/home')} />
+          onFinish={() => navigate('/home')} 
+        />
       ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
     </div>
-  )
+  );
 }
 
 export default App
