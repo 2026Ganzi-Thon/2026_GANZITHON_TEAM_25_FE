@@ -88,6 +88,39 @@
     font-size: 12px;
 }
 
+/* ── 고치기(인라인 편집) — Figma에 편집 화면이 없어 카드 톤에 맞춰 구성 ── */
+.memory-card__input {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px 10px;
+    border: 0.5px solid var(--color-point);
+    border-radius: 12px;
+    background: var(--color-home);
+    color: inherit;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    resize: none;
+    word-break: keep-all;
+}
+
+.memory-card__input:focus {
+    border-color: var(--color-main);
+    outline: none;
+}
+
+.memory-card__button--primary {
+    border-color: var(--color-main);
+    background: var(--color-main);
+    color: var(--color-white);
+}
+
+.memory-card__button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 /* ── 모두 지우기 ── */
 .memories__clear {
     width: calc(100% - 4px);

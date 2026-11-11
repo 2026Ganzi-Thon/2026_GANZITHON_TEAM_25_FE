@@ -5,6 +5,7 @@ import {
     deleteAllMemories,
     deleteMemory,
     getMemories,
+    updateMemory,
     type Memory,
 } from '../../api/memories';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
@@ -26,6 +27,8 @@ function formatDate(iso: string) {
 function Memories({ onBack }: MemoriesProps) {
     const [memories, setMemories] = useState<Memory[]>([])
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [draft, setDraft] = useState('')
     useEffect(() => {
         getMemories().then(setMemories)
     }, [])
@@ -41,6 +44,21 @@ function Memories({ onBack }: MemoriesProps) {
             setMemories((prev) => prev.filter((memory) => memory.memoryId !== memoryId))
         }
         setDeleteTarget(null)
+    }
+    const startEdit = (memory: Memory) => {
+        setEditingId(memory.memoryId)
+        setDraft(memory.summary)
+    }
+
+    const handleSaveEdit = async (memoryId: string) => {
+        const summary = draft.trim()
+        if (!summary) return
+
+        const updated = await updateMemory(memoryId, summary)
+        setMemories((prev) =>
+            prev.map((memory) => (memory.memoryId === memoryId ? updated : memory)),
+        )
+        setEditingId(null)
     }
     return (
         <main className="memories">
@@ -73,21 +91,58 @@ function Memories({ onBack }: MemoriesProps) {
                                 <p className="memory-card__date">
                                     {formatDate(memory.approvedAt)}
                                 </p>
-                                <p className="memory-card__summary">{memory.summary}</p>
-                                <div className="memory-card__actions">
-                                    <button type="button" className="memory-card__button">
-                                        고치기
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="memory-card__button"
-                                        onClick={() =>
-                                            setDeleteTarget({ kind: 'one', memoryId: memory.memoryId })
-                                        }
-                                    >
-                                        지우기
-                                    </button>
-                                </div>
+                                {editingId === memory.memoryId ? (
+                                    <>
+                                        <textarea
+                                            className="memory-card__input"
+                                            value={draft}
+                                            maxLength={300}
+                                            rows={2}
+                                            aria-label="기억 문장 고치기"
+                                            autoFocus
+                                            onChange={(event) => setDraft(event.target.value)}
+                                        />
+                                        <div className="memory-card__actions">
+                                            <button
+                                                type="button"
+                                                className="memory-card__button"
+                                                onClick={() => setEditingId(null)}
+                                            >
+                                                취소
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="memory-card__button memory-card__button--primary"
+                                                disabled={draft.trim() === ''}
+                                                onClick={() => handleSaveEdit(memory.memoryId)}
+                                            >
+                                                저장
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="memory-card__summary">{memory.summary}</p>
+                                        <div className="memory-card__actions">
+                                            <button
+                                                type="button"
+                                                className="memory-card__button"
+                                                onClick={() => startEdit(memory)}
+                                            >
+                                                고치기
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="memory-card__button"
+                                                onClick={() =>
+                                                    setDeleteTarget({ kind: 'one', memoryId: memory.memoryId })
+                                                }
+                                            >
+                                                지우기
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </li>
                         ))}
                     </ul>
