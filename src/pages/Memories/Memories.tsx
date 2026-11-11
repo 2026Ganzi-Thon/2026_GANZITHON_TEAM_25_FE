@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react';
 import arrowBack from '../../assets/icons/arrow-back.svg';
 import HeaderActions from '../../components/HeaderActions/HeaderActions';
-import { getMemories, type Memory } from '../../api/memories';
+import {
+    deleteAllMemories,
+    deleteMemory,
+    getMemories,
+    type Memory,
+} from '../../api/memories';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import '../../styles/Memories.css'
+
+/** 지울 대상: 기억 하나 또는 전체 */
+type DeleteTarget = { kind: 'one'; memoryId: string } | { kind: 'all' }
 
 type MemoriesProps = {
     onBack?: () => void;
@@ -16,11 +25,23 @@ function formatDate(iso: string) {
 
 function Memories({ onBack }: MemoriesProps) {
     const [memories, setMemories] = useState<Memory[]>([])
-
+    const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
     useEffect(() => {
         getMemories().then(setMemories)
     }, [])
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return
 
+        if (deleteTarget.kind === 'all') {
+            await deleteAllMemories()
+            setMemories([])
+        } else {
+            const { memoryId } = deleteTarget
+            await deleteMemory(memoryId)
+            setMemories((prev) => prev.filter((memory) => memory.memoryId !== memoryId))
+        }
+        setDeleteTarget(null)
+    }
     return (
         <main className="memories">
             <header className="memories__top">
@@ -57,17 +78,42 @@ function Memories({ onBack }: MemoriesProps) {
                                     <button type="button" className="memory-card__button">
                                         고치기
                                     </button>
-                                    <button type="button" className="memory-card__button">
+                                    <button
+                                        type="button"
+                                        className="memory-card__button"
+                                        onClick={() =>
+                                            setDeleteTarget({ kind: 'one', memoryId: memory.memoryId })
+                                        }
+                                    >
                                         지우기
                                     </button>
                                 </div>
                             </li>
                         ))}
                     </ul>
-                    <button type="button" className="memories__clear">
+                    <button
+                        type="button"
+                        className="memories__clear"
+                        onClick={() => setDeleteTarget({ kind: 'all' })}
+                    >
                         모두 지우기
                     </button>
                 </>
+            )}
+            {deleteTarget && (
+                <ConfirmModal
+                    title={deleteTarget.kind === 'all' ? '기억을 모두 지울까요?' : '이 기억을 지울까요?'}
+                    description={
+                        <>
+                            지우면 다음 대화에 참고하지 않아요.
+                            <br />
+                            한번 지운 요약은 되돌릴 수 없어요.
+                        </>
+                    }
+                    confirmLabel={deleteTarget.kind === 'all' ? '모두 지우기' : '이 기억 지우기'}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setDeleteTarget(null)}
+                />
             )}
         </main>
     )
