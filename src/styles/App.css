@@ -1,9 +1,13 @@
-/* 모바일 앱 프레임: 화면 폭 402px(Figma 기준) 안에서 중앙 정렬 */
+/*
+ * 앱 루트: 화면 전체 폭을 사용한다.
+ * - 배경(색·이미지)은 각 페이지 루트가 화면 끝까지 꽉 채워서 그린다.
+ * - 내용물(버튼·텍스트·몽글이)은 각 페이지 안쪽에서 --app-max-width(402px, Figma 기준)로 가운데 정렬한다.
+ * → 아이폰보다 넓은 화면(태블릿·PC)에서도 양옆이 흰 여백으로 남지 않음
+ */
 .app {
   width: 100%;
-  max-width: var(--app-max-width);
   min-height: 100svh;
-  margin: 0 auto;
-  padding:0;
+  margin: 0;
+  padding: 0;
   background: var(--color-home);
 }

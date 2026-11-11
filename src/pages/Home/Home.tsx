@@ -92,123 +92,125 @@ function Home({
       className={`home home--${mode}`}
       style={{ backgroundImage: `url(${backgroundNoon})` }}
     >
-      <div className="home__actions">
-        <HeaderActions
-          onSoundClick={() => setOpenSheet('sound')}
-          onMenuClick={() => setOpenSheet('menu')}
-        />
-      </div>
-
-      <div className="home__sun" aria-hidden="true">
-        <img
-          className="home__sun-glow"
-          src={sunGlow}
-          width={153}
-          height={153}
-          alt=""
-        />
-        <img
-          className="home__sun-image"
-          src={sunImage}
-          width={188}
-          height={188}
-          alt=""
-        />
-      </div>
-
-      <p className="home__guide" aria-live="polite">
-        {guideLine1}
-        <br />
-        {guideLine2}
-      </p>
-
-      <div className="home__stage">
-        <div className="home__mongle-wrap">
-          {mode === 'rest' && (
-            <p className="home__greeting" aria-hidden="true">
-              안녕!
-            </p>
-          )}
-
-          {mode === 'talk' && showChoices && (
-            <>
-              <button
-                type="button"
-                className="home__choice home__choice--organize"
-                onClick={onOrganizeAndTalk}
-              >
-                내 마음 정리하고 대화하기
-              </button>
-              <button
-                type="button"
-                className="home__choice home__choice--rest"
-                onClick={startRest}
-              >
-                말없이 쉬기
-              </button>
-            </>
-          )}
-
-          <img
-            className="home__mongle-shadow"
-            src={mongleShadow}
-            width={190}
-            height={55}
-            alt=""
-            aria-hidden="true"
+      <div className="home__frame">
+        <div className="home__actions">
+          <HeaderActions
+            onSoundClick={() => setOpenSheet('sound')}
+            onMenuClick={() => setOpenSheet('menu')}
           />
-          <button
-            type="button"
-            className="home__mongle"
-            aria-label={
-              mode === 'talk' ? '몽글이 — 대화 방식 고르기' : '몽글이 만지기'
-            }
-            aria-expanded={mode === 'talk' ? showChoices : undefined}
-            onClick={handleMongleClick}
-          >
-            <img
-              className="home__mongle-body"
-              src={mongleImage}
-              width={242}
-              height={242}
-              alt=""
-            />
-            <img
-              className="home__mongle-eyes"
-              src={mongleEyesSmile}
-              width={81}
-              height={27}
-              alt=""
-            />
-          </button>
         </div>
-      </div>
 
-      <form className="home__composer" onSubmit={handleSubmit}>
-        <input
-          className="home__input"
-          type="text"
-          value={message}
-          placeholder="편하게 털어내봐요"
-          aria-label="몽글이에게 털어놓기"
-          enterKeyHint="send"
-          onFocus={() => mode === 'rest' && setMode('talk')}
-          onChange={(event) => setMessage(event.target.value)}
-        />
-        <button type="submit" className="home__send" aria-label="보내기">
-          {mode === 'talk' ? (
+        <div className="home__sun" aria-hidden="true">
+          <img
+            className="home__sun-glow"
+            src={sunGlow}
+            width={153}
+            height={153}
+            alt=""
+          />
+          <img
+            className="home__sun-image"
+            src={sunImage}
+            width={188}
+            height={188}
+            alt=""
+          />
+        </div>
+
+        <p className="home__guide" aria-live="polite">
+          {guideLine1}
+          <br />
+          {guideLine2}
+        </p>
+
+        <div className="home__stage">
+          <div className="home__mongle-wrap">
+            {mode === 'rest' && (
+              <p className="home__greeting" aria-hidden="true">
+                안녕!
+              </p>
+            )}
+
+            {mode === 'talk' && showChoices && (
+              <>
+                <button
+                  type="button"
+                  className="home__choice home__choice--organize"
+                  onClick={onOrganizeAndTalk}
+                >
+                  내 마음 정리하고 대화하기
+                </button>
+                <button
+                  type="button"
+                  className="home__choice home__choice--rest"
+                  onClick={startRest}
+                >
+                  말없이 쉬기
+                </button>
+              </>
+            )}
+
             <img
-              className="home__send-icon"
-              src={sendButton}
-              width={78}
-              height={78}
+              className="home__mongle-shadow"
+              src={mongleShadow}
+              width={190}
+              height={55}
               alt=""
+              aria-hidden="true"
             />
-          ) : (
-            <img src={sendButtonRest} width={55} height={55} alt="" />
-          )}
-        </button>
-      </form>
+            <button
+              type="button"
+              className="home__mongle"
+              aria-label={
+                mode === 'talk' ? '몽글이 — 대화 방식 고르기' : '몽글이 만지기'
+              }
+              aria-expanded={mode === 'talk' ? showChoices : undefined}
+              onClick={handleMongleClick}
+            >
+              <img
+                className="home__mongle-body"
+                src={mongleImage}
+                width={242}
+                height={242}
+                alt=""
+              />
+              <img
+                className="home__mongle-eyes"
+                src={mongleEyesSmile}
+                width={81}
+                height={27}
+                alt=""
+              />
+            </button>
+          </div>
+        </div>
+
+        <form className="home__composer" onSubmit={handleSubmit}>
+          <input
+            className="home__input"
+            type="text"
+            value={message}
+            placeholder="편하게 털어내봐요"
+            aria-label="몽글이에게 털어놓기"
+            enterKeyHint="send"
+            onFocus={() => mode === 'rest' && setMode('talk')}
+            onChange={(event) => setMessage(event.target.value)}
+          />
+          <button type="submit" className="home__send" aria-label="보내기">
+            {mode === 'talk' ? (
+              <img
+                className="home__send-icon"
+                src={sendButton}
+                width={78}
+                height={78}
+                alt=""
+              />
+            ) : (
+              <img src={sendButtonRest} width={55} height={55} alt="" />
+            )}
+          </button>
+        </form>
+      </div>
 
       {openSheet === 'sound' && (
         <SoundSheet

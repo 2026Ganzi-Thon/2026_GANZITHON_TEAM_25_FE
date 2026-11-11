@@ -4,11 +4,14 @@
   background-color: #F6F5F0;
   display: flex;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate; /* bgImage(z -1)가 wrapper 배경색 뒤로 숨지 않도록 */
 }
 
 .container {
   width: 100%;
-  max-width: 100%;
+  max-width: var(--app-max-width); /* 내용은 Figma 402px 폭, 배경은 wrapper가 전체 폭 */
   min-height: 100vh;
   position: relative;
   overflow: hidden; 
@@ -26,6 +29,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 45%; /* 지평선 높이 고정 — 넓은 화면에서도 몽글이가 풀밭 위에 서 있도록 */
   z-index: -1;
 }
 
