@@ -2,6 +2,9 @@
 .mind {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
   min-height: 100svh;
   padding-top: calc(43px + env(safe-area-inset-top));
   padding-bottom: calc(clamp(32px, 10svh, 91px) + env(safe-area-inset-bottom));

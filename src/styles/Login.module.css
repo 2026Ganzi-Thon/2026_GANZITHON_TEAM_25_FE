@@ -9,7 +9,7 @@
 
 .container {
   width: 100%;
-  max-width: 28rem; 
+  max-width: var(--app-max-width);
   min-height: 100vh;
   display: flex;
   flex-direction: column;

@@ -120,124 +120,126 @@ function Chat({ onBack, onFinish }: ChatProps) {
             className="chat"
             style={{ backgroundImage: `url(${backgroundNoon})` }}
         >
-            <header className="chat__top">
-                <button
-                    type="button"
-                    className="chat__back"
-                    aria-label="뒤로 가기"
-                    onClick={onBack}
-                >
-                    <img src={arrowBack} width={35} height={35} alt="" />
-                </button>
-                <HeaderActions />
-            </header>
-            <div className="chat__memory">
-                <span className="chat__memory-label" aria-hidden="true">
-                    내용 기억하기
-                </span>
-                <button
-                    type="button"
-                    role="switch"
-                    aria-checked={remember}
-                    aria-label="내용 기억하기"
-                    className={`chat__toggle${remember ? ' chat__toggle--on' : ''}`}
-                    onClick={() => setRemember((prev) => !prev)}
-                >
-                    <span className="chat__toggle-knob" />
-                    <span className="chat__toggle-text">{remember ? 'ON' : 'OFF'}</span>
-                </button>
-            </div>
-            <div className="chat__sun" aria-hidden="true">
-                <img
-                    className="chat__sun-glow"
-                    src={sunGlow}
-                    width={153}
-                    height={153}
-                    alt=""
-                />
-                <img
-                    className="chat__sun-image"
-                    src={sunImage}
-                    width={188}
-                    height={188}
-                    alt=""
-                />
-            </div>
-
-            <div className="chat__stage">
-                <div className="chat__mongle-wrap" aria-hidden="true">
+            {/* 배경 · 해 · 몽글이만 어둡게 덮는 막 (Figma: rgba(0,0,0,0.25)) — 넓은 화면에서도 배경 전체를 덮도록 프레임 바깥에 둠 */}
+            <div className="chat__dim" aria-hidden="true" />
+            <div className="chat__frame">
+                <header className="chat__top">
+                    <button
+                        type="button"
+                        className="chat__back"
+                        aria-label="뒤로 가기"
+                        onClick={onBack}
+                    >
+                        <img src={arrowBack} width={35} height={35} alt="" />
+                    </button>
+                    <HeaderActions />
+                </header>
+                <div className="chat__memory">
+                    <span className="chat__memory-label" aria-hidden="true">
+                        내용 기억하기
+                    </span>
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={remember}
+                        aria-label="내용 기억하기"
+                        className={`chat__toggle${remember ? ' chat__toggle--on' : ''}`}
+                        onClick={() => setRemember((prev) => !prev)}
+                    >
+                        <span className="chat__toggle-knob" />
+                        <span className="chat__toggle-text">{remember ? 'ON' : 'OFF'}</span>
+                    </button>
+                </div>
+                <div className="chat__sun" aria-hidden="true">
                     <img
-                        className="chat__mongle-shadow"
-                        src={mongleShadow}
-                        width={190}
-                        height={55}
+                        className="chat__sun-glow"
+                        src={sunGlow}
+                        width={153}
+                        height={153}
                         alt=""
                     />
-                    <div className="chat__mongle">
+                    <img
+                        className="chat__sun-image"
+                        src={sunImage}
+                        width={188}
+                        height={188}
+                        alt=""
+                    />
+                </div>
+
+                <div className="chat__stage">
+                    <div className="chat__mongle-wrap" aria-hidden="true">
                         <img
-                            className="chat__mongle-body"
-                            src={mongleImage}
-                            width={242}
-                            height={242}
+                            className="chat__mongle-shadow"
+                            src={mongleShadow}
+                            width={190}
+                            height={55}
                             alt=""
                         />
-                        <img
-                            className="chat__mongle-eyes"
-                            src={mongleEyesSmile}
-                            width={81}
-                            height={27}
-                            alt=""
-                        />
+                        <div className="chat__mongle">
+                            <img
+                                className="chat__mongle-body"
+                                src={mongleImage}
+                                width={242}
+                                height={242}
+                                alt=""
+                            />
+                            <img
+                                className="chat__mongle-eyes"
+                                src={mongleEyesSmile}
+                                width={81}
+                                height={27}
+                                alt=""
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* 배경 · 해 · 몽글이만 어둡게 덮는 막 (Figma: rgba(0,0,0,0.25)) */}
-            <div className="chat__dim" aria-hidden="true" />
-            <ol className="chat__log" ref={logRef} aria-live="polite">
-                <li className="chat__bubble chat__bubble--mongle">
-                    {introLine1}
-                    <br />
-                    {introLine2}
-                </li>
-                {messages.map((item) => (
-                    <li
-                        key={item.id}
-                        className={`chat__bubble chat__bubble--${item.from}`}
-                    >
-                        {item.text}
+                <ol className="chat__log" ref={logRef} aria-live="polite">
+                    <li className="chat__bubble chat__bubble--mongle">
+                        {introLine1}
+                        <br />
+                        {introLine2}
                     </li>
-                ))}
-            </ol>
+                    {messages.map((item) => (
+                        <li
+                            key={item.id}
+                            className={`chat__bubble chat__bubble--${item.from}`}
+                        >
+                            {item.text}
+                        </li>
+                    ))}
+                </ol>
 
-            <div className="chat__quick">
-                <button type="button" className="chat__quick-button" onClick={handleStop}>
-                    그만 털어놓기
-                </button>
-                <button type="button" className="chat__quick-button" onClick={handleOpenPick}>
-                    기억 꺼내기
-                </button>
-            </div>
-            <form className="chat__composer" onSubmit={handleSubmit}>
-                <input
-                    className="chat__input"
-                    type="text"
-                    value={message}
-                    placeholder="편하게 털어내봐요"
-                    aria-label="몽글이에게 털어놓기"
-                    enterKeyHint="send"
-                    onChange={(event) => setMessage(event.target.value)}
-                />
-                <button type="submit" className="chat__send" aria-label="보내기">
-                    <img
-                        className="chat__send-icon"
-                        src={sendButton}
-                        width={78}
-                        height={78}
-                        alt=""
+                <div className="chat__quick">
+                    <button type="button" className="chat__quick-button" onClick={handleStop}>
+                        그만 털어놓기
+                    </button>
+                    <button type="button" className="chat__quick-button" onClick={handleOpenPick}>
+                        기억 꺼내기
+                    </button>
+                </div>
+                <form className="chat__composer" onSubmit={handleSubmit}>
+                    <input
+                        className="chat__input"
+                        type="text"
+                        value={message}
+                        placeholder="편하게 털어내봐요"
+                        aria-label="몽글이에게 털어놓기"
+                        enterKeyHint="send"
+                        onChange={(event) => setMessage(event.target.value)}
                     />
-                </button>
-            </form>
+                    <button type="submit" className="chat__send" aria-label="보내기">
+                        <img
+                            className="chat__send-icon"
+                            src={sendButton}
+                            width={78}
+                            height={78}
+                            alt=""
+                        />
+                    </button>
+                </form>
+            </div>
             {preview && (
                 <RememberSheet
                     initialSummary={preview.draftSummary}

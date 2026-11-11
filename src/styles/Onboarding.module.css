@@ -1,3 +1,14 @@
+.wrapper {
+  width: 100%;
+}
+
+/* 내용은 Figma 402px 폭 안에서 가운데 정렬 */
+.container {
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+}
+
 .stepContainer {
   flex-grow: 1;
   display: flex;
