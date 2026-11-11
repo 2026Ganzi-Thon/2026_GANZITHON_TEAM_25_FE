@@ -9,6 +9,8 @@ import MindOrganize from './pages/MindOrganize/MindOrganize'
 import Chat from './pages/Chat/Chat'
 import MongleNext from './pages/Next';
 import MongleHelp from './pages/Help';
+import Memories from './pages/Memories/Memories'
+
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
  * - /     → 첫화면(로그인)
@@ -29,25 +31,28 @@ function App() {
     setPath(to)
   }
 
-return (
+  return (
     <div className="app">
-      {path.startsWith('/home') ? (  
-        <Home onOrganizeAndTalk={() => navigate('/mind')} />
+      {path.startsWith('/home') ? (
+        <Home
+          onOrganizeAndTalk={() => navigate('/mind')}
+          onOpenMemories={() => navigate('/memories')}
+        />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
           onBack={() => navigate('/action')}
           onComplete={() => navigate('/home')}
-          onNextActivity={() => navigate('/next')} 
+          onNextActivity={() => navigate('/next')}
         />
       ) : path.toLowerCase().startsWith('/next') ? (
-        <MongleNext 
+        <MongleNext
           onBack={() => navigate('/action')}
-          onHelp={() => navigate('/help')} 
+          onHelp={() => navigate('/help')}
           onMind={() => navigate('/mind')}
         />
       ) : path.toLowerCase().startsWith('/help') ? (
-        <MongleHelp 
-          onBack={() => navigate('/next')} 
+        <MongleHelp
+          onBack={() => navigate('/next')}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
@@ -57,13 +62,15 @@ return (
         <MindOrganize
           onBack={() => navigate('/home')}
           onEnd={() => navigate('/home')}
-          onGoChat={() => navigate('/chat')} 
+          onGoChat={() => navigate('/chat')}
         />
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
           onBack={() => navigate('/mind')}
-          onFinish={() => navigate('/home')} 
+          onFinish={() => navigate('/home')}
         />
+      ) : path.toLowerCase().startsWith('/memories') ? (
+        <Memories onBack={() => navigate('/home')} />
       ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
