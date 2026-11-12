@@ -79,6 +79,7 @@ function App() {
         <Memories onBack={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
+          onTouchMongle={() => navigate('/action')}
           onShave={() => navigate('/shave')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
