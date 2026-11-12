@@ -10,6 +10,8 @@ import Chat from './pages/Chat/Chat'
 import MongleNext from './pages/Next';
 import MongleHelp from './pages/Help';
 import Memories from './pages/Memories/Memories'
+import After from './pages/After/After'
+import End from './pages/End/End'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -25,6 +27,7 @@ function App() {
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+  const [savedCount, setSavedCount] = useState(0)
 
   const navigate = (to: string) => {
     window.history.pushState(null, '', to)
@@ -67,10 +70,21 @@ function App() {
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
           onBack={() => navigate('/mind')}
-          onFinish={() => navigate('/home')}
+          onFinish={(count) => {
+            setSavedCount(count)
+            navigate('/after')
+          }}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
         <Memories onBack={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/after') ? (
+        <After
+          onShave={() => navigate('/shave')}
+          onNext={() => navigate('/next')}
+          onEnd={() => navigate('/end')}
+        />
+      ) : path.toLowerCase().startsWith('/end') ? (
+        <End savedCount={savedCount} onHome={() => navigate('/home')} />
       ) : (
         <Login onLoginClick={() => navigate('/onboarding')} />
       )}
