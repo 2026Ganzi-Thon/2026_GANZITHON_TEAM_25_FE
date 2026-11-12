@@ -36,7 +36,7 @@ type ChatProps = {
     /** 뒤로 가기 */
     onBack?: () => void
     /** 대화 종료 (그만 털어놓기) */
-    onFinish?: () => void
+    onFinish?: (savedCount: number) => void
 }
 
 /**
@@ -50,7 +50,7 @@ function Chat({ onBack, onFinish }: ChatProps) {
     const [remember, setRemember] = useState(false)
     const nextId = useRef(0)
     const logRef = useRef<HTMLOListElement>(null)
-    
+
     // 기억 요약 후보 — 값이 있으면 "이 내용만 기억하기" 시트가 열림
     const [preview, setPreview] = useState<MemoryPreview | null>(null)
     // 꺼낼 기억 목록 — 값이 있으면 "꺼낼 기억 고르기" 시트가 열림
@@ -86,7 +86,7 @@ function Chat({ onBack, onFinish }: ChatProps) {
             .map((item) => item.text)
 
         if (!remember || userTexts.length === 0) {
-            onFinish?.()
+            onFinish?.(0)
             return
         }
         setPreview(await createMemoryPreview(userTexts))
@@ -95,10 +95,10 @@ function Chat({ onBack, onFinish }: ChatProps) {
     const handleSaveMemory = async (summary: string) => {
         if (!preview) return
         await approveMemory(preview.previewId, summary)
-        onFinish?.()
+        onFinish?.(1)
     }
 
-        /** 기억 꺼내기 — 사용자가 직접 눌렀을 때만 기억 목록을 불러옴 (자동 불러오기 금지) */
+    /** 기억 꺼내기 — 사용자가 직접 눌렀을 때만 기억 목록을 불러옴 (자동 불러오기 금지) */
     const handleOpenPick = async () => {
         setPickList(await getMemories())
     }
@@ -243,12 +243,12 @@ function Chat({ onBack, onFinish }: ChatProps) {
             {preview && (
                 <RememberSheet
                     initialSummary={preview.draftSummary}
-                    onSkip={() => onFinish?.()}
+                    onSkip={() => onFinish?.(0)}
                     onSave={handleSaveMemory}
                     onClose={() => setPreview(null)}
                 />
             )}
-            
+
             {pickList && (
                 <MemoryPickSheet
                     memories={pickList}
