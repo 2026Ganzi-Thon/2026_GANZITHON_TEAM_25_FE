@@ -27,6 +27,15 @@
     margin-top: 34px;
 }
 
+.confirm-modal__body {
+    margin-top: 21px;
+}
+
+/* 입력창이 있을 땐 버튼과의 간격이 좁아요 (Figma 고치기 278:161) */
+.confirm-modal__body+.confirm-modal__actions {
+    margin-top: 21px;
+}
+
 .confirm-modal__button {
     width: 100%;
     padding: 11px;
@@ -44,6 +53,11 @@
 .confirm-modal__button--confirm {
     background: var(--color-main);
     color: var(--color-white);
+}
+
+.confirm-modal__button:disabled {
+    opacity: 0.4;
+    cursor: default;
 }
 
 @keyframes confirm-modal-pop {
