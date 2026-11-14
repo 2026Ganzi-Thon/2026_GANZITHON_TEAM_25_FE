@@ -13,9 +13,11 @@ type Category = 'normal' | 'emotion' | 'worry';
 
 interface WoolAnim {
   id: number;
-  randX: number;
-  randY: number;
-  randRot: number;
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  targetRot: number;
 }
 
 export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?: () => void, onComplete?: () => void, onNextActivity?: () => void }) {
@@ -31,6 +33,7 @@ export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?:
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const dragAccumulator = useRef(0);
+  const hasShearedThisDrag = useRef(false);
 
   const totalWools = counts.normal + counts.emotion + counts.worry 
 
@@ -45,32 +48,39 @@ export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?:
     setIsDragging(true);
     setDragStartX(e.clientX);
     dragAccumulator.current = 0;
+    hasShearedThisDrag.current = false;
   };
 
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isFinished) return;
+    if (!isDragging || isFinished || hasShearedThisDrag.current) return;
     const diff = Math.abs(e.clientX - dragStartX);
     dragAccumulator.current += diff;
     setDragStartX(e.clientX);
 
-    if (dragAccumulator.current > 100) {
+   if (dragAccumulator.current > 50) {
       triggerShear();
-      dragAccumulator.current = 0; 
+      hasShearedThisDrag.current = true; 
     }
   };
 
   const handlePointerUp = () => setIsDragging(false);
 
   const triggerShear = () => {
+    if (totalWools >= 10) return;
     setCounts(prev => ({ ...prev, [selectedCategory]: prev[selectedCategory] + 1 }));
     
-    const randX = Math.random() * 40 - 20; 
-    const randY = Math.random() * 30 - 15; 
-    const randRot = Math.random() * 90 - 45; 
+    const col = totalWools % 5; 
+    const row = Math.floor(totalWools / 5); 
+
+    const targetX = col * 15; 
+    const targetY = row * -12; 
+    const targetRot = Math.random() * 30 - 15; 
+
+    const startX = Math.random() * 100 - 50; // -50px ~ +50px
+    const startY = Math.random() * 100 - 50;
 
     const newId = woolIdCounter.current++;
-    
-    setFlyingWools(prev => [...prev, { id: newId, randX, randY, randRot }]);
+    setFlyingWools(prev => [...prev, { id: newId, startX, startY, targetX, targetY, targetRot }])
   };
 
   return (
@@ -119,9 +129,11 @@ export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?:
                 className={styles.flyingWool} 
                 alt="깎인 털" 
                 style={{
-                  '--rand-x': `${wool.randX}px`,
-                  '--rand-y': `${wool.randY}px`,
-                  '--rand-rot': `${wool.randRot}deg`
+                  '--start-x': `${wool.startX}px`,
+                  '--start-y': `${wool.startY}px`,
+                  '--target-x': `${wool.targetX}px`,
+                  '--target-y': `${wool.targetY}px`,
+                  '--target-rot': `${wool.targetRot}deg`
                 } as React.CSSProperties}
               />
             ))}
