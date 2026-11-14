@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styles from '../styles/MongleAction.module.css';
 
 import bgImage from '../assets/images/background_noon_wide.png'; 
+import bgSunsetImage from '../assets/images/background_sunset_wide.png';
 import mongleBody from '../assets/images/alpaca/mongle_default_v3.png'; 
 import woolParticle from '../assets/images/tuft/tuft-01.png'; 
 import eyesDefault from '../assets/images/alpaca/eyes_v2.png';       
@@ -17,8 +18,9 @@ import iconShake from '../assets/icons/shaking.png';
 import iconSquish from '../assets/icons/press.png';
 
 type Mode = 'none' | 'pet' | 'shake' | 'squish';
+type MongleActionProps = { phase: 'noon' | 'sunset' };
 
-export default function MongleAction() {
+export default function MongleAction({ phase }: MongleActionProps) {
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0); 
 
@@ -49,7 +51,7 @@ export default function MongleAction() {
   return (
     <div className={styles.wrapper}>
       {/* 1. 전체 배경 이미지 — 화면 전체 폭을 채우도록 container 바깥(wrapper)에 둠 */}
-      <img src={bgImage} alt="" aria-hidden="true" className={styles.bgImage} />
+      <img src={phase === 'sunset' ? bgSunsetImage : bgImage} alt="" aria-hidden="true" className={styles.bgImage} />
       <div className={styles.container}>
 
         {/* 2. 상단 네비게이션 (소리, 메뉴) */}
