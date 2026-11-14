@@ -1,0 +1,97 @@
+/* Figma: 회원가입 - 이름 (250:56) ~ 개인정보 동의 (252:141), 402 × 874 */
+.signup {
+    width: 100%;
+    min-height: 100svh;
+    background: var(--color-home);
+}
+
+/* 내용 프레임: 402px 폭 안에서 가운데 정렬 */
+.signup__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(114px + env(safe-area-inset-top)) 33px calc(52px + env(safe-area-inset-bottom));
+}
+
+/* ── 뒤로가기 ── */
+.signup__back {
+    position: absolute;
+    top: calc(44px + env(safe-area-inset-top));
+    left: 16px;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+/* ── 제목 (두 줄) ── */
+.signup__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 29px;
+}
+
+/* ── 입력칸 이름표 (제목 아래 40px, 입력칸보다 17px 안쪽) ── */
+.signup__label {
+    margin: 40px 0 0 17px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 19px;
+}
+
+/* ── 입력칸 ── */
+.signup__field {
+    display: flex;
+    align-items: center;
+    height: 55px;
+    padding: 0 27px;
+    border: 1px solid var(--color-point);
+    border-radius: 26px;
+    background: var(--color-white);
+    box-shadow: 0 4px 11.4px rgba(0, 0, 0, 0.16);
+}
+
+/* 입력 중인 칸은 메인색 테두리로 표시 */
+.signup__field:focus-within {
+    border-color: var(--color-main);
+}
+
+.signup__input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: none;
+    font-size: 16px;
+}
+
+.signup__input::placeholder {
+    color: var(--color-text);
+    opacity: 0.5;
+}
+
+/* ── 다음 (화면 맨 아래에 붙는 띠, 입력했을 때만 나타남) ── */
+.signup__next {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--app-max-width);
+    height: calc(52px + env(safe-area-inset-bottom));
+    padding: 0 0 env(safe-area-inset-bottom);
+    border: 0;
+    background: var(--color-main);
+    color: var(--color-home);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
