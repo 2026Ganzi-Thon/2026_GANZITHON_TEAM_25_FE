@@ -13,7 +13,8 @@ import Memories from './pages/Memories/Memories'
 import After from './pages/After/After'
 import End from './pages/End/End'
 import SignIn from './pages/SignIn/SignIn'
-import MyMongle from './pages/MyMongle/MyMongle' 
+import MyMongle from './pages/MyMongle/MyMongle'
+import SignUp from './pages/SignUp/SignUp'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -45,9 +46,9 @@ function App() {
           onOpenMyMongle={() => navigate('/mymongle')}
           onOpenHelp={() => navigate('/help')}
         />
-      ) : path.toLowerCase().startsWith('/mymongle') ? ( 
-        <MyMongle 
-          onBack={() => navigate('/home')} 
+      ) : path.toLowerCase().startsWith('/mymongle') ? (
+        <MyMongle
+          onBack={() => navigate('/home')}
         />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
@@ -99,9 +100,13 @@ function App() {
           onBack={() => navigate('/')}
           onLoginSuccess={() => navigate('/onboarding')}
         />
+      ) : path.toLowerCase().startsWith('/signup') ? (
+        <SignUp onBack={() => navigate('/')} onComplete={() => navigate('/')} />
       ) : (
-        <Login onLoginClick={() => navigate('/signin')} />
-      )}
+        <Login
+          onLoginClick={() => navigate('/signin')}
+          onSignUpClick={() => navigate('/signup')}
+        />)}
     </div>
   );
 }
