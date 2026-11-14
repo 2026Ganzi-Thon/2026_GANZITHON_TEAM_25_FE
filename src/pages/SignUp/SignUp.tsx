@@ -1,5 +1,7 @@
 import { useState, type SubmitEvent } from 'react'
 import arrowBack from '../../assets/icons/arrow-back.svg'
+import iconError from '../../assets/icons/error-cross.svg'
+import { checkUserIdAvailable } from '../../api/auth'
 import '../../styles/SignUp.css'
 
 /** 회원가입 단계 (입력칸 하나짜리 화면 4개) */
@@ -35,6 +37,36 @@ const STEP_INFO: Record<Step, StepInfo> = {
     },
 }
 
+const HAS_LETTER = /[A-Za-z]/
+const HAS_DIGIT = /[0-9]/
+const HAS_SYMBOL = /[^A-Za-z0-9]/
+
+/** 지금 단계의 입력값을 검사해서 안내 문구를 돌려줘요. 문제가 없으면 빈 문자열 */
+function validate(step: Step, values: Record<Step, string>): string {
+    const value = values[step]
+
+    if (step === 'userId') {
+        if (value.length < 6) return '아이디는 6자 이상 입력해 주세요.'
+        if (!HAS_LETTER.test(value) || !HAS_DIGIT.test(value)) {
+            return '아이디는 영문과 숫자를 모두 포함하여 입력해주세요.'
+        }
+    }
+
+    if (step === 'password') {
+        if (value.length < 6) return '비밀번호를 6자 이상 입력해주세요.'
+        if (!HAS_LETTER.test(value) || !HAS_DIGIT.test(value) || !HAS_SYMBOL.test(value)) {
+            return '비밀번호에 영문, 숫자, 특수기호를 모두 포함하여 입력해주세요.'
+        }
+    }
+
+    if (step === 'passwordConfirm') {
+        if (value === '') return '비밀번호를 한 번 더 입력해 주세요.'
+        if (value !== values.password) return '비밀번호가 일치하지 않아요.'
+    }
+
+    return ''
+}
+
 type SignUpProps = {
     /** 뒤로 가기 (첫화면으로) */
     onBack?: () => void
@@ -52,16 +84,35 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
         passwordConfirm: '',
     })
 
+    const [errorMessage, setErrorMessage] = useState('')
+    /** 중복확인을 통과한 아이디 (아직 확인 전이면 null) */
+    const [checkedUserId, setCheckedUserId] = useState<string | null>(null)
+    const [isChecking, setIsChecking] = useState(false)
+
     const info = STEP_INFO[step]
     const value = values[step]
     const stepIndex = STEPS.indexOf(step)
 
-    // 빈칸(공백만 입력한 경우 포함)이면 다음으로 못 감
-    const canNext = value.trim() !== ''
+    // 아이디를 고치면 값이 달라져서 자동으로 "확인 전"이 돼요
+    const isIdChecked = checkedUserId === values.userId
+
+    // 이름 단계는 입력했을 때만, 나머지 단계는 항상 "다음"이 보여요 (Figma와 같게)
+    const showNext = step !== 'name' || value.trim() !== ''
 
     const handleNext = (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault() // 폼 제출 시 페이지 새로고침 막기
-        if (!canNext) return
+        if (step === 'name' && value.trim() === '') return
+
+        const message = validate(step, values)
+        if (message) {
+            setErrorMessage(message)
+            return
+        }
+        if (step === 'userId' && !isIdChecked) {
+            setErrorMessage('아이디 중복확인을 해 주세요.')
+            return
+        }
+        setErrorMessage('')
 
         const isLastStep = stepIndex === STEPS.length - 1
         if (isLastStep) {
@@ -71,8 +122,33 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
         }
     }
 
+    const handleCheckId = async () => {
+        const message = validate('userId', values)
+        if (message) {
+            setErrorMessage(message)
+            return
+        }
+
+        const userId = values.userId
+        setIsChecking(true)
+        setErrorMessage('')
+        try {
+            const available = await checkUserIdAvailable(userId)
+            if (available) {
+                setCheckedUserId(userId)
+            } else {
+                setErrorMessage('이미 사용 중인 아이디예요.')
+            }
+        } catch {
+            setErrorMessage('잠시 후 다시 시도해 주세요.')
+        } finally {
+            setIsChecking(false)
+        }
+    }
+
     // 첫 단계에서는 첫화면으로, 그 뒤로는 이전 단계로
     const handleBack = () => {
+        setErrorMessage('')
         if (stepIndex === 0) {
             onBack?.()
         } else {
@@ -108,11 +184,35 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
                         autoCapitalize="none"
                         autoFocus
                         value={value}
-                        onChange={(e) => setValues({ ...values, [step]: e.target.value })}
+                        onChange={(e) => {
+                            setValues({ ...values, [step]: e.target.value })
+                            setErrorMessage('')
+                        }}
                     />
+                    {step === 'userId' && (
+                        <button
+                            type="button"
+                            className="signup__check"
+                            onClick={handleCheckId}
+                            disabled={isChecking}
+                        >
+                            중복확인
+                        </button>
+                    )}
                 </div>
 
-                {canNext && (
+                <p className="signup__message" role="alert">
+                    {errorMessage ? (
+                        <>
+                            <img src={iconError} width={20} height={20} alt="" />
+                            {errorMessage}
+                        </>
+                    ) : step === 'userId' && isIdChecked ? (
+                        <span className="signup__message-ok">사용할 수 있는 아이디예요.</span>
+                    ) : null}
+                </p>
+
+                {showNext && (
                     <button type="submit" className="signup__next">
                         다음
                     </button>

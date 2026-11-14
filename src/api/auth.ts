@@ -30,3 +30,12 @@ export async function login(userId: string, password: string): Promise<LoginResp
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     }
 }
+/**
+ * 아이디 중복확인 — 쓸 수 있는 아이디면 true
+ * GET /auth/check-id (가정) 🔴 백엔드와 모양 확정 필요
+ * 지금은 0.4초 뒤 테스트 계정 아이디만 "이미 사용 중"으로 답하는 가짜 구현
+ */
+export async function checkUserIdAvailable(userId: string): Promise<boolean> {
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    return userId !== MOCK_ACCOUNT.userId
+}

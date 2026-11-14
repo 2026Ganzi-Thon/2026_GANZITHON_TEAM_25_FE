@@ -50,8 +50,9 @@
 .signup__field {
     display: flex;
     align-items: center;
+    gap: 8px;
     height: 55px;
-    padding: 0 27px;
+    padding: 0 12px 0 27px;
     border: 1px solid var(--color-point);
     border-radius: 26px;
     background: var(--color-white);
@@ -76,6 +77,46 @@
 .signup__input::placeholder {
     color: var(--color-text);
     opacity: 0.5;
+}
+
+/* ── 중복확인 버튼 (아이디 입력칸 오른쪽 안) ── */
+.signup__check {
+    flex-shrink: 0;
+    width: 93px;
+    height: 37px;
+    padding: 0;
+    border: 0;
+    border-radius: 25px;
+    background: var(--color-main);
+    box-shadow: 0 3.6px 10.3px rgba(0, 0, 0, 0.14);
+    color: var(--color-home);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.signup__check:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* ── 안내 문구 (입력칸 아래 6px) ──
+   문구가 없어도 높이를 미리 잡아 둬서 화면이 들썩이지 않게 함 */
+.signup__message {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 20px;
+    margin: 6px 0 0;
+    padding-left: 13px;
+    color: #db4d4d;
+    font-size: 12px;
+}
+
+/* 중복확인 통과 (아이콘 자리만큼 띄워서 오류 문구와 글자 시작 위치를 맞춤) */
+.signup__message-ok {
+    padding-left: 22px;
+    color: var(--color-main);
 }
 
 /* ── 다음 (화면 맨 아래에 붙는 띠, 입력했을 때만 나타남) ── */
