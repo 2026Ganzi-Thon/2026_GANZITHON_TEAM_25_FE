@@ -1,7 +1,13 @@
 import { useState, type SubmitEvent } from 'react'
 import arrowBack from '../../assets/icons/arrow-back.svg'
 import iconError from '../../assets/icons/error-cross.svg'
-import { checkUserIdAvailable } from '../../api/auth'
+import iconEye from '../../assets/icons/eye.svg'
+import iconEyeOff from '../../assets/icons/eye-off.svg'
+import iconCheck from '../../assets/icons/check.svg'
+import iconCheckOn from '../../assets/icons/check-on.svg'
+import iconCheckCircle from '../../assets/icons/check-circle.svg'
+import iconCheckCircleOn from '../../assets/icons/check-circle-on.svg'
+import { checkUserIdAvailable, signUp } from '../../api/auth'
 import '../../styles/SignUp.css'
 
 /** 회원가입 단계 (입력칸 하나짜리 화면 4개) */
@@ -36,6 +42,14 @@ const STEP_INFO: Record<Step, StepInfo> = {
         autoComplete: 'new-password',
     },
 }
+
+/** 동의 항목 (둘 다 필수) */
+type TermId = 'service' | 'privacy'
+
+const TERMS: { id: TermId; label: string }[] = [
+    { id: 'service', label: '이용약관에 동의 (필수)' },
+    { id: 'privacy', label: '개인정보 처리 방침에 동의 (필수)' },
+]
 
 const HAS_LETTER = /[A-Za-z]/
 const HAS_DIGIT = /[0-9]/
@@ -89,6 +103,11 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
     const [checkedUserId, setCheckedUserId] = useState<string | null>(null)
     const [isChecking, setIsChecking] = useState(false)
 
+    const [showPassword, setShowPassword] = useState(false)
+    const [isTermsOpen, setIsTermsOpen] = useState(false)
+    const [agreed, setAgreed] = useState<Record<TermId, boolean>>({ service: false, privacy: false })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
     const info = STEP_INFO[step]
     const value = values[step]
     const stepIndex = STEPS.indexOf(step)
@@ -98,6 +117,8 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
 
     // 이름 단계는 입력했을 때만, 나머지 단계는 항상 "다음"이 보여요 (Figma와 같게)
     const showNext = step !== 'name' || value.trim() !== ''
+
+    const isAllAgreed = agreed.service && agreed.privacy
 
     const handleNext = (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault() // 폼 제출 시 페이지 새로고침 막기
@@ -116,7 +137,7 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
 
         const isLastStep = stepIndex === STEPS.length - 1
         if (isLastStep) {
-            onComplete?.() // 5단계에서 "약관 동의 시트 열기"로 바꿔요
+            setIsTermsOpen(true) // 입력이 다 끝났으니 약관 동의로
         } else {
             setStep(STEPS[stepIndex + 1])
         }
@@ -146,9 +167,37 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
         }
     }
 
-    // 첫 단계에서는 첫화면으로, 그 뒤로는 이전 단계로
+    // 전체동의: 둘 다 켜져 있으면 모두 끄고, 아니면 모두 켜요
+    const handleToggleAll = () => {
+        setAgreed({ service: !isAllAgreed, privacy: !isAllAgreed })
+    }
+
+    const handleSignUp = async () => {
+        if (!isAllAgreed || isSubmitting) return
+
+        setIsSubmitting(true)
+        setErrorMessage('')
+        try {
+            await signUp({
+                name: values.name.trim(),
+                userId: values.userId,
+                password: values.password,
+            })
+            onComplete?.()
+        } catch {
+            setErrorMessage('잠시 후 다시 시도해 주세요.')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    // 약관 시트가 열려 있으면 시트만 닫고, 첫 단계에서는 첫화면으로, 그 뒤로는 이전 단계로
     const handleBack = () => {
         setErrorMessage('')
+        if (isTermsOpen) {
+            setIsTermsOpen(false)
+            return
+        }
         if (stepIndex === 0) {
             onBack?.()
         } else {
@@ -177,7 +226,7 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
                         key={step}
                         id="signup-input"
                         className="signup__input"
-                        type={info.type}
+                        type={info.type === 'password' && showPassword ? 'text' : info.type}
                         name={step}
                         placeholder={info.label}
                         autoComplete={info.autoComplete}
@@ -187,8 +236,21 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
                         onChange={(e) => {
                             setValues({ ...values, [step]: e.target.value })
                             setErrorMessage('')
+                            setIsTermsOpen(false) // 값을 고치면 다시 "다음"으로 검사받게
                         }}
                     />
+                    {info.type === 'password' && (
+                        <button
+                            type="button"
+                            className="signup__eye"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            onMouseDown={(e) => e.preventDefault()}
+                            aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+                            aria-pressed={showPassword}
+                        >
+                            <img src={showPassword ? iconEye : iconEyeOff} width={24} height={24} alt="" />
+                        </button>
+                    )}
                     {step === 'userId' && (
                         <button
                             type="button"
@@ -212,10 +274,53 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
                     ) : null}
                 </p>
 
-                {showNext && (
+                {showNext && !isTermsOpen && (
                     <button type="submit" className="signup__next">
                         다음
                     </button>
+                )}
+
+                {isTermsOpen && (
+                    <section className="signup__terms" role="dialog" aria-labelledby="signup-terms-title">
+                        <h2 id="signup-terms-title" className="signup__terms-title">
+                            약관동의
+                        </h2>
+
+                        <button
+                            type="button"
+                            className={`signup__agree-all${isAllAgreed ? ' signup__agree-all--on' : ''}`}
+                            onClick={handleToggleAll}
+                            aria-pressed={isAllAgreed}
+                        >
+                            <img src={isAllAgreed ? iconCheckCircleOn : iconCheckCircle} width={27} height={26} alt="" />
+                            전체동의
+                        </button>
+
+                        <ul className="signup__agree-list">
+                            {TERMS.map((term) => (
+                                <li key={term.id}>
+                                    <button
+                                        type="button"
+                                        className="signup__agree-item"
+                                        onClick={() => setAgreed({ ...agreed, [term.id]: !agreed[term.id] })}
+                                        aria-pressed={agreed[term.id]}
+                                    >
+                                        <img src={agreed[term.id] ? iconCheckOn : iconCheck} width={23} height={23} alt="" />
+                                        {term.label}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+
+                        <button
+                            type="button"
+                            className="signup__submit"
+                            onClick={handleSignUp}
+                            disabled={!isAllAgreed || isSubmitting}
+                        >
+                            {isSubmitting ? '가입 중…' : '다음'}
+                        </button>
+                    </section>
                 )}
             </form>
         </main>
