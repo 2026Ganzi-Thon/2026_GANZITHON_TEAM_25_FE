@@ -31,8 +31,10 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
   const [savedCount, setSavedCount] = useState(0)
+  const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
 
-  const navigate = (to: string) => {
+  const navigate = (to: string, phase?: 'noon' | 'sunset') => {
+    if (to === '/action') setActionPhase(phase ?? 'noon')
     window.history.pushState(null, '', to)
     setPath(to)
   }
@@ -45,6 +47,7 @@ function App() {
           onOpenMemories={() => navigate('/memories')}
           onOpenMyMongle={() => navigate('/mymongle')}
           onOpenHelp={() => navigate('/help')}
+          onTouchMongle={() => navigate('/action', 'noon')}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
@@ -69,7 +72,7 @@ function App() {
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/action') ? (
-        <MongleAction />
+        <MongleAction phase={actionPhase} />
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
           onBack={() => navigate('/home')}
@@ -88,7 +91,7 @@ function App() {
         <Memories onBack={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
-          onTouchMongle={() => navigate('/action')}
+          onTouchMongle={() => navigate('/action', 'sunset')}
           onShave={() => navigate('/shave')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
