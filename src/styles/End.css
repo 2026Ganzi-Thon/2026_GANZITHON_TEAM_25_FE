@@ -1,0 +1,171 @@
+/* Figma: 털어낸후 - 오늘은 여기까지 (171:3420), 402 × 874 */
+/* 배경 레이어: 화면 전체 폭을 꽉 채움 */
+.end {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: #1d2a3a;
+    background-position: center 45%;
+    /* 지평선 높이 고정 */
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+/* 내용 프레임: Figma 402px 폭 안에서 가운데 정렬 */
+.end__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(220px + env(safe-area-inset-top)) 33px calc(74px + env(safe-area-inset-bottom));
+    overflow: hidden;
+}
+
+/* ── 우측 상단 버튼 ── */
+.end__actions {
+    position: absolute;
+    top: calc(43px + env(safe-area-inset-top));
+    right: 29px;
+    z-index: 2;
+}
+
+/* ── 달 (왼쪽 위) ── */
+.end__moon {
+    position: absolute;
+    top: calc(51px + env(safe-area-inset-top));
+    left: 50px;
+    width: 167px;
+    height: 167px;
+}
+
+.end__moon-glow {
+    position: absolute;
+    top: 8px;
+    left: -3px;
+}
+
+.end__moon-image {
+    position: relative;
+    width: 167px;
+    height: 167px;
+    object-fit: contain;
+}
+
+/* ── 제목 · 설명 (밤하늘 위라 밝은 글자) ── */
+.end__title {
+    position: relative;
+    color: var(--color-home);
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.end__desc {
+    position: relative;
+    margin-top: 9px;
+    color: var(--color-home);
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ── 몽글이 무대 ── */
+.end__stage {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 8px;
+    /* 몽글이 바닥 ~ 안내 상자 간격 */
+}
+
+.end__mongle-wrap {
+    position: relative;
+    width: 242px;
+    height: 242px;
+}
+
+.end__bubble {
+    position: absolute;
+    top: -56px;
+    left: 13px;
+    z-index: 1;
+    padding: 12px 38px;
+    border-radius: 33px;
+    background: var(--color-white);
+    box-shadow: 3px 3px 8.1px rgba(0, 0, 0, 0.2);
+    color: #000;
+    font-family: 'MemomentKkukkukk', var(--font-sans);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.end__mongle-shadow {
+    position: absolute;
+    top: 203.6px;
+    left: 30.6px;
+}
+
+/* 모션 명세 sleepy: 졸린 눈 유지 + 4.6초 느린 호흡, 발 쪽 기준 */
+.end__mongle {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 95%;
+    animation: end-breathe 4.6s ease-in-out infinite;
+}
+
+.end__mongle-body {
+    width: 242px;
+    height: 242px;
+    object-fit: cover;
+}
+
+.end__mongle-eyes {
+    position: absolute;
+    top: 42px;
+    left: 50px;
+    width: 72px;
+    height: 24px;
+    object-fit: cover;
+}
+
+@keyframes end-breathe {
+    50% {
+        transform: scale(1.006, 1.012);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .end__mongle {
+        animation: none;
+    }
+}
+
+/* ── 기억 안내 상자 ── */
+.end__info {
+    width: 100%;
+    padding: 15px 0;
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, 0.64);
+    font-size: 15px;
+    text-align: center;
+}
+
+/* ── 처음 화면으로 ── */
+.end__home {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    border-radius: var(--radius-card);
+    background: var(--color-home);
+    box-shadow: 0 4px 8.8px rgba(0, 0, 0, 0.25);
+    font-size: 20px;
+    font-weight: 600;
+}

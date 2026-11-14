@@ -8,6 +8,7 @@ export type Memory = {
     memoryId: string
     summary: string
     approvedAt: string
+    updatedAt?: string
 }
 
 export type MemoryPreview = {
@@ -30,6 +31,14 @@ function readMemories(): Memory[] {
         return raw ? (JSON.parse(raw) as Memory[]) : []
     } catch {
         return []
+    }
+}
+
+function writeMemories(memories: Memory[]) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(memories))
+    } catch {
+        // 저장 공간이 막힌 환경(시크릿 모드 등)에서는 조용히 무시
     }
 }
 
@@ -72,4 +81,39 @@ export async function approveMemory(
         // 저장 공간이 막힌 환경(시크릿 모드 등)에서는 조용히 무시
     }
     return memory
+}
+
+/** PATCH /memories/{memoryId} — 요약 문장 고치기 */
+export async function updateMemory(
+    memoryId: string,
+    summary: string,
+): Promise<Memory> {
+    const memories = readMemories()
+    const target = memories.find((memory) => memory.memoryId === memoryId)
+    if (!target) {
+        throw new Error('MEMORY_NOT_FOUND') // 서버라면 404
+    }
+    const updated: Memory = {
+        ...target,
+        summary,
+        updatedAt: new Date().toISOString(),
+    }
+    writeMemories(
+        memories.map((memory) =>
+            memory.memoryId === memoryId ? updated : memory,
+        ),
+    )
+    return updated
+}
+
+/** DELETE /memories/{memoryId} — 기억 하나 지우기 (하드 삭제) */
+export async function deleteMemory(memoryId: string): Promise<void> {
+    writeMemories(
+        readMemories().filter((memory) => memory.memoryId !== memoryId),
+    )
+}
+
+/** DELETE /memories — 기억 모두 지우기 */
+export async function deleteAllMemories(): Promise<void> {
+    writeMemories([])
 }

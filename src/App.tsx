@@ -7,6 +7,12 @@ import MongleAction from './pages/MongleAction'
 import Shave from './pages/Shave';
 import MindOrganize from './pages/MindOrganize/MindOrganize'
 import Chat from './pages/Chat/Chat'
+import MongleNext from './pages/Next';
+import MongleHelp from './pages/Help';
+import Memories from './pages/Memories/Memories'
+import After from './pages/After/After'
+import End from './pages/End/End'
+import SignIn from './pages/SignIn/SignIn'
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -22,6 +28,7 @@ function App() {
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+  const [savedCount, setSavedCount] = useState(0)
 
   const navigate = (to: string) => {
     window.history.pushState(null, '', to)
@@ -31,11 +38,25 @@ function App() {
   return (
     <div className="app">
       {path.startsWith('/home') ? (
-        <Home onOrganizeAndTalk={() => navigate('/mind')} />
+        <Home
+          onOrganizeAndTalk={() => navigate('/mind')}
+          onOpenMemories={() => navigate('/memories')}
+        />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
           onBack={() => navigate('/action')}
           onComplete={() => navigate('/home')}
+          onNextActivity={() => navigate('/next')}
+        />
+      ) : path.toLowerCase().startsWith('/next') ? (
+        <MongleNext
+          onBack={() => navigate('/action')}
+          onHelp={() => navigate('/help')}
+          onMind={() => navigate('/mind')}
+        />
+      ) : path.toLowerCase().startsWith('/help') ? (
+        <MongleHelp
+          onBack={() => navigate('/next')}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
@@ -45,16 +66,37 @@ function App() {
         <MindOrganize
           onBack={() => navigate('/home')}
           onEnd={() => navigate('/home')}
-          onGoChat={() => navigate('/chat')} />
+          onGoChat={() => navigate('/chat')}
+        />
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
           onBack={() => navigate('/mind')}
-          onFinish={() => navigate('/home')} />
+          onFinish={(count) => {
+            setSavedCount(count)
+            navigate('/after')
+          }}
+        />
+      ) : path.toLowerCase().startsWith('/memories') ? (
+        <Memories onBack={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/after') ? (
+        <After
+          onTouchMongle={() => navigate('/action')}
+          onShave={() => navigate('/shave')}
+          onNext={() => navigate('/next')}
+          onEnd={() => navigate('/end')}
+        />
+      ) : path.toLowerCase().startsWith('/end') ? (
+        <End savedCount={savedCount} onHome={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/signin') ? (
+        <SignIn
+          onBack={() => navigate('/')}
+          onLoginSuccess={() => navigate('/onboarding')}
+        />
       ) : (
-        <Login onLoginClick={() => navigate('/onboarding')} />
+        <Login onLoginClick={() => navigate('/signin')} />
       )}
     </div>
-  )
+  );
 }
 
 export default App

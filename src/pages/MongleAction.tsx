@@ -48,9 +48,9 @@ export default function MongleAction() {
 
   return (
     <div className={styles.wrapper}>
+      {/* 1. 전체 배경 이미지 — 화면 전체 폭을 채우도록 container 바깥(wrapper)에 둠 */}
+      <img src={bgImage} alt="" aria-hidden="true" className={styles.bgImage} />
       <div className={styles.container}>
-        {/* 1. 전체 배경 이미지 */}
-        <img src={bgImage} alt="배경" className={styles.bgImage} />
 
         {/* 2. 상단 네비게이션 (소리, 메뉴) */}
         <div className={styles.topBar}>

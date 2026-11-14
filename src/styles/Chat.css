@@ -1,16 +1,31 @@
 /* Figma: 대화 - 이번만 기억하기 (171:3177), 402 × 874 */
+/* 배경 레이어: 화면 전체 폭을 꽉 채움 */
 .chat {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: var(--color-home);
+    /* 45% = 배경 이미지의 지평선 높이. 가로로 넓은 화면에서도 지평선이 같은 높이에 오도록 고정 */
+    background-position: center 45%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--color-text);
+}
+
+/*
+ * 내용 프레임: Figma 402px 폭 안에서 가운데 정렬 (기존 .chat 레이아웃 그대로)
+ * z-index를 주지 않아야 바깥의 .chat__dim(z 1)이 몽글이(아래)와 입력창(z 2) 사이에 정상적으로 끼어듦
+ */
+.chat__frame {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: var(--app-max-width);
     min-height: 100svh;
-    overflow: hidden;
-    background-color: var(--color-home);
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: var(--color-text);
+    margin: 0 auto;
 }
 
 /* ── 상단 바: 뒤로가기 + 소리·메뉴 ── */
