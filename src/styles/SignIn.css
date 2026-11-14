@@ -1,0 +1,159 @@
+/* Figma: 로그인하기 (244:8), 402 × 874 */
+.signin {
+    width: 100%;
+    min-height: 100svh;
+    background: var(--color-home);
+}
+
+/* 내용 프레임: 402px 폭 안에서 가운데 정렬 */
+.signin__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(114px + env(safe-area-inset-top)) 33px calc(40px + env(safe-area-inset-bottom));
+}
+
+/* ── 뒤로가기 ── */
+.signin__back {
+    position: absolute;
+    top: calc(44px + env(safe-area-inset-top));
+    left: 16px;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+/* ── 제목 ── */
+.signin__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: normal;
+}
+
+/* ── 몽글이 (제목 아래 51px, 가운데) ── */
+.signin__mongle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 51px auto 0;
+}
+
+.signin__mongle-shadow {
+    position: absolute;
+    top: 168px;
+    left: 25px;
+}
+
+.signin__mongle-body {
+    position: relative;
+    /* 그림자보다 위에 보이게 */
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.signin__mongle-eyes {
+    position: absolute;
+    top: 33px;
+    left: 38px;
+    width: 67px;
+    height: 22px;
+    object-fit: cover;
+}
+
+/* ── 입력칸 (몽글이 아래 43px, 칸 사이 17px) ── */
+.signin__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    margin-top: 43px;
+}
+
+.signin__field {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 55px;
+    padding: 0 18px;
+    border: 1px solid var(--color-point);
+    border-radius: 26px;
+    background: var(--color-white);
+    box-shadow: 0 4px 11.4px rgba(0, 0, 0, 0.16);
+    cursor: text;
+}
+
+/* 입력 중인 칸은 메인색 테두리로 표시 */
+.signin__field:focus-within {
+    border-color: var(--color-main);
+}
+
+.signin__input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: none;
+    font-size: 16px;
+}
+
+.signin__input::placeholder {
+    color: var(--color-text);
+    opacity: 0.5;
+}
+
+/* 비밀번호 보기 토글 (Figma: 칸 오른쪽 끝에서 20px) */
+.signin__eye {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-right: 2px;
+}
+
+/* ── 폼: 입력칸 + 오류 + 버튼을 세로로 ── */
+.signin__form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── 오류 메시지 (회원가입 Figma 오류 스타일과 같게) ──
+   메시지가 없어도 높이를 미리 잡아 둬서 버튼이 들썩이지 않게 함 */
+.signin__error {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 20px;
+    margin-top: 6px;
+    padding-left: 13px;
+    color: #db4d4d;
+    font-size: 12px;
+}
+
+/* ── 로그인 버튼 ── */
+.signin__submit {
+    width: 100%;
+    margin-top: 36px;
+    padding: 11px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--color-main);
+    box-shadow: 0 4px 8.8px rgba(0, 0, 0, 0.25);
+    color: var(--color-white);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* 두 칸이 비어 있거나 보내는 중일 때 */
+.signin__submit:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
