@@ -13,6 +13,7 @@ import Memories from './pages/Memories/Memories'
 import After from './pages/After/After'
 import End from './pages/End/End'
 import SignIn from './pages/SignIn/SignIn'
+import MyMongle from './pages/MyMongle/MyMongle' 
 
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
@@ -41,11 +42,17 @@ function App() {
         <Home
           onOrganizeAndTalk={() => navigate('/mind')}
           onOpenMemories={() => navigate('/memories')}
+          onOpenMyMongle={() => navigate('/mymongle')}
+          onOpenHelp={() => navigate('/help')}
+        />
+      ) : path.toLowerCase().startsWith('/mymongle') ? ( 
+        <MyMongle 
+          onBack={() => navigate('/home')} 
         />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
           onBack={() => navigate('/action')}
-          onComplete={() => navigate('/home')}
+          onComplete={() => navigate('/end')}
           onNextActivity={() => navigate('/next')}
         />
       ) : path.toLowerCase().startsWith('/next') ? (
