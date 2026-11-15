@@ -34,7 +34,7 @@ function App() {
   const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
 
   const navigate = (to: string, phase?: 'noon' | 'sunset') => {
-    if (to === '/action') setActionPhase(phase ?? 'noon')
+    if (to === '/action' && phase) setActionPhase(phase)
     window.history.pushState(null, '', to)
     setPath(to)
   }
@@ -84,6 +84,7 @@ function App() {
           onBack={() => navigate('/mind')}
           onFinish={(count) => {
             setSavedCount(count)
+            setActionPhase('sunset')
             navigate('/after')
           }}
         />
