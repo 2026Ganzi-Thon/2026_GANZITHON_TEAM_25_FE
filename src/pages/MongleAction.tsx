@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, type PointerEvent } from 'react';
 import styles from '../styles/MongleAction.module.css';
 
 import bgImage from '../assets/images/background_noon_wide.png'; 
@@ -12,32 +12,68 @@ import eyesSmile from '../assets/images/alpaca/eyes_smile_matched.png';
 
 import iconSound from '../assets/icons/sound-button.svg';
 import iconMenu from '../assets/icons/menu-button.svg';
-
 import iconPet from '../assets/icons/petting.png';
 import iconShake from '../assets/icons/shaking.png';
 import iconSquish from '../assets/icons/press.png';
 
-type Mode = 'none' | 'pet' | 'shake' | 'squish';
-type MongleActionProps = { phase: 'noon' | 'sunset' };
+import SoundSheet from './Home/components/SoundSheet'; 
+import MenuSheet from './Home/components/MenuSheet';
+import type { NatureSound } from './Home/natureSounds';
 
-export default function MongleAction({ phase }: MongleActionProps) {
+const AnySoundSheet = SoundSheet as any;
+const AnyMenuSheet = MenuSheet as any;
+
+type OpenSheet = 'sound' | 'menu' | null;
+type Mode = 'none' | 'pet' | 'shake' | 'squish';
+
+type MongleActionProps = {
+  phase: 'noon' | 'sunset';
+  onOpenMemories?: () => void;
+  onOpenMyMongle?: () => void;
+  onOpenHelp?: () => void;
+  onLogout?: () => void;
+};
+
+interface WoolAnim {
+  id: number;
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  targetRot: number;
+}
+
+export default function MongleAction({ 
+  phase, 
+  onOpenMemories, 
+  onOpenMyMongle, 
+  onOpenHelp, 
+  onLogout 
+}: MongleActionProps) {
+  
+  const [openSheet, setOpenSheet] = useState<OpenSheet>(null);
+  const [natureSound, setNatureSound] = useState<NatureSound>('off');
+  const [volume, setVolume] = useState(50);
+  const [vibration, setVibration] = useState(true);
+  const closeSheet = useCallback(() => setOpenSheet(null), []);
+
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0); 
+  
+  const [flyingWools, setFlyingWools] = useState<WoolAnim[]>([]);
+  const woolIdCounter = useRef(0);
 
-  const handleGoToShave = () => {
-    window.history.pushState(null, '', '/shave'); 
-    window.dispatchEvent(new PopStateEvent('popstate')); 
-  };
-
-  const handleAction = (newMode: Mode) => {
-    setMode(newMode);
-    setAnimKey(prev => prev + 1); // 클릭할 때마다 key가 바뀌어 애니메이션 재시작
-  };
+  const [isDragging, setIsDragging] = useState(false);
+  const initialTouchX = useRef(0);
+  const [dragStartX, setDragStartX] = useState(0);
+  const dragAccumulator = useRef(0);
+  const [dragOffset, setDragOffset] = useState(0); 
+  const hasTriggeredThisDrag = useRef(false);
 
   const textData = {
-    none: { title: "몽글이와 함께 시간을 보내요.", sub: "아래 버튼을 눌러 몽글이와 상호작용 해보세요!" },
-    pet: { title: "몽글이가 눈을 감고 털을 맡겨요.", sub: "털이 살랑살랑 움직요. 같이 있어줄게요!" },
-    shake: { title: "부르르 - 털이 가볍게 날아가요.", sub: "털어낸 털은 바람에 흩어졌어요. 같이 있어줄게요." },
+    none: { title: "몽글이와 함께 시간을 보내요.", sub: "아래 버튼을 눌러 모드를 선택하고 몽글이를 문질러보세요!" },
+    pet: { title: "몽글이가 눈을 감고 털을 맡겨요.", sub: "털이 살랑살랑 움직여요. 같이 있어줄게요!" },
+    shake: { title: "부르르 - 털이 가볍게 날아가요.", sub: "문지르면 털이 바닥에 떨어져요. 같이 있어줄게요." },
     squish: { title: "말랑 - 눌렸다가 다시 몽글", sub: "몽글이가 다시 동그래졌어요. 같이 있어줄게요." }
   };
 
@@ -48,46 +84,102 @@ export default function MongleAction({ phase }: MongleActionProps) {
     squish: eyesSmile
   };
 
+  const handleGoToShave = () => {
+    window.history.pushState(null, '', '/shave'); 
+    window.dispatchEvent(new PopStateEvent('popstate')); 
+  };
+
+  const handleAction = (newMode: Mode) => {
+    setMode(newMode);
+    setAnimKey(prev => prev + 1);
+  };
+
+  const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    initialTouchX.current = e.clientX;
+    setDragStartX(e.clientX);
+    dragAccumulator.current = 0;
+    setDragOffset(0);
+    hasTriggeredThisDrag.current = false; 
+  };
+
+  const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    
+    const currentX = e.clientX;
+    const diff = Math.abs(currentX - dragStartX);
+    
+    if (mode === 'pet') {
+      setDragOffset(currentX - initialTouchX.current);
+    }
+
+    dragAccumulator.current += diff;
+    setDragStartX(currentX);
+
+    if (mode === 'shake' && dragAccumulator.current > 60 && !hasTriggeredThisDrag.current) {
+      triggerShear(); 
+      hasTriggeredThisDrag.current = true; 
+    }
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
+    setDragOffset(0); 
+  };
+
+  const triggerShear = () => {
+    const startX = Math.random() * 80 - 40; 
+    const startY = Math.random() * 80 - 40;
+    const targetX = Math.random() * 160 - 80; 
+    const targetY = Math.random() * 60 - 10;  
+    const targetRot = Math.random() * 180 - 90;
+
+    const newId = woolIdCounter.current++;
+    setFlyingWools(prev => [...prev, { id: newId, startX, startY, targetX, targetY, targetRot }]);
+  };
+
+  const characterStyle = {
+    transform: mode === 'pet' && isDragging ? `rotate(${dragOffset * 0.15}deg)` : 'rotate(0deg)',
+    transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+  };
+
   return (
     <div className={styles.wrapper}>
-      {/* 1. 전체 배경 이미지 — 화면 전체 폭을 채우도록 container 바깥(wrapper)에 둠 */}
       <img src={phase === 'sunset' ? bgSunsetImage : bgImage} alt="" aria-hidden="true" className={styles.bgImage} />
       <div className={styles.container}>
 
-        {/* 2. 상단 네비게이션 (소리, 메뉴) */}
         <div className={styles.topBar}>
-          <button className={styles.iconBtn}><img src={iconSound} alt="소리" /></button>
-          <button className={styles.iconBtn}><img src={iconMenu} alt="메뉴" /></button>
+          <button className={styles.iconBtn} onClick={() => setOpenSheet('sound')}><img src={iconSound} alt="소리" /></button>
+          <button className={styles.iconBtn} onClick={() => setOpenSheet('menu')}><img src={iconMenu} alt="메뉴" /></button>
         </div>
 
-        {/* 3. 상황별 텍스트 영역 */}
         <div className={styles.textSection}>
           <h2 className={styles.title}>{textData[mode].title}</h2>
           <p className={styles.subtitle}>{textData[mode].sub}</p>
         </div>
 
-        {/* 4. 액션 버튼 3개 */}
         <div className={styles.actionButtons}>
           <button className={`${styles.actionBtn} ${mode === 'pet' ? styles.active : ''}`} onClick={() => handleAction('pet')}>
-            <img src={iconPet} alt="쓰다듬기" className={styles.actionIcon} />
-            <span>쓰다듬기</span>
+            <img src={iconPet} alt="쓰다듬기" className={styles.actionIcon} /><span>쓰다듬기</span>
           </button>
           <button className={`${styles.actionBtn} ${mode === 'shake' ? styles.active : ''}`} onClick={() => handleAction('shake')}>
-            <img src={iconShake} alt="털어내기" className={styles.actionIcon} />
-            <span>털어내기</span>
+            <img src={iconShake} alt="털어내기" className={styles.actionIcon} /><span>털어내기</span>
           </button>
           <button className={`${styles.actionBtn} ${mode === 'squish' ? styles.active : ''}`} onClick={() => handleAction('squish')}>
-            <img src={iconSquish} alt="꾹 누르기" className={styles.actionIcon} />
-            <span>꾹 누르기</span>
+            <img src={iconSquish} alt="꾹 누르기" className={styles.actionIcon} /><span>꾹 누르기</span>
           </button>
         </div>
 
-        {/* 5. 캐릭터 및 애니메이션 영역 */}
-        <div className={styles.characterArea}>
-          {/* animKey가 바뀔 때마다 div가 새로 그려지면서 CSS 애니메이션이 처음부터 다시 재생됨 */}
-          <div key={animKey} className={`${styles.mongleWrapper} ${styles[mode]}`}>
+        <div 
+          className={styles.characterArea}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          style={{ touchAction: 'none' }} 
+        >
+          <div key={animKey} className={`${styles.mongleWrapper} ${styles[mode]}`} style={characterStyle}>
             
-            {/* 털어내기(shake) 모드일 때만 흩뿌려지는 양털 3개 렌더링 */}
             {mode === 'shake' && (
               <>
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool1}`} alt="털" />
@@ -96,27 +188,44 @@ export default function MongleAction({ phase }: MongleActionProps) {
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool4}`} alt="털" />
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool5}`} alt="털" />
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool6}`} alt="털" />
+                
+                {flyingWools.map(wool => (
+                  <img 
+                    key={wool.id} src={woolParticle} className={styles.flyingWool} alt="깎인 털" 
+                    style={{
+                      '--start-x': `${wool.startX}px`, '--start-y': `${wool.startY}px`,
+                      '--target-x': `${wool.targetX}px`, '--target-y': `${wool.targetY}px`, '--target-rot': `${wool.targetRot}deg`
+                    } as React.CSSProperties}
+                  />
+                ))}
               </>
             )}
 
-            <img src={mongleBody} alt="몽글이 몸" className={styles.mongleBody} />
-            {/* 쓰다듬기(pet) 모드면 눈을 감고, 아니면 뜬 눈 이미지 사용 */}
             <img 
-              src={eyesMap[mode]} 
-              alt="몽글이 표정" 
+              src={mongleBody} alt="몽글이 몸" 
+              className={`${styles.mongleBody} ${isDragging && mode === 'shake' ? styles.wiggleMotion : ''}`} 
+            />
+            <img 
+              src={eyesMap[mode]} alt="몽글이 표정" 
               className={`${styles.mongleEyes} ${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`} 
             />
           </div>
         </div>
 
-        {/* 6. 하단 버튼 영역 */}
         <div className={styles.bottomSection}>
           <div className={styles.pillButtons}>
             <button className={styles.pillBtn} onClick={handleGoToShave}>털 깎으며 정리하기</button>
-            <button className={styles.pillBtn}>다음 활동 보기</button>
+            <button className={styles.pillBtn}>다음 행동 선택</button>
           </div>
           <button className={styles.textLinkBtn}>여기서 끝내기</button>
         </div>
+
+        {openSheet === 'sound' && (
+          <AnySoundSheet sound={natureSound} volume={volume} onSoundChange={setNatureSound} onVolumeChange={setVolume} onClose={closeSheet} />
+        )}
+        {openSheet === 'menu' && (
+          <AnyMenuSheet vibration={vibration} onVibrationChange={setVibration} onOpenMemories={onOpenMemories} onOpenMyMongle={onOpenMyMongle} onOpenHelp={onOpenHelp} onLogout={onLogout} onClose={closeSheet} />
+        )}
 
       </div>
     </div>
