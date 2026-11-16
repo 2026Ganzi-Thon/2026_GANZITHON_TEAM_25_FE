@@ -15,7 +15,14 @@ import End from './pages/End/End'
 import SignIn from './pages/SignIn/SignIn'
 import MyMongle from './pages/MyMongle/MyMongle'
 import SignUp from './pages/SignUp/SignUp'
+import { logout } from './api/auth'
+import { getToken, UNAUTHORIZED_EVENT } from './api/client'
 
+/** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
+function isPublicPath(path: string) {
+  const lower = path.toLowerCase()
+  return lower === '/' || lower.startsWith('/signin') || lower.startsWith('/signup')
+}
 /**
  * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
  * - /     → 첫화면(로그인)
@@ -23,8 +30,7 @@ import SignUp from './pages/SignUp/SignUp'
  * 브라우저 뒤로가기/앞으로가기도 동작하도록 history API 사용
  */
 function App() {
-  const [path, setPath] = useState(window.location.pathname)
-
+  const [rawPath, setPath] = useState(window.location.pathname)
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname)
     window.addEventListener('popstate', handlePopState)
@@ -32,12 +38,41 @@ function App() {
   }, [])
   const [savedCount, setSavedCount] = useState(0)
   const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
-
   const navigate = (to: string, phase?: 'noon' | 'sunset') => {
     if (to === '/action' && phase) setActionPhase(phase)
     window.history.pushState(null, '', to)
     setPath(to)
   }
+  // 보호 API에서 401이 오면 client.ts가 토큰을 지우고 신호를 보내요 → 첫화면으로
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      window.history.replaceState(null, '', '/')
+      setPath('/')
+    }
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [])
+
+  // 로그인 안 했는데 보호 화면이면 첫화면으로, 로그인했는데 첫화면·로그인·가입이면 홈으로
+  const isLoggedIn = getToken() !== null
+  const redirectTo = !isLoggedIn && !isPublicPath(rawPath)
+    ? '/'
+    : isLoggedIn && isPublicPath(rawPath)
+      ? '/home'
+      : null
+  /** 실제로 그릴 화면 주소 */
+  const path = redirectTo ?? rawPath
+
+  // 주소창도 옮겨 간 주소로 맞춰요 (뒤로가기 기록에 남기지 않음)
+  useEffect(() => {
+    if (redirectTo) window.history.replaceState(null, '', redirectTo)
+  }, [redirectTo])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
 
   return (
     <div className="app">
@@ -48,10 +83,12 @@ function App() {
           onOpenMyMongle={() => navigate('/mymongle')}
           onOpenHelp={() => navigate('/help')}
           onTouchMongle={() => navigate('/action', 'noon')}
+          onLogout={handleLogout}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
           onBack={() => navigate('/home')}
+          onLogout={handleLogout}
         />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave

@@ -1,65 +1,56 @@
 /**
- * 로그인 API
- * 🔴 RestAPI 설계 v1에는 아직 없음 (v1은 기기 익명 토큰만 있음) → 백엔드와 모양 확정 필요
- * TODO: 서버가 준비되면 함수 안만 fetch 호출로 바꾸면 됨 (화면 코드는 그대로)
- *       지금은 0.6초 뒤 테스트 계정 하나만 통과시키는 가짜 구현
+ * 인증 API (백엔드 API 안내서 · 계정)
+ * - 로그인 전에 부르는 API라서 모두 auth: false (토큰을 붙이지 않음)
+ * - 로그인 아이디는 loginId, 응답의 userId는 서버 내부 ID라 서로 달라요
  */
+import { clearToken, request, setToken } from './client'
+
 export type LoginResponse = {
+    /** 서버 내부 사용자 ID (로그인 아이디 아님) */
     userId: string
     accessToken: string
     expiresAt: string
+    name: string
 }
 
-/** 아이디·비밀번호가 맞지 않을 때 던지는 에러 */
-export class LoginError extends Error { }
-
-/** 가짜 테스트 계정 (Figma 회원가입 예시 비밀번호와 같게 맞춤) */
-const MOCK_ACCOUNT = { userId: 'mongle01', password: 'mongle123!' }
-
-/**
- * 가짜 회원 목록 — 테스트 계정 + 이번에 가입한 계정
- * 메모리에만 있어서 새로고침하면 가입한 계정은 사라져요 (비밀번호를 브라우저에 저장하지 않으려고 일부러 이렇게 함)
- */
-const mockAccounts = [MOCK_ACCOUNT]
-
-/** POST /auth/login (가정) */
-export async function login(userId: string, password: string): Promise<LoginResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-
-    const account = mockAccounts.find((item) => item.userId === userId)
-    if (!account || account.password !== password) {
-        throw new LoginError('아이디 또는 비밀번호가 맞지 않아요.')
-    }
-
-    return {
-        userId,
-        accessToken: 'mock-access-token',
-        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-    }
+/** POST /auth/login — 성공하면 토큰을 저장해요 */
+export async function login(loginId: string, password: string): Promise<LoginResponse> {
+    const data = await request<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: { loginId, password },
+        auth: false,
+    })
+    setToken(data.accessToken)
+    return data
 }
 
-/**
- * 아이디 중복확인 — 쓸 수 있는 아이디면 true
- * GET /auth/check-id (가정) 🔴 백엔드와 모양 확정 필요
- * 지금은 0.4초 뒤 가짜 회원 목록에 있는 아이디만 "이미 사용 중"으로 답하는 가짜 구현
- */
-export async function checkUserIdAvailable(userId: string): Promise<boolean> {
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    return !mockAccounts.some((item) => item.userId === userId)
+/** 로그아웃 — 서버 호출 없이 저장한 토큰만 지워요 (안내서 공통 규칙) */
+export function logout() {
+    clearToken()
+}
+
+/** GET /auth/check-id — 쓸 수 있는 아이디면 true */
+export async function checkLoginIdAvailable(loginId: string): Promise<boolean> {
+    const data = await request<{ available: boolean }>(
+        `/auth/check-id?loginId=${encodeURIComponent(loginId)}`,
+        { auth: false },
+    )
+    return data.available
 }
 
 export type SignUpRequest = {
     name: string
-    userId: string
+    loginId: string
     password: string
+    termsAgreed: boolean
+    privacyAgreed: boolean
 }
 
-/**
- * 회원가입
- * POST /auth/signup (가정) 🔴 백엔드와 모양 확정 필요
- * 지금은 0.6초 뒤 가짜 회원 목록에 넣는 가짜 구현 — 가입한 계정으로 바로 로그인할 수 있어요
- */
-export async function signUp({ userId, password }: SignUpRequest): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-    mockAccounts.push({ userId, password })
+/** POST /auth/signup — 토큰은 주지 않아요. 가입 후 로그인 화면에서 다시 로그인 */
+export async function signUp(body: SignUpRequest): Promise<void> {
+    await request<{ userId: string }>('/auth/signup', {
+        method: 'POST',
+        body,
+        auth: false,
+    })
 }

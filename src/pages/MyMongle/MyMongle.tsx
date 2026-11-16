@@ -15,9 +15,10 @@ import SoundSheet from '../Home/components/SoundSheet';
 
 interface MyMongleProps {
   onBack: () => void;
+  onLogout?: () => void;
 }
 
-const MyMongle = ({ onBack }: MyMongleProps) => {
+const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSoundOpen, setIsSoundOpen] = useState(false);
   const [sound, setSound] = useState<any>('');
@@ -124,7 +125,7 @@ const MyMongle = ({ onBack }: MyMongleProps) => {
           onOpenMemories={() => setIsMenuOpen(false)}
           onOpenMyMongle={() => setIsMenuOpen(false)} 
           onOpenHelp={() => setIsMenuOpen(false)}
-          onLogout={() => setIsMenuOpen(false)}
+          onLogout={onLogout}
           onClose={() => setIsMenuOpen(false)} 
         />
       )}
