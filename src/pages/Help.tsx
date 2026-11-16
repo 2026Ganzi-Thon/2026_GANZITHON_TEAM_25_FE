@@ -3,8 +3,9 @@ import iconBack from '../assets/icons/arrow-back.svg';
 import iconSound from '../assets/icons/sound-button.svg';
 import iconMenu from '../assets/icons/menu-button.svg';
 import iconPhone from '../assets/icons/call.png';
+import type { HeaderButtonHandlers } from '../components/HeaderActions/HeaderActions';
 
-export default function MongleHelp({ onBack }: { onBack?: () => void }) {
+export default function MongleHelp({ onBack, onSoundClick, onMenuClick }: { onBack?: () => void } & HeaderButtonHandlers) {
   const handleCopy = () => {
     navigator.clipboard.writeText("요즘 좀 힘든 일이 있었어. 잠깐 내 이야기 들어줄 수 있어?");
     alert("문장이 복사되었습니다.");
@@ -13,18 +14,22 @@ export default function MongleHelp({ onBack }: { onBack?: () => void }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        
+
         <div className={styles.topBar}>
           <button className={styles.iconBtn} onClick={onBack}>
             <img src={iconBack} alt="뒤로가기" />
           </button>
           <div className={styles.rightIcons}>
-            <button className={styles.iconBtn}><img src={iconSound} alt="소리" /></button>
-            <button className={styles.iconBtn}><img src={iconMenu} alt="메뉴" /></button>
+            <button className={styles.iconBtn} onClick={onSoundClick}>
+              <img src={iconSound} alt="소리" />
+            </button>
+            <button className={styles.iconBtn} onClick={onMenuClick}>
+              <img src={iconMenu} alt="메뉴" />
+            </button>
           </div>
         </div>
 
-     <div className={styles.helpView}>
+        <div className={styles.helpView}>
           <div className={styles.helpHeader}>
             <div className={styles.titleRow}>
               <div className={styles.iconCircle}>
@@ -75,12 +80,12 @@ export default function MongleHelp({ onBack }: { onBack?: () => void }) {
 
           <div className={styles.messageBox}>
             <h4 className={styles.messageTitle}>믿을 수 있는 사람에게 말 걸기</h4>
-            <p className={styles.messageQuote}>"요즘 좀 힘든 일이 있었어.<br/>잠깐 내 이야기 들어줄 수 있어?"</p>
+            <p className={styles.messageQuote}>"요즘 좀 힘든 일이 있었어.<br />잠깐 내 이야기 들어줄 수 있어?"</p>
             <button className={styles.copyBtn} onClick={handleCopy}>문장 복사</button>
           </div>
 
           <p className={styles.footerText}>
-            폭력·스토킹·위협이 있었던 관계라면,<br/>
+            폭력·스토킹·위협이 있었던 관계라면,<br />
             연락하거나 회피하려고 애쓰지 말아요. 내 안전이 먼저예요.
           </p>
         </div>

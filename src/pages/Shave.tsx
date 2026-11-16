@@ -7,6 +7,7 @@ import iconMenu from '../assets/icons/menu-button.svg';
 import mongleBody from '../assets/images/alpaca/mongle_default_v3.png';
 import mongleEyesSmile from '../assets/images/alpaca/eyes_smile_matched.png';
 import woolParticle from '../assets/images/tuft/tuft-01.png';
+import type { HeaderButtonHandlers } from '../components/HeaderActions/HeaderActions';
 
 
 type Category = 'normal' | 'emotion' | 'worry';
@@ -20,7 +21,7 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?: () => void, onComplete?: () => void, onNextActivity?: () => void }) {
+export default function Shave({ onBack, onComplete, onNextActivity, onSoundClick, onMenuClick }: { onBack?: () => void, onComplete?: () => void, onNextActivity?: () => void } & HeaderButtonHandlers) {  
   const [isFinished, setIsFinished] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>('normal');
   const [counts, setCounts] = useState<Record<Category, number>>({
@@ -90,8 +91,12 @@ export default function Shave({ onBack, onComplete, onNextActivity }: { onBack?:
         <div className={styles.topBar}>
           <button className={styles.iconBtn} onClick={onBack}><img src={iconBack} alt="뒤로가기" /></button>
           <div className={styles.rightIcons}>
-            <button className={styles.iconBtn}><img src={iconSound} alt="소리" /></button>
-            <button className={styles.iconBtn}><img src={iconMenu} alt="메뉴" /></button>
+            <button className={styles.iconBtn} onClick={onSoundClick}>
+              <img src={iconSound} alt="소리" />
+            </button>
+            <button className={styles.iconBtn} onClick={onMenuClick}>
+              <img src={iconMenu} alt="메뉴" />
+            </button>
           </div>
         </div>
 

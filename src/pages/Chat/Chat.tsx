@@ -7,7 +7,7 @@ import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import sendButton from '../../assets/icons/send-button.svg'
 import arrowBack from '../../assets/icons/arrow-back.svg'
-import HeaderActions from '../../components/HeaderActions/HeaderActions'
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Chat.css'
 import { postReflection } from '../../api/reflection'
 import {
@@ -37,14 +37,14 @@ type ChatProps = {
     onBack?: () => void
     /** 대화 종료 (그만 털어놓기) */
     onFinish?: (savedCount: number) => void
-}
+} & HeaderButtonHandlers
 
 /**
  * 대화 (Figma: 대화 - 이번만 기억하기 171:3177)
  * - 2단계: 배경 · 어두운 막 · 해 · 몽글이 · 상단 바 · 입력창
  * - 다음 단계에서 토글(내용 기억하기), 말풍선, 하단 버튼을 추가
  */
-function Chat({ onBack, onFinish }: ChatProps) {
+function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [remember, setRemember] = useState(false)
@@ -132,7 +132,7 @@ function Chat({ onBack, onFinish }: ChatProps) {
                     >
                         <img src={arrowBack} width={35} height={35} alt="" />
                     </button>
-                    <HeaderActions />
+                    <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
                 </header>
                 <div className="chat__memory">
                     <span className="chat__memory-label" aria-hidden="true">

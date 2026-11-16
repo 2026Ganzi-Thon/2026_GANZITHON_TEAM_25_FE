@@ -4,7 +4,7 @@ import moonGlow from '../../assets/icons/moon-glow.svg'
 import mongleImage from '../../assets/images/home/mongle-default.png'
 import mongleEyesSleepy from '../../assets/images/alpaca/eyes_sleepy_matched.png'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
-import HeaderActions from '../../components/HeaderActions/HeaderActions'
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/End.css'
 
 type EndProps = {
@@ -12,10 +12,10 @@ type EndProps = {
     savedCount: number
     /** 처음 화면으로 */
     onHome?: () => void
-}
+} & HeaderButtonHandlers
 
 /** 털어낸 후 ② 종료 화면 (Figma: 털어낸후 171:3420) */
-function End({ savedCount, onHome }: EndProps) {
+function End({ savedCount, onHome, onSoundClick, onMenuClick }: EndProps) {
     return (
         <main
             className="end"
@@ -23,7 +23,7 @@ function End({ savedCount, onHome }: EndProps) {
         >
             <div className="end__frame">
                 <div className="end__actions">
-                    <HeaderActions />
+                    <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
                 </div>
 
                 <div className="end__moon" aria-hidden="true">
