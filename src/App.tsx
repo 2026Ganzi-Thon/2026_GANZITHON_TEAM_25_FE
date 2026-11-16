@@ -132,7 +132,13 @@ function App() {
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/action') ? (
-        <MongleAction {...header} phase={actionPhase}/>
+        <MongleAction
+          {...header}
+          phase={actionPhase}
+          onShave={() => navigate('/shave')}
+          onNext={() => navigate('/next')}
+          onEnd={() => navigate('/end')}
+        />
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
           {...header}

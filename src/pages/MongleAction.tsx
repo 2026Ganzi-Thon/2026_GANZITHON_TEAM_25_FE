@@ -21,6 +21,9 @@ type Mode = 'none' | 'pet' | 'shake' | 'squish';
 
 type MongleActionProps = {
   phase: 'noon' | 'sunset';
+  onShave?: () => void;
+  onNext?: () => void;
+  onEnd?: () => void;
 } & HeaderButtonHandlers;
 
 interface WoolAnim {
@@ -32,8 +35,7 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function MongleAction({ phase, onSoundClick, onMenuClick }: MongleActionProps) {
-
+export default function MongleAction({ phase, onShave, onNext, onEnd, onSoundClick, onMenuClick }: MongleActionProps) {
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0);
 
@@ -59,11 +61,6 @@ export default function MongleAction({ phase, onSoundClick, onMenuClick }: Mongl
     pet: eyesClosed,
     shake: eyesSquint,
     squish: eyesSmile
-  };
-
-  const handleGoToShave = () => {
-    window.history.pushState(null, '', '/shave');
-    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   const handleAction = (newMode: Mode) => {
@@ -195,10 +192,16 @@ export default function MongleAction({ phase, onSoundClick, onMenuClick }: Mongl
 
         <div className={styles.bottomSection}>
           <div className={styles.pillButtons}>
-            <button className={styles.pillBtn} onClick={handleGoToShave}>털 깎으며 정리하기</button>
-            <button className={styles.pillBtn}>다음 행동 선택</button>
+            <button className={styles.pillBtn} onClick={onShave}>
+              털 깎으며 정리하기
+            </button>
+            <button className={styles.pillBtn} onClick={onNext}>
+              다음 행동 선택
+            </button>
           </div>
-          <button className={styles.textLinkBtn}>여기서 끝내기</button>
+          <button className={styles.textLinkBtn} onClick={onEnd}>
+            여기서 끝내기
+          </button>
         </div>
       </div>
     </div>
