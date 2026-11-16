@@ -1,9 +1,13 @@
+/*** - 목록·수정·삭제: 실제 서버 연결
+ * - 미리보기·승인(preview/approve): 세션 연결 전까지 localStorage 가짜 구현
 /**
  * 기억 API (RestAPI 설계 4.2 · 4.4)
- * - 대화 원문은 저장하지 않고, 사용자가 확인·수정한 "요약"만 저장한다.
- * TODO: 서버가 준비되면 각 함수 안만 fetch 호출로 바꾸면 됨
- *       지금은 브라우저 localStorage에 저장하는 가짜 구현
+ * - 목록·수정·삭제: 실제 서버 연결
+ * - 미리보기·승인(preview/approve): 세션 연결 전까지 localStorage 가짜 구현
  */
+
+import { request } from './client'
+
 export type Memory = {
     memoryId: string
     summary: string
@@ -34,17 +38,10 @@ function readMemories(): Memory[] {
     }
 }
 
-function writeMemories(memories: Memory[]) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(memories))
-    } catch {
-        // 저장 공간이 막힌 환경(시크릿 모드 등)에서는 조용히 무시
-    }
-}
-
 /** GET /memories — 최신순 */
 export async function getMemories(): Promise<Memory[]> {
-    return readMemories()
+    const data = await request<{ memories: Memory[] }>('/memories')
+    return data.memories
 }
 
 /**
@@ -88,32 +85,19 @@ export async function updateMemory(
     memoryId: string,
     summary: string,
 ): Promise<Memory> {
-    const memories = readMemories()
-    const target = memories.find((memory) => memory.memoryId === memoryId)
-    if (!target) {
-        throw new Error('MEMORY_NOT_FOUND') // 서버라면 404
-    }
-    const updated: Memory = {
-        ...target,
-        summary,
-        updatedAt: new Date().toISOString(),
-    }
-    writeMemories(
-        memories.map((memory) =>
-            memory.memoryId === memoryId ? updated : memory,
-        ),
-    )
-    return updated
+    return request<Memory>(`/memories/${encodeURIComponent(memoryId)}`, {
+        method: 'PATCH',
+        body: { summary },
+    })
 }
 
 /** DELETE /memories/{memoryId} — 기억 하나 지우기 (하드 삭제) */
 export async function deleteMemory(memoryId: string): Promise<void> {
-    writeMemories(
-        readMemories().filter((memory) => memory.memoryId !== memoryId),
-    )
+    await request<void>(`/memories/${encodeURIComponent(memoryId)}`, { method: 'DELETE' })
 }
 
 /** DELETE /memories — 기억 모두 지우기 */
 export async function deleteAllMemories(): Promise<void> {
-    writeMemories([])
+    await request<void>('/memories', { method: 'DELETE' })
 }
+
