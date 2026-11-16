@@ -1,35 +1,3 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
 # Mongle — Frontend
 
 나를 닮은 양 '몽글'에게 털어놓거나 말없이 쉬며 마음을 추스르는 정서 케어 서비스의 프론트엔드입니다. (2026 간지톤 TEAM 25)
@@ -48,26 +16,19 @@ npm run dev
 # http://localhost:5173
 ```
 
-### 2. 백엔드 실행 (로그인·API 연동 화면을 보려면 필수)
+### 2. 백엔드 연결
 
-프론트는 개발 중에 `/api/...` 요청을 **로컬 백엔드 `http://localhost:8081`** 로 보냅니다. (`vite.config.ts`의 proxy 설정)
-백엔드가 꺼져 있으면 모든 API가 **502**로 실패하고, 로그인·회원가입에서 "잠시 후 다시 시도해 주세요."만 표시됩니다.
+기본으로 **운영 백엔드 `https://api.mongle.asia`** 에 연결됩니다 (`.env`). 별도 설정 없이 `npm run dev`만 하면 회원가입·로그인이 됩니다.
 
-[백엔드 레포](https://github.com/2026Ganzi-Thon/2026_GANZITHON_TEAM_25_BE)를 Docker로 띄우면 됩니다. Java·MySQL 설치는 필요 없습니다.
+> 로컬 백엔드에서 만든 계정은 운영 서버에 없습니다. 운영 서버에서 새로 가입해 주세요.
 
-```bash
-git clone https://github.com/2026Ganzi-Thon/2026_GANZITHON_TEAM_25_BE.git
-cd 2026_GANZITHON_TEAM_25_BE
-cp .env.example .env
-openssl rand -base64 48      # 출력값을 .env의 JWT_SECRET= 뒤에 붙여넣기 (Windows는 Git Bash에서 실행)
-docker compose up --build    # 첫 실행은 빌드 때문에 몇 분 걸림
+로컬 백엔드(`localhost:8081`)로 테스트하고 싶을 때만 `.env.local`에 아래를 넣고, [백엔드 레포](https://github.com/2026Ganzi-Thon/2026_GANZITHON_TEAM_25_BE)를 `docker compose up --build`로 실행합니다.
+
+```
+VITE_API_BASE_URL=/api
 ```
 
-- 확인: http://localhost:8081/actuator/health 에서 `{"status":"UP"}`가 나오면 성공
-- `GEMINI_API_KEY`는 비워도 서버가 뜹니다. AI 대화만 기본 문구로 응답합니다.
-- 각자 로컬 DB를 쓰므로 계정은 본인 로컬에서 새로 가입해야 합니다.
-- 종료: `docker compose down` / DB 초기화: `docker compose down -v`
-- API 상세: 백엔드 레포의 `docs/FRONTEND_GUIDE.md`, Swagger `http://localhost:8081/swagger-ui.html`
+`.env`를 바꾼 뒤에는 `npm run dev`를 재시작해야 적용됩니다.
 
 ### 백엔드 없이 화면만 볼 때
 
@@ -82,9 +43,11 @@ localStorage.removeItem('mongle:accessToken')         // 원래대로
 
 ```
 src/
-├─ api/      # 백엔드 호출 (client.ts: 공통 요청·토큰 저장, auth.ts 등 도메인별 API)
-├─ pages/    # 화면 단위 컴포넌트
-└─ styles/   # 전역 스타일
+├─ api/         # 백엔드 호출 (client.ts: 공통 요청·토큰 저장, auth.ts 등 도메인별 API)
+├─ assets/      # 이미지·아이콘
+├─ components/  # 여러 화면에서 쓰는 공통 컴포넌트 (HeaderActions, Overlay, BottomSheet 등)
+├─ pages/       # 화면 단위 컴포넌트
+└─ styles/      # 화면별·전역 스타일
 ```
 
 ## 협업 규칙
