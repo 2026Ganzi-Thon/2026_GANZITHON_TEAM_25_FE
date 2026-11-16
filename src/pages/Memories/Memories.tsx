@@ -10,6 +10,7 @@ import {
 } from '../../api/memories';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import '../../styles/Memories.css'
+import { ApiError } from '../../api/client';
 
 /** 지울 대상: 기억 하나 또는 전체 */
 type DeleteTarget = { kind: 'one'; memoryId: string } | { kind: 'all' }
@@ -23,27 +24,48 @@ function formatDate(iso: string) {
     const date = new Date(iso)
     return `${date.getMonth() + 1}월 ${date.getDate()}일 기억함`
 }
+/** 서버 에러 → 화면에 보여줄 문구 (토스트 디자인 나오기 전 임시) */
+function getMemoryErrorMessage(error: unknown): string {
+    if (error instanceof ApiError) {
+        if (error.status === 404) return '이미 지워진 기억이에요.'
+        if (error.status === 0) return error.message // 인터넷 연결 문제
+    }
+    return '잠시 후 다시 시도해 주세요.'
+}
 
 function Memories({ onBack, onSoundClick, onMenuClick }: MemoriesProps) {
     const [memories, setMemories] = useState<Memory[]>([])
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [draft, setDraft] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [errorMessage, setErrorMessage] = useState('')
     useEffect(() => {
-        getMemories().then(setMemories)
+        getMemories()
+            .then(setMemories)
+            .catch((error) => setErrorMessage(getMemoryErrorMessage(error)))
+            .finally(() => setLoading(false))
     }, [])
     const handleConfirmDelete = async () => {
         if (!deleteTarget) return
-
-        if (deleteTarget.kind === 'all') {
-            await deleteAllMemories()
-            setMemories([])
-        } else {
-            const { memoryId } = deleteTarget
-            await deleteMemory(memoryId)
-            setMemories((prev) => prev.filter((memory) => memory.memoryId !== memoryId))
+        setErrorMessage('')
+        try {
+            if (deleteTarget.kind === 'all') {
+                await deleteAllMemories()
+                setMemories([])
+            } else {
+                await deleteMemory(deleteTarget.memoryId)
+                setMemories((prev) => prev.filter((m) => m.memoryId !== deleteTarget.memoryId))
+            }
+        } catch (error) {
+            // 이미 지워진 기억(404)이면 목록에서도 빼요
+            if (error instanceof ApiError && error.status === 404 && deleteTarget.kind === 'one') {
+                setMemories((prev) => prev.filter((m) => m.memoryId !== deleteTarget.memoryId))
+            }
+            setErrorMessage(getMemoryErrorMessage(error))
+        } finally {
+            setDeleteTarget(null)
         }
-        setDeleteTarget(null)
     }
     const startEdit = (memory: Memory) => {
         setEditingId(memory.memoryId)
@@ -53,12 +75,20 @@ function Memories({ onBack, onSoundClick, onMenuClick }: MemoriesProps) {
     const handleSaveEdit = async (memoryId: string) => {
         const summary = draft.trim()
         if (!summary) return
-
-        const updated = await updateMemory(memoryId, summary)
-        setMemories((prev) =>
-            prev.map((memory) => (memory.memoryId === memoryId ? updated : memory)),
-        )
-        setEditingId(null)
+        setErrorMessage('')
+        try {
+            const updated = await updateMemory(memoryId, summary)
+            setMemories((prev) =>
+                prev.map((memory) => (memory.memoryId === memoryId ? updated : memory)),
+            )
+        } catch (error) {
+            if (error instanceof ApiError && error.status === 404) {
+                setMemories((prev) => prev.filter((m) => m.memoryId !== memoryId))
+            }
+            setErrorMessage(getMemoryErrorMessage(error))
+        } finally {
+            setEditingId(null)
+        }
     }
     return (
         <main className="memories">
@@ -80,48 +110,50 @@ function Memories({ onBack, onSoundClick, onMenuClick }: MemoriesProps) {
                 <br />
                 대화 원문은 저장하지 않고, 지운 기억은 다음 대화에 쓰지 않아요.
             </p>
+            {errorMessage && <p className="memories__empty">{errorMessage}</p>}
 
-            {memories.length === 0 ? (
+            {loading ? null : memories.length === 0 ? (
                 <p className="memories__empty">아직 기억한 이야기가 없어요.</p>
             ) : (
                 <>
                     <ul className="memories__list">
-                        {memories.map((memory) => (
-                            <li key={memory.memoryId} className="memory-card">
-                                <p className="memory-card__date">
-                                    {formatDate(memory.approvedAt)}
-                                </p>
-                                <p className="memory-card__summary">{memory.summary}</p>
-                                <div className="memory-card__actions">
-                                    <button
-                                        type="button"
-                                        className="memory-card__button"
-                                        onClick={() => startEdit(memory)}
-                                    >
-                                        고치기
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="memory-card__button"
-                                        onClick={() =>
-                                            setDeleteTarget({ kind: 'one', memoryId: memory.memoryId })
-                                        }
-                                    >
-                                        지우기
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                    <button
-                        type="button"
-                        className="memories__clear"
-                        onClick={() => setDeleteTarget({ kind: 'all' })}
-                    >
-                        모두 지우기
-                    </button>
-                </>
-            )}
+                                {memories.map((memory) => (
+                                    <li key={memory.memoryId} className="memory-card">
+                                        <p className="memory-card__date">
+                                            {formatDate(memory.approvedAt)}
+                                        </p>
+                                        <p className="memory-card__summary">{memory.summary}</p>
+                                        <div className="memory-card__actions">
+                                            <button
+                                                type="button"
+                                                className="memory-card__button"
+                                                onClick={() => startEdit(memory)}
+                                            >
+                                                고치기
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="memory-card__button"
+                                                onClick={() =>
+                                                    setDeleteTarget({ kind: 'one', memoryId: memory.memoryId })
+                                                }
+                                            >
+                                                지우기
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button
+                                type="button"
+                                className="memories__clear"
+                                onClick={() => setDeleteTarget({ kind: 'all' })}
+                            >
+                                모두 지우기
+                            </button>
+                        </>
+                    )
+                }
             {editingId && (
                 <ConfirmModal
                     title="기억한 이야기 고치기"
