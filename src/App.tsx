@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Home from './pages/Home/Home'
 import Login from './pages/Login'
 import './styles/App.css'
@@ -17,6 +17,10 @@ import MyMongle from './pages/MyMongle/MyMongle'
 import SignUp from './pages/SignUp/SignUp'
 import { logout } from './api/auth'
 import { getToken, UNAUTHORIZED_EVENT } from './api/client'
+import SoundSheet from './pages/Home/components/SoundSheet'
+import MenuSheet from './pages/Home/components/MenuSheet'
+import type { NatureSound } from './pages/Home/natureSounds'
+
 
 /** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
 function isPublicPath(path: string) {
@@ -32,13 +36,30 @@ function isPublicPath(path: string) {
 function App() {
   const [rawPath, setPath] = useState(window.location.pathname)
   useEffect(() => {
-    const handlePopState = () => setPath(window.location.pathname)
+    const handlePopState = () => {
+      setOpenSheet(null)
+      setPath(window.location.pathname)
+    }
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
   const [savedCount, setSavedCount] = useState(0)
   const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
+  // 상단 소리·메뉴 시트 — 모든 화면이 같은 설정을 쓰도록 App 한 곳에서 관리
+  const [openSheet, setOpenSheet] = useState<'sound' | 'menu' | null>(null)
+  const [natureSound, setNatureSound] = useState<NatureSound>('off')
+  const [volume, setVolume] = useState(50)
+  const [vibration, setVibration] = useState(true)
+  const closeSheet = useCallback(() => setOpenSheet(null), [])
+
+  /** 화면 상단 소리·메뉴 버튼에 그대로 넘기는 묶음 */
+  const header = {
+    onSoundClick: () => setOpenSheet('sound'),
+    onMenuClick: () => setOpenSheet('menu'),
+  }
+
   const navigate = (to: string, phase?: 'noon' | 'sunset') => {
+    setOpenSheet(null)
     if (to === '/action' && phase) setActionPhase(phase)
     window.history.pushState(null, '', to)
     setPath(to)
@@ -112,6 +133,7 @@ function App() {
         <MongleAction phase={actionPhase} />
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
+          {...header}
           onBack={() => navigate('/home')}
           onEnd={() => navigate('/home')}
           onGoChat={() => navigate('/chat')}
@@ -148,6 +170,26 @@ function App() {
           onLoginClick={() => navigate('/signin')}
           onSignUpClick={() => navigate('/signup')}
         />)}
+      {openSheet === 'sound' && (
+        <SoundSheet
+          sound={natureSound}
+          volume={volume}
+          onSoundChange={setNatureSound}
+          onVolumeChange={setVolume}
+          onClose={closeSheet}
+        />
+      )}
+      {openSheet === 'menu' && (
+        <MenuSheet
+          vibration={vibration}
+          onVibrationChange={setVibration}
+          onOpenMemories={() => navigate('/memories')}
+          onOpenMyMongle={() => navigate('/mymongle')}
+          onOpenHelp={() => navigate('/help')}
+          onLogout={handleLogout}
+          onClose={closeSheet}
+        />
+      )}
     </div>
   );
 }
