@@ -58,6 +58,9 @@ function App() {
     onMenuClick: () => setOpenSheet('menu'),
   }
 
+  /** 메뉴에서 연 화면(도움·기억·내 몽글)은 왔던 화면으로 돌아가요 */
+  const goBack = () => window.history.back()
+
   const navigate = (to: string, phase?: 'noon' | 'sunset') => {
     setOpenSheet(null)
     if (to === '/action' && phase) setActionPhase(phase)
@@ -113,19 +116,22 @@ function App() {
         />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
+          {...header}
           onBack={() => navigate('/action')}
           onComplete={() => navigate('/end')}
           onNextActivity={() => navigate('/next')}
         />
       ) : path.toLowerCase().startsWith('/next') ? (
         <MongleNext
+          {...header}
           onBack={() => navigate('/action')}
           onHelp={() => navigate('/help')}
           onMind={() => navigate('/mind')}
         />
       ) : path.toLowerCase().startsWith('/help') ? (
         <MongleHelp
-          onBack={() => navigate('/next')}
+          {...header}
+          onBack={goBack} 
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />

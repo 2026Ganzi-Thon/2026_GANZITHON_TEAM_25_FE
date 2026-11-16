@@ -2,6 +2,7 @@ import styles from '../styles/Next.module.css';
 import iconBack from '../assets/icons/arrow-back.svg';
 import iconSound from '../assets/icons/sound-button.svg';
 import iconMenu from '../assets/icons/menu-button.svg';
+import type { HeaderButtonHandlers } from '../components/HeaderActions/HeaderActions';
 import mongleBody from '../assets/images/mongle_v3.png';
 
 import iconHand from '../assets/icons/hand.png';
@@ -9,18 +10,18 @@ import iconHeart from '../assets/icons/heart.png';
 import iconPhone from '../assets/icons/call.png';
 import iconArrow from '../assets/icons/chevron-right.svg';
 
-export default function MongleNext({ onBack, onHelp, onMind }: { onBack?: () => void, onHelp?: () => void, onMind?: () => void}) {
+export default function MongleNext({ onBack, onHelp, onMind, onSoundClick, onMenuClick }: { onBack?: () => void, onHelp?: () => void, onMind?: () => void } & HeaderButtonHandlers) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        
+
         <div className={styles.topBar}>
           <button className={styles.iconBtn} onClick={onBack}>
             <img src={iconBack} alt="뒤로가기" />
           </button>
           <div className={styles.rightIcons}>
-            <button className={styles.iconBtn}><img src={iconSound} alt="소리" /></button>
-            <button className={styles.iconBtn}><img src={iconMenu} alt="메뉴" /></button>
+            <button className={styles.iconBtn} onClick={onSoundClick}><img src={iconSound} alt="소리" /></button>
+            <button className={styles.iconBtn} onClick={onMenuClick}><img src={iconMenu} alt="메뉴" /></button>
           </div>
         </div>
 

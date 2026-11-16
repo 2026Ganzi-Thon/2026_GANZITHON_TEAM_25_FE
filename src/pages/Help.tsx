@@ -3,9 +3,9 @@ import iconBack from '../assets/icons/arrow-back.svg';
 import iconSound from '../assets/icons/sound-button.svg';
 import iconMenu from '../assets/icons/menu-button.svg';
 import iconPhone from '../assets/icons/call.png';
+import type { HeaderButtonHandlers } from '../components/HeaderActions/HeaderActions';
 
-export default function MongleHelp({ onBack }: { onBack?: () => void }) {
-  const handleCopy = () => {
+export default function MongleHelp({ onBack, onSoundClick, onMenuClick }: { onBack?: () => void } & HeaderButtonHandlers) {  const handleCopy = () => {
     navigator.clipboard.writeText("요즘 좀 힘든 일이 있었어. 잠깐 내 이야기 들어줄 수 있어?");
     alert("문장이 복사되었습니다.");
   };
@@ -19,8 +19,12 @@ export default function MongleHelp({ onBack }: { onBack?: () => void }) {
             <img src={iconBack} alt="뒤로가기" />
           </button>
           <div className={styles.rightIcons}>
-            <button className={styles.iconBtn}><img src={iconSound} alt="소리" /></button>
-            <button className={styles.iconBtn}><img src={iconMenu} alt="메뉴" /></button>
+            <button className={styles.iconBtn} onClick={onSoundClick}>
+              <img src={iconSound} alt="소리" />
+            </button>
+            <button className={styles.iconBtn} onClick={onMenuClick}>
+              <img src={iconMenu} alt="메뉴" />
+            </button>
           </div>
         </div>
 
