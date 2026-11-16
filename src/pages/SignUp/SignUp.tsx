@@ -7,7 +7,7 @@ import iconCheck from '../../assets/icons/check.svg'
 import iconCheckOn from '../../assets/icons/check-on.svg'
 import iconCheckCircle from '../../assets/icons/check-circle.svg'
 import iconCheckCircleOn from '../../assets/icons/check-circle-on.svg'
-import { checkUserIdAvailable, signUp } from '../../api/auth'
+import { checkLoginIdAvailable, signUp } from '../../api/auth'
 import '../../styles/SignUp.css'
 
 /** 회원가입 단계 (입력칸 하나짜리 화면 4개) */
@@ -144,6 +144,7 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
     }
 
     const handleCheckId = async () => {
+
         const message = validate('userId', values)
         if (message) {
             setErrorMessage(message)
@@ -154,7 +155,7 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
         setIsChecking(true)
         setErrorMessage('')
         try {
-            const available = await checkUserIdAvailable(userId)
+            const available = await checkLoginIdAvailable(userId)
             if (available) {
                 setCheckedUserId(userId)
             } else {
@@ -180,8 +181,10 @@ function SignUp({ onBack, onComplete }: SignUpProps) {
         try {
             await signUp({
                 name: values.name.trim(),
-                userId: values.userId,
+                loginId: values.userId,
                 password: values.password,
+                termsAgreed: agreed.service,
+                privacyAgreed: agreed.privacy,
             })
             onComplete?.()
         } catch {

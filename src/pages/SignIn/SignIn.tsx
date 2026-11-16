@@ -9,7 +9,18 @@ import iconLock from '../../assets/icons/lock-password.svg'
 import iconEye from '../../assets/icons/eye.svg'
 import iconEyeOff from '../../assets/icons/eye-off.svg'
 import iconError from '../../assets/icons/error-cross.svg'
-import { login, LoginError } from '../../api/auth'
+import { login } from '../../api/auth'
+import { ApiError } from '../../api/client'
+
+/** 서버 에러를 로그인 화면 문구로 바꿔요 (문구는 프론트가 정함) */
+function getLoginErrorMessage(error: unknown): string {
+    if (error instanceof ApiError) {
+        if (error.status === 401 || error.status === 400) return '아이디 또는 비밀번호가 맞지 않아요.'
+        if (error.status === 429) return '로그인 시도가 너무 많아요. 잠시 후 다시 시도해 주세요.'
+        if (error.status === 0) return error.message // 연결 문제 문구
+    }
+    return '잠시 후 다시 시도해 주세요.'
+}
 
 interface SignInProps {
     onBack: () => void
@@ -37,9 +48,7 @@ export default function SignIn({ onBack, onLoginSuccess }: SignInProps) {
             await login(userId.trim(), password)
             onLoginSuccess()
         } catch (error) {
-            setErrorMessage(
-                error instanceof LoginError ? error.message : '잠시 후 다시 시도해 주세요.',
-            )
+            setErrorMessage(getLoginErrorMessage(error))
         } finally {
             setIsSubmitting(false)
         }
