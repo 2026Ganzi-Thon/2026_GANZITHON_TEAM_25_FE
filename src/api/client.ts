@@ -4,8 +4,8 @@
  * - 다른 api 파일은 fetch를 직접 쓰지 않고 request()만 불러요.
  */
 
-/** 개발 중에는 vite 프록시(/api → localhost:8081)를 탐. 배포 때는 이 한 줄만 바꾸면 됨 */
-const BASE_URL = '/api'
+/** 기본은 운영 서버(.env). 로컬 백엔드를 쓰려면 .env.local에 VITE_API_BASE_URL=/api */
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 const TOKEN_KEY = 'mongle:accessToken'
 
