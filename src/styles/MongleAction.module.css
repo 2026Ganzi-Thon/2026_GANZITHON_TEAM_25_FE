@@ -6,12 +6,12 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  isolation: isolate; /* bgImage(z -1)가 wrapper 배경색 뒤로 숨지 않도록 */
+  isolation: isolate; 
 }
 
 .container {
   width: 100%;
-  max-width: var(--app-max-width); /* 내용은 Figma 402px 폭, 배경은 wrapper가 전체 폭 */
+  max-width: var(--app-max-width); 
   min-height: 100vh;
   position: relative;
   overflow: hidden; 
@@ -263,4 +263,32 @@
 .textLinkBtn:active {
   transform: scale(0.95);
   opacity: 0.5;
+}
+
+.flyingWool {
+  position: absolute;
+  width: 2.5rem;
+  top: 45%;
+  left: 45%;
+  z-index: 10;
+  pointer-events: none; 
+  animation: floatDrop 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes floatDrop {
+  0% { 
+    transform: translate(var(--start-x, 0px), var(--start-y, 0px)) scale(1) rotate(0deg); 
+    opacity: 1; 
+  }
+  20% { 
+    transform: translate(calc(var(--start-x, 0px) - 5px), calc(var(--start-y, 0px) - 20px)) scale(1.1) rotate(15deg); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translate(
+      var(--target-x, 0px), 
+      calc(160px + var(--target-y, 0px)) 
+    ) scale(0.8) rotate(var(--target-rot, 0deg)); 
+    opacity: 1; 
+  }
 }
