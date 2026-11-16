@@ -1,7 +1,10 @@
 /**
  * 공감 대화 API (RestAPI 설계 4.3 `POST /sessions/{sessionId}/reflections`)
- * TODO: 서버가 준비되면 이 함수 안만 fetch 호출로 바꾸면 됨 (화면 코드는 그대로)
+ * - AI가 실패해도 서버가 200 + 대체 문구로 답해요 (에러 화면 띄우지 않기)
+ * - 응답까지 4~5초 걸릴 수 있어요
  */
+import { request } from './client'
+
 export type RiskResource = {
   name: string
   phone: string
@@ -14,18 +17,16 @@ export type ReflectionResponse = {
 }
 
 /**
- * 지금은 서버가 없어서 0.6초 뒤 고정 문구로 답하는 가짜 함수
- * @param selectedMemoryIds 이번 대화에 꺼낸 기억 (안 골랐으면 빈 배열)
+ * 몽글이에게 한 문장 보내고 답장 받기
+ * @param selectedMemoryIds 이번 대화에 꺼낸 기억 ("이번만 이야기하기"면 빈 배열)
  */
 export async function postReflection(
+  sessionId: string,
   text: string,
   selectedMemoryIds: string[] = [],
 ): Promise<ReflectionResponse> {
-  console.log('[mock] reflections 요청:', { text, selectedMemoryIds })
-  await new Promise((resolve) => setTimeout(resolve, 600))
-  return {
-    reply: '그런 일이 있었구나. 솔직하게 말해줘서 고마워!',
-    riskDetected: false,
-    riskResources: null,
-  }
+  return request<ReflectionResponse>(
+    `/sessions/${encodeURIComponent(sessionId)}/reflections`,
+    { method: 'POST', body: { text, selectedMemoryIds } },
+  )
 }
