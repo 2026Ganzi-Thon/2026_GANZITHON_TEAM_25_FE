@@ -102,17 +102,13 @@ function App() {
     <div className="app">
       {path.startsWith('/home') ? (
         <Home
+          {...header}
           onOrganizeAndTalk={() => navigate('/mind')}
-          onOpenMemories={() => navigate('/memories')}
-          onOpenMyMongle={() => navigate('/mymongle')}
-          onOpenHelp={() => navigate('/help')}
           onTouchMongle={() => navigate('/action', 'noon')}
-          onLogout={handleLogout}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
-          onBack={() => navigate('/home')}
-          onLogout={handleLogout}
+          {...header} onBack={goBack}
         />
       ) : path.toLowerCase().startsWith('/shave') ? (
         <Shave
@@ -136,7 +132,7 @@ function App() {
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/action') ? (
-        <MongleAction phase={actionPhase} />
+        <MongleAction {...header} phase={actionPhase}/>
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
           {...header}
@@ -155,7 +151,7 @@ function App() {
           }}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
-        <Memories {...header}  onBack={goBack} />
+        <Memories {...header} onBack={goBack} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
           {...header}

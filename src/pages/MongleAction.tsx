@@ -1,38 +1,27 @@
-import { useState, useRef, useCallback, type PointerEvent } from 'react';
+import { useState, useRef, type PointerEvent } from 'react';
 import styles from '../styles/MongleAction.module.css';
 
-import bgImage from '../assets/images/background_noon_wide.png'; 
+import bgImage from '../assets/images/background_noon_wide.png';
 import bgSunsetImage from '../assets/images/background_sunset_wide.png';
-import mongleBody from '../assets/images/alpaca/mongle_default_v3.png'; 
-import woolParticle from '../assets/images/tuft/tuft-01.png'; 
-import eyesDefault from '../assets/images/alpaca/eyes_v2.png';       
+import mongleBody from '../assets/images/alpaca/mongle_default_v3.png';
+import woolParticle from '../assets/images/tuft/tuft-01.png';
+import eyesDefault from '../assets/images/alpaca/eyes_v2.png';
 import eyesClosed from '../assets/images/alpaca/eyes_closed_wide.png';
-import eyesSquint from '../assets/images/alpaca/mongle_eyes_wry.png';              
+import eyesSquint from '../assets/images/alpaca/mongle_eyes_wry.png';
 import eyesSmile from '../assets/images/alpaca/eyes_smile_matched.png';
-
+import type { HeaderButtonHandlers } from '../components/HeaderActions/HeaderActions';
 import iconSound from '../assets/icons/sound-button.svg';
 import iconMenu from '../assets/icons/menu-button.svg';
 import iconPet from '../assets/icons/petting.png';
 import iconShake from '../assets/icons/shaking.png';
 import iconSquish from '../assets/icons/press.png';
 
-import SoundSheet from './Home/components/SoundSheet'; 
-import MenuSheet from './Home/components/MenuSheet';
-import type { NatureSound } from './Home/natureSounds';
 
-const AnySoundSheet = SoundSheet as any;
-const AnyMenuSheet = MenuSheet as any;
-
-type OpenSheet = 'sound' | 'menu' | null;
 type Mode = 'none' | 'pet' | 'shake' | 'squish';
 
 type MongleActionProps = {
   phase: 'noon' | 'sunset';
-  onOpenMemories?: () => void;
-  onOpenMyMongle?: () => void;
-  onOpenHelp?: () => void;
-  onLogout?: () => void;
-};
+} & HeaderButtonHandlers;
 
 interface WoolAnim {
   id: number;
@@ -43,23 +32,11 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function MongleAction({ 
-  phase, 
-  onOpenMemories, 
-  onOpenMyMongle, 
-  onOpenHelp, 
-  onLogout 
-}: MongleActionProps) {
-  
-  const [openSheet, setOpenSheet] = useState<OpenSheet>(null);
-  const [natureSound, setNatureSound] = useState<NatureSound>('off');
-  const [volume, setVolume] = useState(50);
-  const [vibration, setVibration] = useState(true);
-  const closeSheet = useCallback(() => setOpenSheet(null), []);
+export default function MongleAction({ phase, onSoundClick, onMenuClick }: MongleActionProps) {
 
   const [mode, setMode] = useState<Mode>('none');
-  const [animKey, setAnimKey] = useState(0); 
-  
+  const [animKey, setAnimKey] = useState(0);
+
   const [flyingWools, setFlyingWools] = useState<WoolAnim[]>([]);
   const woolIdCounter = useRef(0);
 
@@ -67,7 +44,7 @@ export default function MongleAction({
   const initialTouchX = useRef(0);
   const [dragStartX, setDragStartX] = useState(0);
   const dragAccumulator = useRef(0);
-  const [dragOffset, setDragOffset] = useState(0); 
+  const [dragOffset, setDragOffset] = useState(0);
   const hasTriggeredThisDrag = useRef(false);
 
   const textData = {
@@ -85,8 +62,8 @@ export default function MongleAction({
   };
 
   const handleGoToShave = () => {
-    window.history.pushState(null, '', '/shave'); 
-    window.dispatchEvent(new PopStateEvent('popstate')); 
+    window.history.pushState(null, '', '/shave');
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   const handleAction = (newMode: Mode) => {
@@ -100,15 +77,15 @@ export default function MongleAction({
     setDragStartX(e.clientX);
     dragAccumulator.current = 0;
     setDragOffset(0);
-    hasTriggeredThisDrag.current = false; 
+    hasTriggeredThisDrag.current = false;
   };
 
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
-    
+
     const currentX = e.clientX;
     const diff = Math.abs(currentX - dragStartX);
-    
+
     if (mode === 'pet') {
       setDragOffset(currentX - initialTouchX.current);
     }
@@ -117,21 +94,21 @@ export default function MongleAction({
     setDragStartX(currentX);
 
     if (mode === 'shake' && dragAccumulator.current > 60 && !hasTriggeredThisDrag.current) {
-      triggerShear(); 
-      hasTriggeredThisDrag.current = true; 
+      triggerShear();
+      hasTriggeredThisDrag.current = true;
     }
   };
 
   const handlePointerUp = () => {
     setIsDragging(false);
-    setDragOffset(0); 
+    setDragOffset(0);
   };
 
   const triggerShear = () => {
-    const startX = Math.random() * 80 - 40; 
+    const startX = Math.random() * 80 - 40;
     const startY = Math.random() * 80 - 40;
-    const targetX = Math.random() * 160 - 80; 
-    const targetY = Math.random() * 60 - 10;  
+    const targetX = Math.random() * 160 - 80;
+    const targetY = Math.random() * 60 - 10;
     const targetRot = Math.random() * 180 - 90;
 
     const newId = woolIdCounter.current++;
@@ -149,8 +126,12 @@ export default function MongleAction({
       <div className={styles.container}>
 
         <div className={styles.topBar}>
-          <button className={styles.iconBtn} onClick={() => setOpenSheet('sound')}><img src={iconSound} alt="소리" /></button>
-          <button className={styles.iconBtn} onClick={() => setOpenSheet('menu')}><img src={iconMenu} alt="메뉴" /></button>
+          <button className={styles.iconBtn} onClick={onSoundClick}>
+            <img src={iconSound} alt="소리" />
+          </button>
+          <button className={styles.iconBtn} onClick={onMenuClick}>
+            <img src={iconMenu} alt="메뉴" />
+          </button>
         </div>
 
         <div className={styles.textSection}>
@@ -170,16 +151,16 @@ export default function MongleAction({
           </button>
         </div>
 
-        <div 
+        <div
           className={styles.characterArea}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
-          style={{ touchAction: 'none' }} 
+          style={{ touchAction: 'none' }}
         >
           <div key={animKey} className={`${styles.mongleWrapper} ${styles[mode]}`} style={characterStyle}>
-            
+
             {mode === 'shake' && (
               <>
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool1}`} alt="털" />
@@ -188,10 +169,10 @@ export default function MongleAction({
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool4}`} alt="털" />
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool5}`} alt="털" />
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool6}`} alt="털" />
-                
+
                 {flyingWools.map(wool => (
-                  <img 
-                    key={wool.id} src={woolParticle} className={styles.flyingWool} alt="깎인 털" 
+                  <img
+                    key={wool.id} src={woolParticle} className={styles.flyingWool} alt="깎인 털"
                     style={{
                       '--start-x': `${wool.startX}px`, '--start-y': `${wool.startY}px`,
                       '--target-x': `${wool.targetX}px`, '--target-y': `${wool.targetY}px`, '--target-rot': `${wool.targetRot}deg`
@@ -201,13 +182,13 @@ export default function MongleAction({
               </>
             )}
 
-            <img 
-              src={mongleBody} alt="몽글이 몸" 
-              className={`${styles.mongleBody} ${isDragging && mode === 'shake' ? styles.wiggleMotion : ''}`} 
+            <img
+              src={mongleBody} alt="몽글이 몸"
+              className={`${styles.mongleBody} ${isDragging && mode === 'shake' ? styles.wiggleMotion : ''}`}
             />
-            <img 
-              src={eyesMap[mode]} alt="몽글이 표정" 
-              className={`${styles.mongleEyes} ${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`} 
+            <img
+              src={eyesMap[mode]} alt="몽글이 표정"
+              className={`${styles.mongleEyes} ${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`}
             />
           </div>
         </div>
@@ -219,14 +200,6 @@ export default function MongleAction({
           </div>
           <button className={styles.textLinkBtn}>여기서 끝내기</button>
         </div>
-
-        {openSheet === 'sound' && (
-          <AnySoundSheet sound={natureSound} volume={volume} onSoundChange={setNatureSound} onVolumeChange={setVolume} onClose={closeSheet} />
-        )}
-        {openSheet === 'menu' && (
-          <AnyMenuSheet vibration={vibration} onVibrationChange={setVibration} onOpenMemories={onOpenMemories} onOpenMyMongle={onOpenMyMongle} onOpenHelp={onOpenHelp} onLogout={onLogout} onClose={closeSheet} />
-        )}
-
       </div>
     </div>
   );

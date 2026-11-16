@@ -10,20 +10,13 @@ import bellNeckImg from '../../assets/deco/bell.png';
 import backIcon from '../../assets/icons/arrow-back.svg';
 import soundIcon from '../../assets/icons/sound-button.svg';
 import menuIcon from '../../assets/icons/menu-button.svg';
-import MenuSheet from '../Home/components/MenuSheet';
-import SoundSheet from '../Home/components/SoundSheet';
+import type { HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions';
 
-interface MyMongleProps {
+interface MyMongleProps extends HeaderButtonHandlers {
   onBack: () => void;
-  onLogout?: () => void;
 }
 
-const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSoundOpen, setIsSoundOpen] = useState(false);
-  const [sound, setSound] = useState<any>('');
-  const [volume, setVolume] = useState<number>(50);
-  const [vibration, setVibration] = useState<boolean>(true);
+const MyMongle = ({ onBack, onSoundClick, onMenuClick }: MyMongleProps) => {
 
   const [trait, setTrait] = useState('멍하니 있기');
   const [tendency, setTendency] = useState('차분하고 조용함');
@@ -41,10 +34,10 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
         </button>
         <h1 className={styles.title}>나의 몽글이</h1>
         <div className={styles.headerRight}>
-          <button className={styles.iconBtn} onClick={() => setIsSoundOpen(true)}>
+          <button className={styles.iconBtn} onClick={onSoundClick}>
             <img src={soundIcon} alt="음량" className={styles.iconImg} />
           </button>
-          <button className={styles.iconBtn} onClick={() => setIsMenuOpen(true)}>
+          <button className={styles.iconBtn} onClick={onMenuClick}>
             <img src={menuIcon} alt="메뉴" className={styles.iconImg} />
           </button>
         </div>
@@ -116,30 +109,7 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
           </div>
         </div>
       </div>
-
-      {isMenuOpen && (
-        <MenuSheet 
-          memoryCount={0}
-          vibration={vibration}
-          onVibrationChange={setVibration}
-          onOpenMemories={() => setIsMenuOpen(false)}
-          onOpenMyMongle={() => setIsMenuOpen(false)} 
-          onOpenHelp={() => setIsMenuOpen(false)}
-          onLogout={onLogout}
-          onClose={() => setIsMenuOpen(false)} 
-        />
-      )}
-      
-      {isSoundOpen && (
-        <SoundSheet 
-          sound={sound}
-          volume={volume}
-          onSoundChange={setSound}
-          onVolumeChange={setVolume}
-          onClose={() => setIsSoundOpen(false)} 
-        />
-      )}
-    </div>    
+    </div>
   );
 };
 

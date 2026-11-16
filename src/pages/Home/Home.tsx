@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import backgroundNoon from '../../assets/images/background_noon_wide.png'
 import sunImage from '../../assets/images/home/sun.png'
 import mongleImage from '../../assets/images/home/mongle-default.png'
@@ -7,16 +7,11 @@ import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import sendButton from '../../assets/icons/send-button.svg'
 import sendButtonRest from '../../assets/icons/send-button-rest.svg'
-import HeaderActions from '../../components/HeaderActions/HeaderActions'
-import SoundSheet from './components/SoundSheet'
-import type { NatureSound } from './natureSounds'
-import MenuSheet from './components/MenuSheet'
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Home.css'
 
 /** talk: 대화 모드(기본) / rest: 말없이 쉬기 모드 */
 type HomeMode = 'talk' | 'rest'
-type OpenSheet = 'sound' | 'menu' | null
-
 type HomeProps = {
   /** 몽글이 탭 → "내 마음 정리하고 대화하기" */
   onOrganizeAndTalk?: () => void
@@ -24,12 +19,7 @@ type HomeProps = {
   onFreeTalk?: (message: string) => void
   /** 말없이 쉬기 모드에서 몽글이를 만졌을 때 (털어내기 화면 진입) */
   onTouchMongle?: () => void
-  memoryCount?: number
-  onOpenMemories?: () => void
-  onOpenMyMongle?: () => void
-  onOpenHelp?: () => void
-  onLogout?: () => void
-}
+} & HeaderButtonHandlers 
 
 const GUIDE_TEXT: Record<HomeMode, [string, string]> = {
   talk: ['몽글이를 누르면', '원하는 방식으로 대화할 수 있어요.'],
@@ -46,24 +36,12 @@ function Home({
   onOrganizeAndTalk,
   onFreeTalk,
   onTouchMongle,
-  memoryCount,
-  onOpenMemories,
-  onOpenMyMongle,
-  onOpenHelp,
-  onLogout,
+  onSoundClick, 
+  onMenuClick,
 }: HomeProps) {
   const [mode, setMode] = useState<HomeMode>('talk')
   const [showChoices, setShowChoices] = useState(false)
-  const [openSheet, setOpenSheet] = useState<OpenSheet>(null)
   const [message, setMessage] = useState('')
-
-  // 자연음은 기본값 "끄기" — 소리를 켜지 않아도 모든 기능을 쓸 수 있어야 함
-  const [natureSound, setNatureSound] = useState<NatureSound>('off')
-  const [volume, setVolume] = useState(50)
-  const [vibration, setVibration] = useState(true)
-
-  const closeSheet = useCallback(() => setOpenSheet(null), [])
-
   const handleMongleClick = () => {
     if (mode === 'rest') {
       onTouchMongle?.()
@@ -94,10 +72,7 @@ function Home({
     >
       <div className="home__frame">
         <div className="home__actions">
-          <HeaderActions
-            onSoundClick={() => setOpenSheet('sound')}
-            onMenuClick={() => setOpenSheet('menu')}
-          />
+          <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
         </div>
 
         <div className="home__sun" aria-hidden="true">
@@ -212,28 +187,7 @@ function Home({
         </form>
       </div>
 
-      {openSheet === 'sound' && (
-        <SoundSheet
-          sound={natureSound}
-          volume={volume}
-          onSoundChange={setNatureSound}
-          onVolumeChange={setVolume}
-          onClose={closeSheet}
-        />
-      )}
 
-      {openSheet === 'menu' && (
-        <MenuSheet
-          memoryCount={memoryCount}
-          vibration={vibration}
-          onVibrationChange={setVibration}
-          onOpenMemories={onOpenMemories}
-          onOpenMyMongle={onOpenMyMongle}
-          onOpenHelp={onOpenHelp}
-          onLogout={onLogout}
-          onClose={closeSheet}
-        />
-      )}
     </main>
   )
 }
