@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import arrowBack from '../../assets/icons/arrow-back.svg';
-import HeaderActions from '../../components/HeaderActions/HeaderActions';
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import {
     deleteAllMemories,
     deleteMemory,
@@ -16,7 +16,7 @@ type DeleteTarget = { kind: 'one'; memoryId: string } | { kind: 'all' }
 
 type MemoriesProps = {
     onBack?: () => void;
-}
+} & HeaderButtonHandlers
 
 /** "2026-10-24T..." -> "10월 24일 기억함" */
 function formatDate(iso: string) {
@@ -24,7 +24,7 @@ function formatDate(iso: string) {
     return `${date.getMonth() + 1}월 ${date.getDate()}일 기억함`
 }
 
-function Memories({ onBack }: MemoriesProps) {
+function Memories({ onBack, onSoundClick, onMenuClick }: MemoriesProps) {
     const [memories, setMemories] = useState<Memory[]>([])
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -71,7 +71,7 @@ function Memories({ onBack }: MemoriesProps) {
                 >
                     <img src={arrowBack} width={35} height={35} alt="" />
                 </button>
-                <HeaderActions />
+                <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
             </header>
 
             <h1 className="memories__title">기억한 이야기</h1>

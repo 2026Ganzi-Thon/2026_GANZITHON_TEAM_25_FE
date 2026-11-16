@@ -131,7 +131,7 @@ function App() {
       ) : path.toLowerCase().startsWith('/help') ? (
         <MongleHelp
           {...header}
-          onBack={goBack} 
+          onBack={goBack}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
@@ -146,6 +146,7 @@ function App() {
         />
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
+          {...header}
           onBack={() => navigate('/mind')}
           onFinish={(count) => {
             setSavedCount(count)
@@ -154,16 +155,17 @@ function App() {
           }}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
-        <Memories onBack={() => navigate('/home')} />
+        <Memories {...header}  onBack={goBack} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
+          {...header}
           onTouchMongle={() => navigate('/action', 'sunset')}
           onShave={() => navigate('/shave')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
         />
       ) : path.toLowerCase().startsWith('/end') ? (
-        <End savedCount={savedCount} onHome={() => navigate('/home')} />
+        <End {...header} savedCount={savedCount} onHome={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/signin') ? (
         <SignIn
           onBack={() => navigate('/')}
