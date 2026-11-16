@@ -1,0 +1,153 @@
+/* Figma: 털어낸후 (171:3392), 402 × 874 */
+/* 배경 레이어: 화면 전체 폭을 꽉 채움 (홈과 같은 구조) */
+.after {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: var(--color-home);
+    background-position: center 45%;
+    /* 지평선 높이 고정 */
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+/* 내용 프레임: Figma 402px 폭 안에서 가운데 정렬 */
+.after__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(220px + env(safe-area-inset-top)) 27px calc(59px + env(safe-area-inset-bottom)) 26px;
+    overflow: hidden;
+}
+
+/* ── 우측 상단 버튼 ── */
+.after__actions {
+    position: absolute;
+    top: calc(43px + env(safe-area-inset-top));
+    right: 29px;
+    z-index: 2;
+}
+
+/* ── 해 (제목 뒤 오른쪽, 화면 밖으로 살짝 잘림) ── */
+.after__sun {
+    position: absolute;
+    top: calc(220px + env(safe-area-inset-top));
+    left: 235px;
+    width: 188px;
+    height: 188px;
+}
+
+.after__sun-glow {
+    position: absolute;
+    top: 17.8px;
+    left: 17.8px;
+}
+
+.after__sun-image {
+    position: relative;
+    width: 188px;
+    height: 188px;
+    object-fit: cover;
+}
+
+/* ── 제목 · 설명 ── */
+.after__title {
+    position: relative;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.after__desc {
+    position: relative;
+    margin-top: 9px;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ── 몽글이 무대: 남는 높이를 채우고 몽글이는 아래쪽에 ── */
+.after__stage {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 68px;
+    /* 몽글이 바닥 ~ 버튼 간격 */
+}
+
+.after__mongle-wrap {
+    position: relative;
+    width: 242px;
+    height: 242px;
+}
+
+.after__mongle-shadow {
+    position: absolute;
+    top: 203.6px;
+    left: 30.6px;
+    pointer-events: none;
+}
+
+.after__mongle {
+    position: absolute;
+    inset: 0;
+    border-radius: 40%;
+    transition: transform 0.2s ease;
+}
+
+.after__mongle:active {
+    transform: scale(0.97);
+}
+
+.after__mongle-body {
+    width: 242px;
+    height: 242px;
+    object-fit: cover;
+}
+
+.after__mongle-eyes {
+    position: absolute;
+    top: 39.9px;
+    left: 46px;
+    width: 81.07px;
+    height: 26.62px;
+    object-fit: cover;
+}
+
+/* ── 선택 버튼 2개 ── */
+.after__choices {
+    display: flex;
+    gap: 7px;
+    width: 100%;
+}
+
+.after__choice {
+    flex: 1;
+    padding: 15px 0;
+    border: 0.5px solid var(--color-point);
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    box-shadow: 0 4px 11.5px rgba(0, 0, 0, 0.14);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ── 여기서 끝내기 (밑줄 글자 버튼) ── */
+.after__end {
+    margin-top: 12px;
+    color: var(--color-white);
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}

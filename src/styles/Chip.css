@@ -1,0 +1,47 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 29px;
+  padding: 7px 15px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.chip--selected {
+  background: var(--color-main);
+  color: var(--color-home);
+}
+
+.chip--add {
+  width: 40px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chip--input {
+  min-width: 80px;
+  outline: 1px solid var(--color-point);
+  outline-offset: 0;
+  text-align: center;
+}
+
+.chip--input::placeholder {
+  color: var(--color-text);
+  opacity: 0.4;
+}

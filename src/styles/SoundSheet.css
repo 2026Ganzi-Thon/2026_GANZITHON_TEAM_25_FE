@@ -1,0 +1,119 @@
+/* Figma: 홈 - 소리 (171:3279) › 자연음 모달 359 × 342 */
+.sound-sheet {
+  width: 359px;
+  max-width: 100%;
+  padding: 25px 23px 33px 24px;
+  border-radius: 41px;
+  background: var(--color-home);
+  animation: sound-sheet-pop 0.22s ease;
+}
+
+.sound-sheet__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sound-sheet__title {
+  margin-top: 2.7px;
+  font-size: 21.4px;
+  font-weight: 700;
+}
+
+.sound-sheet__close {
+  width: 30px;
+  height: 30px;
+}
+
+/* ── 자연음 선택 ── */
+.sound-sheet__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 143px));
+  gap: 14.3px 20.5px;
+  margin-top: 38.4px;
+}
+
+.sound-sheet__option {
+  height: 42.9px;
+  border: 0.45px solid var(--color-point);
+  border-radius: 25px;
+  background: var(--color-white);
+  box-shadow: 0 3.6px 10.3px rgba(0, 0, 0, 0.14);
+  color: var(--color-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.sound-sheet__option:active {
+  transform: scale(0.97);
+}
+
+.sound-sheet__option--selected {
+  border-color: var(--color-main);
+  background: var(--color-main);
+  color: var(--color-home);
+}
+
+/* ── 음량 ── */
+.sound-sheet__volume {
+  display: flex;
+  align-items: center;
+  gap: 9.8px;
+  margin-top: 37.6px;
+}
+
+.sound-sheet__slider {
+  flex: 1;
+  height: 11.6px;
+  margin: 0;
+  border: 0.45px solid var(--color-main);
+  border-radius: 17.9px;
+  background: linear-gradient(
+    to right,
+    var(--color-main) 0 var(--volume),
+    var(--color-home) var(--volume) 100%
+  );
+  appearance: none;
+  cursor: pointer;
+}
+
+.sound-sheet__slider:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sound-sheet__slider::-webkit-slider-thumb {
+  width: 11.6px;
+  height: 11.6px;
+  border: 0.45px solid var(--color-point);
+  border-radius: 50%;
+  background: var(--color-main);
+  appearance: none;
+}
+
+.sound-sheet__slider::-moz-range-thumb {
+  width: 11.6px;
+  height: 11.6px;
+  border: 0.45px solid var(--color-point);
+  border-radius: 50%;
+  background: var(--color-main);
+}
+
+.sound-sheet__volume-value {
+  min-width: 22px;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes sound-sheet-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

@@ -1,122 +1,155 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import Home from './pages/Home/Home'
+import Login from './pages/Login'
+import './styles/App.css'
+import Onboarding from './pages/Onboarding'
+import MongleAction from './pages/MongleAction'
+import Shave from './pages/Shave';
+import MindOrganize from './pages/MindOrganize/MindOrganize'
+import Chat from './pages/Chat/Chat'
+import MongleNext from './pages/Next';
+import MongleHelp from './pages/Help';
+import Memories from './pages/Memories/Memories'
+import After from './pages/After/After'
+import End from './pages/End/End'
+import SignIn from './pages/SignIn/SignIn'
+import MyMongle from './pages/MyMongle/MyMongle'
+import SignUp from './pages/SignUp/SignUp'
+import { logout } from './api/auth'
+import { getToken, UNAUTHORIZED_EVENT } from './api/client'
 
+/** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
+function isPublicPath(path: string) {
+  const lower = path.toLowerCase()
+  return lower === '/' || lower.startsWith('/signin') || lower.startsWith('/signup')
+}
+/**
+ * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
+ * - /     → 첫화면(로그인)
+ * - /home → 홈
+ * 브라우저 뒤로가기/앞으로가기도 동작하도록 history API 사용
+ */
 function App() {
-  const [count, setCount] = useState(0)
+  const [rawPath, setPath] = useState(window.location.pathname)
+  useEffect(() => {
+    const handlePopState = () => setPath(window.location.pathname)
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+  const [savedCount, setSavedCount] = useState(0)
+  const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
+  const navigate = (to: string, phase?: 'noon' | 'sunset') => {
+    if (to === '/action' && phase) setActionPhase(phase)
+    window.history.pushState(null, '', to)
+    setPath(to)
+  }
+  // 보호 API에서 401이 오면 client.ts가 토큰을 지우고 신호를 보내요 → 첫화면으로
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      window.history.replaceState(null, '', '/')
+      setPath('/')
+    }
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [])
+
+  // 로그인 안 했는데 보호 화면이면 첫화면으로, 로그인했는데 첫화면·로그인·가입이면 홈으로
+  const isLoggedIn = getToken() !== null
+  const redirectTo = !isLoggedIn && !isPublicPath(rawPath)
+    ? '/'
+    : isLoggedIn && isPublicPath(rawPath)
+      ? '/home'
+      : null
+  /** 실제로 그릴 화면 주소 */
+  const path = redirectTo ?? rawPath
+
+  // 주소창도 옮겨 간 주소로 맞춰요 (뒤로가기 기록에 남기지 않음)
+  useEffect(() => {
+    if (redirectTo) window.history.replaceState(null, '', redirectTo)
+  }, [redirectTo])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className="app">
+      {path.startsWith('/home') ? (
+        <Home
+          onOrganizeAndTalk={() => navigate('/mind')}
+          onOpenMemories={() => navigate('/memories')}
+          onOpenMyMongle={() => navigate('/mymongle')}
+          onOpenHelp={() => navigate('/help')}
+          onTouchMongle={() => navigate('/action', 'noon')}
+          onLogout={handleLogout}
+        />
+      ) : path.toLowerCase().startsWith('/mymongle') ? (
+        <MyMongle
+          onBack={() => navigate('/home')}
+          onLogout={handleLogout}
+        />
+      ) : path.toLowerCase().startsWith('/shave') ? (
+        <Shave
+          onBack={() => navigate('/action')}
+          onComplete={() => navigate('/end')}
+          onNextActivity={() => navigate('/next')}
+        />
+      ) : path.toLowerCase().startsWith('/next') ? (
+        <MongleNext
+          onBack={() => navigate('/action')}
+          onHelp={() => navigate('/help')}
+          onMind={() => navigate('/mind')}
+        />
+      ) : path.toLowerCase().startsWith('/help') ? (
+        <MongleHelp
+          onBack={() => navigate('/next')}
+        />
+      ) : path.toLowerCase().startsWith('/onboarding') ? (
+        <Onboarding onComplete={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/action') ? (
+        <MongleAction phase={actionPhase} />
+      ) : path.toLowerCase().startsWith('/mind') ? (
+        <MindOrganize
+          onBack={() => navigate('/home')}
+          onEnd={() => navigate('/home')}
+          onGoChat={() => navigate('/chat')}
+        />
+      ) : path.toLowerCase().startsWith('/chat') ? (
+        <Chat
+          onBack={() => navigate('/mind')}
+          onFinish={(count) => {
+            setSavedCount(count)
+            setActionPhase('sunset')
+            navigate('/after')
+          }}
+        />
+      ) : path.toLowerCase().startsWith('/memories') ? (
+        <Memories onBack={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/after') ? (
+        <After
+          onTouchMongle={() => navigate('/action', 'sunset')}
+          onShave={() => navigate('/shave')}
+          onNext={() => navigate('/next')}
+          onEnd={() => navigate('/end')}
+        />
+      ) : path.toLowerCase().startsWith('/end') ? (
+        <End savedCount={savedCount} onHome={() => navigate('/home')} />
+      ) : path.toLowerCase().startsWith('/signin') ? (
+        <SignIn
+          onBack={() => navigate('/')}
+          onLoginSuccess={() => navigate('/onboarding')}
+        />
+      ) : path.toLowerCase().startsWith('/signup') ? (
+        <SignUp onBack={() => navigate('/')} onComplete={() => navigate('/')} />
+      ) : (
+        <Login
+          onLoginClick={() => navigate('/signin')}
+          onSignUpClick={() => navigate('/signup')}
+        />)}
+    </div>
+  );
 }
 
 export default App

@@ -1,0 +1,130 @@
+/* Figma: 홈 - 햄버거바 (171:3330) › 메뉴 시트 402 × 383 */
+.menu-sheet {
+  position: relative;
+  width: 100%;
+  max-width: var(--app-max-width);
+  padding: 48px 23px calc(57px + env(safe-area-inset-bottom));
+  border-radius: 46px 46px 0 0;
+  background: var(--color-home);
+  animation: menu-sheet-up 0.25s ease;
+}
+
+.menu-sheet__handle {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 55px;
+  height: 4px;
+  border-radius: 43px;
+  background: var(--color-text);
+  opacity: 0.34;
+  transform: translateX(-50%);
+}
+
+.menu-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 4px;
+}
+
+.menu-sheet__title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.menu-sheet__close {
+  width: 33px;
+  height: 33px;
+}
+
+/* ── 목록 ── */
+.menu-sheet__list {
+  margin: 25px 0 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0.5px solid var(--color-point);
+  border-radius: 20px;
+  background: var(--color-white);
+  list-style: none;
+}
+
+.menu-sheet__list > li + li {
+  border-top: 0.5px solid var(--color-point);
+}
+
+.menu-sheet__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 13.5px 0 19.5px;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+
+button.menu-sheet__item:active {
+  background: rgba(181, 154, 122, 0.08);
+}
+
+.menu-sheet__item--tall {
+  height: 48px;
+}
+
+.menu-sheet__item--static {
+  padding-right: 12.5px;
+}
+
+.menu-sheet__item--danger {
+  padding-left: 18.5px;
+  color: #db4d4d;
+}
+
+.menu-sheet__label {
+  flex: 1;
+}
+
+.menu-sheet__meta {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+/* ── 진동 스위치 (Figma Frame 17: 40 × 19.26) ── */
+.menu-sheet__switch {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 19.26px;
+  border-radius: 9.63px;
+  background: rgba(41, 45, 44, 0.2);
+  transition: background-color 0.2s ease;
+}
+
+.menu-sheet__switch--on {
+  background: var(--color-point);
+}
+
+.menu-sheet__switch-knob {
+  position: absolute;
+  top: 2.4px;
+  left: 3.3px;
+  width: 14.44px;
+  height: 14.44px;
+  border-radius: 50%;
+  background: var(--color-white);
+  transition: transform 0.2s ease;
+}
+
+.menu-sheet__switch--on .menu-sheet__switch-knob {
+  transform: translateX(18.9px);
+}
+
+@keyframes menu-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}

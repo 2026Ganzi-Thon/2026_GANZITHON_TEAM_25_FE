@@ -1,0 +1,24 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  background: rgba(41, 45, 44, 0.33);
+  animation: overlay-fade-in 0.2s ease;
+}
+
+.overlay--center {
+  align-items: center;
+  padding: 24px 22px;
+}
+
+.overlay--bottom {
+  align-items: flex-end;
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+}

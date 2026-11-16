@@ -1,0 +1,68 @@
+/* Figma: 기억한 이야기 - 경고 (171:4050) › 확인 모달 353 × 270 */
+.confirm-modal {
+    width: 100%;
+    max-width: 353px;
+    padding: 36px 30px;
+    border-radius: 30px;
+    background: var(--color-white);
+    color: var(--color-text);
+    line-height: 1.2;
+    animation: confirm-modal-pop 0.2s ease;
+}
+
+.confirm-modal__title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.confirm-modal__desc {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.confirm-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 34px;
+}
+
+.confirm-modal__body {
+    margin-top: 21px;
+}
+
+/* 입력창이 있을 땐 버튼과의 간격이 좁아요 (Figma 고치기 278:161) */
+.confirm-modal__body+.confirm-modal__actions {
+    margin-top: 21px;
+}
+
+.confirm-modal__button {
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--radius-card);
+    box-shadow: 0 4px 8.8px rgba(0, 0, 0, 0.25);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.confirm-modal__button--cancel {
+    background: var(--color-home);
+    color: var(--color-text);
+}
+
+.confirm-modal__button--confirm {
+    background: var(--color-main);
+    color: var(--color-white);
+}
+
+.confirm-modal__button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+@keyframes confirm-modal-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}

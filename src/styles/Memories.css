@@ -1,0 +1,135 @@
+/* Figma: 기억한 이야기 (171:4020) · empty (171:4088), 402 × 874 */
+.memories {
+    width: 100%;
+    max-width: var(--app-max-width);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(43px + env(safe-area-inset-top)) 29px calc(40px + env(safe-area-inset-bottom)) 22px;
+    background: var(--color-home);
+    color: var(--color-text);
+    line-height: 1.2;
+    /* Figma 'normal'(Pretendard ≈ 1.2) — 글꼴이 늦게 떠도 간격 유지 */
+}
+
+/* ── 상단 바: 뒤로가기 + 소리·메뉴 ── */
+.memories__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: -5px;
+    /* 뒤로가기는 화면 왼쪽에서 17px */
+}
+
+.memories__back {
+    display: flex;
+    width: 35px;
+    height: 35px;
+}
+
+/* ── 제목 · 설명 ── */
+.memories__title {
+    margin: 23px 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.memories__desc {
+    margin: 8px 0 0 5px;
+    font-size: 12px;
+}
+
+/* ── 기억 카드 목록 ── */
+.memories__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.memory-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 125px;
+    padding: 12.5px 10px 12.5px 14.5px;
+    border: 0.5px solid var(--color-point);
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+}
+
+.memory-card__date {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.memory-card__summary {
+    margin-top: 15.5px;
+    font-size: 16px;
+    font-weight: 500;
+    word-break: keep-all;
+    /* 한국어는 단어 단위로 줄바꿈 */
+}
+
+.memory-card__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: auto;
+    /* 요약이 짧아도 버튼은 카드 아래쪽에 */
+    padding-top: 12px;
+}
+
+.memory-card__button {
+    padding: 7px 15px;
+    border: 0.5px solid var(--color-point);
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    font-size: 12px;
+}
+
+/* ── 고치기 모달 입력창 (Figma: 기억한 이야기 - 고치기 278:161) ── */
+.memory-edit__input {
+    display: block;
+    width: 100%;
+    height: 127px;
+    padding: 23px;
+    border: 1px solid var(--color-point);
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    resize: none;
+    word-break: keep-all;
+}
+
+.memory-edit__input:focus {
+    outline: none; /* Figma처럼 테두리 색 유지, 커서로 입력 중임을 보여줘요 */
+}
+
+/* ── 모두 지우기 ── */
+.memories__clear {
+    width: calc(100% - 4px);
+    margin: 23px 0 0 4px;
+    padding: 11px;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    box-shadow: 0 4px 8.8px rgba(0, 0, 0, 0.25);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* ── 빈 상태 (Figma: 기억한 이야기 - empty) ── */
+.memories__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 125px;
+    margin-top: 22px;
+    border: 0.5px dashed var(--color-point);
+    border-radius: var(--radius-card);
+    color: rgba(41, 45, 44, 0.6);
+    font-size: 12px;
+}
