@@ -4,7 +4,6 @@ import Login from './pages/Login'
 import './styles/App.css'
 import Onboarding from './pages/Onboarding'
 import MongleAction from './pages/MongleAction'
-import Shave from './pages/Shave';
 import MindOrganize from './pages/MindOrganize/MindOrganize'
 import Chat from './pages/Chat/Chat'
 import MongleNext from './pages/Next';
@@ -27,12 +26,6 @@ function isPublicPath(path: string) {
   const lower = path.toLowerCase()
   return lower === '/' || lower.startsWith('/signin') || lower.startsWith('/signup')
 }
-/**
- * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
- * - /     → 첫화면(로그인)
- * - /home → 홈
- * 브라우저 뒤로가기/앞으로가기도 동작하도록 history API 사용
- */
 function App() {
   const [rawPath, setPath] = useState(window.location.pathname)
   useEffect(() => {
@@ -51,6 +44,15 @@ function App() {
   const [volume, setVolume] = useState(50)
   const [vibration, setVibration] = useState(true)
   const closeSheet = useCallback(() => setOpenSheet(null), [])
+
+  const [customMongle, setCustomMongle] = useState(() => {
+    const saved = localStorage.getItem('myCustomMongle')
+    return saved ? JSON.parse(saved) : {trait: '멍하니 있기', tendency: '차분하고 조용함', accessory: '리본 (머리)' }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('myCustomMongle', JSON.stringify(customMongle))
+  }, [customMongle])
 
   /** 화면 상단 소리·메뉴 버튼에 그대로 넘기는 묶음 */
   const header = {
@@ -103,19 +105,15 @@ function App() {
       {path.startsWith('/home') ? (
         <Home
           {...header}
+          customMongle={customMongle}
           onOrganizeAndTalk={() => navigate('/mind')}
           onTouchMongle={() => navigate('/action', 'noon')}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
           {...header} onBack={goBack}
-        />
-      ) : path.toLowerCase().startsWith('/shave') ? (
-        <Shave
-          {...header}
-          onBack={() => navigate('/action')}
-          onComplete={() => navigate('/end')}
-          onNextActivity={() => navigate('/next')}
+          customMongle={customMongle}
+          setCustomMongle={setCustomMongle}
         />
       ) : path.toLowerCase().startsWith('/next') ? (
         <MongleNext
@@ -135,7 +133,7 @@ function App() {
         <MongleAction
           {...header}
           phase={actionPhase}
-          onShave={() => navigate('/shave')}
+          customMongle={customMongle}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
         />
@@ -162,7 +160,7 @@ function App() {
         <After
           {...header}
           onTouchMongle={() => navigate('/action', 'sunset')}
-          onShave={() => navigate('/shave')}
+          onShave={() => navigate('/action')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
         />

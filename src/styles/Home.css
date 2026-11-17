@@ -74,6 +74,7 @@
   justify-content: center;
   width: 100%;
   padding-bottom: 88px; /* 몽글이 바닥 ~ 입력창 간격 */
+  position:relative; 
 }
 
 .home__mongle-wrap {
@@ -221,6 +222,17 @@
   box-shadow: none;
   opacity: 0.5;
 }
+
+.accessory {
+  position: absolute;
+  z-index: 2;
+}
+
+.ribbonHead { top: 1%; left: 32%; width: 25%; }
+.flowerHead { top: 1%; left: 34%; width: 20%; }
+.hat { top: -12%; left: 15%; width: 40%; }
+.ribbonNeck { top: 24%; left: 21%; width: 30%; }
+.bellNeck { top: 29%; left: 24%; width: 25%; }
 
 @keyframes home-bubble-in {
   from {
