@@ -36,7 +36,7 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function MongleAction({ phase, onShave, onNext, onEnd, onSoundClick, onMenuClick }: MongleActionProps) {
+export default function MongleAction({ phase, onNext, onEnd, onSoundClick, onMenuClick }: MongleActionProps) {
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0);
 

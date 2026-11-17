@@ -68,21 +68,31 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const [selectedMemoryIds, setSelectedMemoryIds] = useState<string[]>([])
     // 몽글이 답장을 기다리는 중 (4~5초)
     const [sending, setSending] = useState(false)
+    const [saveError, setSaveError] = useState('')
     // 세션 id — 첫 메시지를 보낼 때 만들어요 (들어왔다 그냥 나가면 빈 세션이 안 생기게)
     const sessionIdRef = useRef<string | null>(null)
+    const startSessionPromiseRef = useRef<Promise<string> | null>(null)
+    const leavingRef = useRef(false)
 
     const ensureSession = async (): Promise<string> => {
         if (sessionIdRef.current) return sessionIdRef.current
-        const { sessionId } = await startSession('TALK')
-        sessionIdRef.current = sessionId
-        return sessionId
+        if (!startSessionPromiseRef.current) {
+            startSessionPromiseRef.current = startSession('TALK').then(({ sessionId }) => {
+                sessionIdRef.current = sessionId
+                return sessionId
+            }).finally(() => { startSessionPromiseRef.current = null })
+        }
+        return startSessionPromiseRef.current
     }
 
-    // 화면을 떠나면(뒤로가기·종료·메뉴 이동 모두) 세션 종료 — 실패해도 서버가 4시간 뒤 자동 만료
+    // 화면을 떠나면 세션 종료. 생성 요청이 진행 중이면 생성 완료 후 종료해요.
     useEffect(() => {
+        leavingRef.current = false
         return () => {
+            leavingRef.current = true
             const sessionId = sessionIdRef.current
             if (sessionId) finishSession(sessionId).catch(() => { })
+            else startSessionPromiseRef.current?.then((id) => finishSession(id)).catch(() => { })
         }
     }, [])
     // 새 말풍선이 생기면 맨 아래로 스크롤
@@ -105,6 +115,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
         setSending(true)
         try {
             const sessionId = await ensureSession()
+            if (leavingRef.current) return
             const { reply, riskDetected, riskResources } = await postReflection(
                 sessionId,
                 text,
@@ -127,6 +138,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
 
     /** 그만 털어놓기 — OFF거나 한 말이 없으면 바로 종료, ON이면 서버가 만든 요약 확인 */
     const handleStop = async () => {
+        if (sending) return
         const hasTalked = messages.some((item) => item.from === 'user')
         const sessionId = sessionIdRef.current
         if (!remember || !hasTalked || !sessionId) {
@@ -142,12 +154,16 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
 
     const handleSaveMemory = async (summary: string) => {
         if (!preview) return
+        setSaveError('')
         try {
             await approveMemory(preview.previewId, summary)
             onFinish?.(1)
         } catch (error) {
-            setPreview(null)
-            addMessage('mongle', getChatErrorMessage(error))
+            if (error instanceof ApiError && error.status === 404) {
+                setPreview(null)
+                return
+            }
+            setSaveError('저장하지 못했어. 연결을 확인하고 다시 시도해줘.')
         }
     }
 
@@ -274,7 +290,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
                 </ol>
 
                 <div className="chat__quick">
-                    <button type="button" className="chat__quick-button" onClick={handleStop}>
+                    <button type="button" className="chat__quick-button" onClick={handleStop} disabled={sending}>
                         그만 털어놓기
                     </button>
                     <button type="button" className="chat__quick-button" onClick={handleOpenPick}>
@@ -310,6 +326,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
                         onSkip={() => onFinish?.(0)}
                         onSave={handleSaveMemory}
                         onClose={() => setPreview(null)}
+                        errorMessage={saveError}
                     />
                 )
             }

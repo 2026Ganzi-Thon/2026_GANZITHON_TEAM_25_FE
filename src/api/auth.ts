@@ -3,7 +3,7 @@
  * - 로그인 전에 부르는 API라서 모두 auth: false (토큰을 붙이지 않음)
  * - 로그인 아이디는 loginId, 응답의 userId는 서버 내부 ID라 서로 달라요
  */
-import { clearToken, request, setToken } from './client'
+import { clearToken, clearUserId, request, setToken, setUserId } from './client'
 
 export type LoginResponse = {
     /** 서버 내부 사용자 ID (로그인 아이디 아님) */
@@ -21,12 +21,14 @@ export async function login(loginId: string, password: string): Promise<LoginRes
         auth: false,
     })
     setToken(data.accessToken)
+    setUserId(data.userId)
     return data
 }
 
 /** 로그아웃 — 서버 호출 없이 저장한 토큰만 지워요 (안내서 공통 규칙) */
 export function logout() {
     clearToken()
+    clearUserId()
 }
 
 /** GET /auth/check-id — 쓸 수 있는 아이디면 true */
