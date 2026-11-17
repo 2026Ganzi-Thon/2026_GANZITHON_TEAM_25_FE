@@ -11,6 +11,7 @@ type RememberSheetProps = {
     onSave: (summary: string) => void
     /** 바깥 영역 · Esc → 대화로 돌아가기 */
     onClose: () => void
+    errorMessage?: string
 }
 
 /** 대화를 마칠 때 "이 내용만 기억하기" (Figma: 내용 기억하기 171:3576) */
@@ -19,6 +20,7 @@ function RememberSheet({
     onSkip,
     onSave,
     onClose,
+    errorMessage
 }: RememberSheetProps) {
     const [summary, setSummary] = useState(initialSummary)
     const trimmed = summary.trim()
@@ -48,6 +50,7 @@ function RememberSheet({
                 </>
             }
         >
+            {errorMessage && <p role="alert">{errorMessage}</p>}
             <textarea
                 className="memory-summary"
                 aria-label="기억할 요약"

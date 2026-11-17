@@ -8,6 +8,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 const TOKEN_KEY = 'mongle:accessToken'
+const USER_ID_KEY = 'mongle:userId'
 
 /** 서버 실패 응답 {error, message, field}를 담는 에러 */
 export class ApiError extends Error {
@@ -51,7 +52,29 @@ export function clearToken() {
         // 위와 같음
     }
 }
+export function getUserId(): string | null {
+    try {
+        return localStorage.getItem(USER_ID_KEY)
+    } catch {
+        return null
+    }
+}
 
+export function setUserId(userId: string) {
+    try {
+        localStorage.setItem(USER_ID_KEY, userId)
+    } catch {
+        // 저장소를 사용할 수 없어도 앱이 멈추지 않게 해요.
+    }
+}
+
+export function clearUserId() {
+    try {
+        localStorage.removeItem(USER_ID_KEY)
+    } catch {
+        // 저장소를 사용할 수 없어도 앱이 멈추지 않게 해요.
+    }
+}
 type RequestOptions = {
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     /** 보낼 JSON (없으면 본문 없이 보냄) */

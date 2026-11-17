@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import backgroundNoon from '../../assets/images/background_noon_wide.png'
 import sunImage from '../../assets/images/home/sun.png'
 import mongleImage from '../../assets/images/home/mongle-default.png'
@@ -19,12 +19,10 @@ type HomeMode = 'talk' | 'rest'
 type HomeProps = {
   /** 몽글이 탭 → "내 마음 정리하고 대화하기" */
   onOrganizeAndTalk?: () => void
-  /** 입력창 전송 → 자유 대화 시작 */
-  onFreeTalk?: (message: string) => void
   /** 말없이 쉬기 모드에서 몽글이를 만졌을 때 (털어내기 화면 진입) */
   onTouchMongle?: () => void
   customMongle: { trait: string; tendency: string; accessory: string };
-} & HeaderButtonHandlers 
+} & HeaderButtonHandlers
 
 const GUIDE_TEXT: Record<HomeMode, [string, string]> = {
   talk: ['몽글이를 누르면', '원하는 방식으로 대화할 수 있어요.'],
@@ -39,15 +37,13 @@ const GUIDE_TEXT: Record<HomeMode, [string, string]> = {
  */
 function Home({
   onOrganizeAndTalk,
-  onFreeTalk,
   onTouchMongle,
-  onSoundClick, 
+  onSoundClick,
   onMenuClick,
   customMongle
 }: HomeProps) {
   const [mode, setMode] = useState<HomeMode>('talk')
   const [showChoices, setShowChoices] = useState(false)
-  const [message, setMessage] = useState('')
   const handleMongleClick = () => {
     if (mode === 'rest') {
       onTouchMongle?.()
@@ -59,14 +55,6 @@ function Home({
   const startRest = () => {
     setShowChoices(false)
     setMode('rest')
-  }
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const text = message.trim()
-    if (!text) return
-    onFreeTalk?.(text)
-    setMessage('')
   }
 
   const [guideLine1, guideLine2] = GUIDE_TEXT[mode]
@@ -162,21 +150,21 @@ function Home({
                 height={27}
                 alt=""
               />
-               {customMongle.accessory === '리본 (머리)' && (
-          <img src={ribbonHeadImg} alt="머리 리본" className="accessory ribbonHead" />
-        )}
-        {customMongle.accessory === '작은 꽃 (머리)' && (
-          <img src={flowerHeadImg} alt="머리 꽃" className="accessory flowerHead" />
-        )}
-        {customMongle.accessory === '모자' && (
-          <img src={hatImg} alt="모자" className="accessory hat" />
-        )}
-        {customMongle.accessory === '리본 (목)' && (
-          <img src={ribbonNeckImg} alt="목 리본" className="accessory ribbonNeck" />
-        )}
-        {customMongle.accessory === '방울 (목)' && (
-          <img src={bellNeckImg} alt="목 방울" className="accessory bellNeck" />
-        )}
+              {customMongle.accessory === '리본 (머리)' && (
+                <img src={ribbonHeadImg} alt="머리 리본" className="accessory ribbonHead" />
+              )}
+              {customMongle.accessory === '작은 꽃 (머리)' && (
+                <img src={flowerHeadImg} alt="머리 꽃" className="accessory flowerHead" />
+              )}
+              {customMongle.accessory === '모자' && (
+                <img src={hatImg} alt="모자" className="accessory hat" />
+              )}
+              {customMongle.accessory === '리본 (목)' && (
+                <img src={ribbonNeckImg} alt="목 리본" className="accessory ribbonNeck" />
+              )}
+              {customMongle.accessory === '방울 (목)' && (
+                <img src={bellNeckImg} alt="목 방울" className="accessory bellNeck" />
+              )}
             </button>
           </div>
         </div>

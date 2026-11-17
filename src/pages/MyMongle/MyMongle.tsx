@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import styles from '../../styles/MyMongle.module.css';
-
 import baseAlpacaImg from '../../assets/images/alpaca.png';
 import ribbonHeadImg from '../../assets/deco/ribbon-head.png';
 import flowerHeadImg from '../../assets/deco/flower-head.png';
