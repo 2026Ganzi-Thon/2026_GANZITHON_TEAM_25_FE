@@ -24,6 +24,7 @@ type MongleActionProps = {
   onShave?: () => void;
   onNext?: () => void;
   onEnd?: () => void;
+  customMongle: { trait: string; tendency: string; accessory: string };
 } & HeaderButtonHandlers;
 
 interface WoolAnim {
@@ -192,16 +193,13 @@ export default function MongleAction({ phase, onShave, onNext, onEnd, onSoundCli
 
         <div className={styles.bottomSection}>
           <div className={styles.pillButtons}>
-            <button className={styles.pillBtn} onClick={onShave}>
-              털 깎으며 정리하기
+            <button className={styles.pillBtn} onClick={onEnd}>
+              여기서 끝내기
             </button>
             <button className={styles.pillBtn} onClick={onNext}>
               다음 행동 선택
             </button>
           </div>
-          <button className={styles.textLinkBtn} onClick={onEnd}>
-            여기서 끝내기
-          </button>
         </div>
       </div>
     </div>

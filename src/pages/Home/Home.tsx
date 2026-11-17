@@ -5,10 +5,14 @@ import mongleImage from '../../assets/images/home/mongle-default.png'
 import mongleEyesSmile from '../../assets/images/home/mongle-eyes-smile.png'
 import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
-import sendButton from '../../assets/icons/send-button.svg'
-import sendButtonRest from '../../assets/icons/send-button-rest.svg'
 import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Home.css'
+
+import ribbonHeadImg from '../../assets/deco/ribbon-head.png';
+import flowerHeadImg from '../../assets/deco/flower-head.png';
+import hatImg from '../../assets/deco/hat.png';
+import ribbonNeckImg from '../../assets/deco/ribbon-neck.png';
+import bellNeckImg from '../../assets/deco/bell.png';
 
 /** talk: 대화 모드(기본) / rest: 말없이 쉬기 모드 */
 type HomeMode = 'talk' | 'rest'
@@ -19,6 +23,7 @@ type HomeProps = {
   onFreeTalk?: (message: string) => void
   /** 말없이 쉬기 모드에서 몽글이를 만졌을 때 (털어내기 화면 진입) */
   onTouchMongle?: () => void
+  customMongle: { trait: string; tendency: string; accessory: string };
 } & HeaderButtonHandlers 
 
 const GUIDE_TEXT: Record<HomeMode, [string, string]> = {
@@ -38,6 +43,7 @@ function Home({
   onTouchMongle,
   onSoundClick, 
   onMenuClick,
+  customMongle
 }: HomeProps) {
   const [mode, setMode] = useState<HomeMode>('talk')
   const [showChoices, setShowChoices] = useState(false)
@@ -156,11 +162,26 @@ function Home({
                 height={27}
                 alt=""
               />
+               {customMongle.accessory === '리본 (머리)' && (
+          <img src={ribbonHeadImg} alt="머리 리본" className="accessory ribbonHead" />
+        )}
+        {customMongle.accessory === '작은 꽃 (머리)' && (
+          <img src={flowerHeadImg} alt="머리 꽃" className="accessory flowerHead" />
+        )}
+        {customMongle.accessory === '모자' && (
+          <img src={hatImg} alt="모자" className="accessory hat" />
+        )}
+        {customMongle.accessory === '리본 (목)' && (
+          <img src={ribbonNeckImg} alt="목 리본" className="accessory ribbonNeck" />
+        )}
+        {customMongle.accessory === '방울 (목)' && (
+          <img src={bellNeckImg} alt="목 방울" className="accessory bellNeck" />
+        )}
             </button>
           </div>
         </div>
 
-        <form className="home__composer" onSubmit={handleSubmit}>
+        {/* <form className="home__composer" onSubmit={handleSubmit}>
           <input
             className="home__input"
             type="text"
@@ -184,7 +205,7 @@ function Home({
               <img src={sendButtonRest} width={55} height={55} alt="" />
             )}
           </button>
-        </form>
+        </form> */}
       </div>
 
 
