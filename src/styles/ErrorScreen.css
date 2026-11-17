@@ -1,0 +1,44 @@
+/* Figma: 네트워크 오류 / 서비스 오류 — 홈컬러 배경 + 몽글이 + 문구 + 버튼 */
+.error-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100svh;
+    padding: 0 24px 40px;
+    background: var(--color-home);
+    color: var(--color-text);
+    text-align: center;
+}
+
+.error-screen__mongle {
+    height: auto;
+}
+
+.error-screen__title {
+    margin-top: 28px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.error-screen__desc {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.error-screen__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.error-screen__button {
+    width: 156px;
+    height: 44px;
+    border-radius: var(--radius-pill);
+    background: var(--color-main);
+    color: var(--color-white);
+    box-shadow: var(--shadow-cta);
+    font-size: 15px;
+    font-weight: 500;
+}
