@@ -22,13 +22,15 @@ function SoundSheet({
   onClose,
 }: SoundSheetProps) {
   return (
-    <Overlay placement="center" onClose={onClose}>
+   <Overlay placement="bottom" onClose={onClose}>
       <section
         className="sound-sheet"
         role="dialog"
         aria-modal="true"
         aria-labelledby="sound-sheet-title"
       >
+        <div className="sound-sheet__handle" />
+
         <header className="sound-sheet__header">
           <h2 id="sound-sheet-title" className="sound-sheet__title">
             자연음
