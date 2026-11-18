@@ -10,7 +10,7 @@ import iconHeart from '../assets/icons/heart.png';
 import iconPhone from '../assets/icons/call.png';
 import iconArrow from '../assets/icons/chevron-right.svg';
 
-export default function MongleNext({ onBack, onHelp, onMind, onSoundClick, onMenuClick }: { onBack?: () => void, onHelp?: () => void, onMind?: () => void } & HeaderButtonHandlers) {
+export default function MongleNext({ onBack, onHelp, onMind, onSoundClick, onMenuClick, onLogout }: { onBack?: () => void, onHelp?: () => void, onMind?: () => void, onLogout: () => void } & HeaderButtonHandlers) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -63,6 +63,10 @@ export default function MongleNext({ onBack, onHelp, onMind, onSoundClick, onMen
                 <p>믿을 수 있는 사람이나 전문 상담에 연결해요.</p>
               </div>
               <img src={iconArrow} alt="이동" className={styles.chevronImage} />
+            </button>
+
+            <button className={styles.endBtn} onClick={onLogout}>
+            종료 하기
             </button>
           </div>
         </div>
