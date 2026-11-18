@@ -8,9 +8,11 @@ import { getUserId } from '../api/client';
 
 interface OnboardingProps {
   onComplete: () => void;
+  customMongle: { trait: string; tendency: string; accessory: string };
+  setCustomMongle: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export default function Onboarding({ onComplete }: OnboardingProps) {
+export default function Onboarding({ onComplete, customMongle, setCustomMongle }: OnboardingProps) {
   const onboardingStepKey = `mongle:onboarding-step:${getUserId() ?? 'unknown'}`;
 
   const [step, setStep] = useState(() => {
@@ -122,6 +124,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
+  const handleOptionSelect = (optionId: number) => {
+    setSelectedOption(optionId); 
+
+    if (step === 3) {
+      const selectedAccessoryName = accessoryById[optionId] || '없음';
+      setCustomMongle((prev: any) => ({
+        ...prev,
+        accessory: selectedAccessoryName,
+      }));
+    }
+  };
+
   const stepData = {
     1: {
       title: <><span className="highlight">몽글이</span>에게<br />나와 닮은 점을 줄 수 있어요</>,
@@ -168,10 +182,11 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           eyesImage={mongleEyesSmile}
           options={currentData.options}
           selectedOption={selectedOption}
-          onSelect={setSelectedOption}
+          onSelect={handleOptionSelect}
           onNext={handleNext}
           onBack={() => step > 1 && moveToStep(step - 1)}
           onSkip={handleSkip}
+          customMongle={customMongle} 
         />
       </div>
     </div>
