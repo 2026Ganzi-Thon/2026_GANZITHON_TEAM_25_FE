@@ -13,7 +13,7 @@ import eyesSquint from '../assets/images/alpaca/mongle_eyes_wry.png';
 
 interface MongleProps {
   bodyImage: string;
-  customMongle?: { trait: string; tendency: string; accessory: string };
+  customMongle?: { similarityTrait: string; comfortStyle: string; accessory: string };
   overrideEyes?: string | null; 
   bodyClassName?: string;       
   eyesClassName?: string;       
@@ -27,10 +27,10 @@ export default function MongleCharacter({ bodyImage, customMongle, overrideEyes,
   if (overrideEyes) {
     eyesContent = <img src={overrideEyes} alt="액션 표정" className={`${styles.mongleEyes} ${eyesClassName || ''}`} />;
   } 
-  else if (customMongle?.trait === '멍하니 있기') {
+  else if (customMongle?.similarityTrait === '멍하니 있기') {
     currentBody = mongleBlankBody; 
   } 
-  else if (customMongle?.trait === '침 뱉기') {
+  else if (customMongle?.similarityTrait === '침 뱉기') {
     eyesContent = (
       <>
         <img src={eyesSquint} alt="질끈 감은 눈" className={`${styles.squintEyes} ${eyesClassName || ''}`} />

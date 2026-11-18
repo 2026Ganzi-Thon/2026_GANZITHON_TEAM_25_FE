@@ -1,25 +1,25 @@
 import styles from '../../styles/MyMongle.module.css';
-import baseAlpacaImg from '../../assets/images/alpaca.png';
-import ribbonHeadImg from '../../assets/deco/ribbon-head.png';
-import flowerHeadImg from '../../assets/deco/flower-head.png';
-import hatImg from '../../assets/deco/hat.png';
-import ribbonNeckImg from '../../assets/deco/ribbon-neck.png';
-import bellNeckImg from '../../assets/deco/bell.png';
+// 💡 쓰지 않는 baseAlpacaImg는 지우고 화가 컴포넌트만 남겼습니다.
+import MongleCharacter from '../../components/MongleCharacter';
+import mongleBody from '../../assets/images/alpaca/mongle_default_v3.png';
 import backIcon from '../../assets/icons/arrow-back.svg';
 import soundIcon from '../../assets/icons/sound-button.svg';
 import menuIcon from '../../assets/icons/menu-button.svg';
 import type { HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions';
 
+// 💡 1. 명세서를 최신 이름(similarityTrait, comfortStyle)으로 업데이트!
 interface MyMongleProps extends HeaderButtonHandlers {
   onBack: () => void;
-  customMongle: { trait: string; tendency: string; accessory: string };
-  setCustomMongle: React.Dispatch<React.SetStateAction<{ trait: string; tendency: string; accessory: string }>>;
+  customMongle: { similarityTrait: string; comfortStyle: string; accessory: string };
+  setCustomMongle: React.Dispatch<React.SetStateAction<{ similarityTrait: string; comfortStyle: string; accessory: string }>>;
 }
+
 const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMongle }: MyMongleProps) => {
 
   const traits = ['없음', '멍하니 있기', '침 뱉기', '잘 웃기'];
   const tendencies = ['없음', '차분하고 조용함', '부드럽고 다정함', '가끔 장난스러움'];
-  const accessories = ['없음', '리본 (머리)', '작은 꽃 (머리)', '모자', '리본 (목)', '방울 (목)'];
+  // 띄어쓰기가 컴포넌트와 안 맞아서 나는 오류를 방지하기 위해 띄어쓰기를 없앴습니다. ('리본(머리)')
+  const accessories = ['없음', '리본(머리)', '작은 꽃(머리)', '모자', '리본(목)', '방울(목)'];
 
   return (
     <div className={styles.container}>
@@ -39,23 +39,12 @@ const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMo
       </header>
 
       <div className={styles.characterDisplay}>
-        <img src={baseAlpacaImg} alt="알파카 기본" className={styles.baseAlpaca} />
-        
-        {customMongle.accessory === '리본 (머리)' && (
-          <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
-        )}
-        {customMongle.accessory === '작은 꽃 (머리)' && (
-          <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
-        )}
-        {customMongle.accessory === '모자' && (
-          <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
-        )}
-        {customMongle.accessory === '리본 (목)' && (
-          <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
-        )}
-        {customMongle.accessory === '방울 (목)' && (
-          <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
-        )}
+        {/* 💡 2. 길었던 장식 img 태그들을 싹 지우고 화가 컴포넌트로 교체! */}
+        <MongleCharacter 
+          bodyImage={mongleBody}
+          customMongle={customMongle}
+          wrapperClassName={styles.myMongleSize} 
+        />
       </div>
 
       <div className={styles.optionsContainer}>
@@ -65,8 +54,8 @@ const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMo
             {traits.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${customMongle.trait === item ? styles.activeTag : ''}`}
-                onClick={() => setCustomMongle(prev => ({ ...prev, trait: item }))}
+                className={`${styles.tagBtn} ${customMongle.similarityTrait === item ? styles.activeTag : ''}`}
+                onClick={() => setCustomMongle(prev => ({ ...prev, similarityTrait: item }))}
               >
                 {item}
               </button>
@@ -80,8 +69,8 @@ const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMo
             {tendencies.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${customMongle.tendency=== item ? styles.activeTag : ''}`}
-                onClick={() => setCustomMongle(prev => ({ ...prev, tendency: item }))}
+                className={`${styles.tagBtn} ${customMongle.comfortStyle === item ? styles.activeTag : ''}`}
+                onClick={() => setCustomMongle(prev => ({ ...prev, comfortStyle: item }))}
               >
                 {item}
               </button>
@@ -95,7 +84,7 @@ const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMo
             {accessories.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${customMongle.accessory=== item ? styles.activeTag : ''}`}
+                className={`${styles.tagBtn} ${customMongle.accessory === item ? styles.activeTag : ''}`}
                 onClick={() => setCustomMongle(prev => ({ ...prev, accessory: item }))}
               >
                 {item}

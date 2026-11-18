@@ -25,7 +25,7 @@ type MongleActionProps = {
   onShave?: () => void;
   onNext?: () => void;
   onEnd?: () => void;
-  customMongle: { trait: string; tendency: string; accessory: string }; 
+  customMongle: { similarityTrait: string; comfortStyle: string; accessory: string }; 
 } & HeaderButtonHandlers;
 
 interface WoolAnim {
