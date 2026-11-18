@@ -50,6 +50,7 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
   const dragAccumulator = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
   const hasTriggeredThisDrag = useRef(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   const textData = {
     none: { title: "몽글이와 함께 시간을 보내요.", sub: "버튼을 눌러 모드를 선택하고 몽글이를 문질러보세요!" },
@@ -77,6 +78,7 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
     dragAccumulator.current = 0;
     setDragOffset(0);
     hasTriggeredThisDrag.current = false;
+    if (mode === 'squish') setIsPressed(true);
   };
 
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -99,6 +101,7 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
   };
 
   const handlePointerUp = () => {
+    setIsPressed(false);
     setIsDragging(false);
     setDragOffset(0);
   };
@@ -158,8 +161,7 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
           onPointerLeave={handlePointerUp}
           style={{ touchAction: 'none' }}
         >
-          <div key={animKey} className={`${styles.mongleWrapper} ${styles[mode]}`} style={characterStyle}>
-
+          <div key={animKey} className={`${styles.mongleWrapper} ${styles[mode]} ${isPressed ? styles.squishPressed : ''}`} style={mode === 'pet' ? characterStyle : undefined}>
             {mode === 'shake' && (
               <>
                 <img src={woolParticle} className={`${styles.wool} ${styles.wool1}`} alt="털" />
