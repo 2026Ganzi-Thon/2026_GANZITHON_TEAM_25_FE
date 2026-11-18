@@ -21,6 +21,9 @@ import {
 } from '../../api/memories'
 import RememberSheet from './components/RememberSheet'
 import MemoryPickSheet from './components/MemoryPickSheet'
+import { useToast } from '../../components/Toast/toastContext'
+import { getToastMessage } from '../../api/errors'
+
 
 type Message = {
     id: number
@@ -59,6 +62,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const [remember, setRemember] = useState(false)
     const nextId = useRef(0)
     const logRef = useRef<HTMLOListElement>(null)
+    const showToast = useToast()
 
     // 기억 요약 후보 — 값이 있으면 "이 내용만 기억하기" 시트가 열림
     const [preview, setPreview] = useState<MemoryPreview | null>(null)
@@ -68,7 +72,6 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const [selectedMemoryIds, setSelectedMemoryIds] = useState<string[]>([])
     // 몽글이 답장을 기다리는 중 (4~5초)
     const [sending, setSending] = useState(false)
-    const [saveError, setSaveError] = useState('')
     // 세션 id — 첫 메시지를 보낼 때 만들어요 (들어왔다 그냥 나가면 빈 세션이 안 생기게)
     const sessionIdRef = useRef<string | null>(null)
     const startSessionPromiseRef = useRef<Promise<string> | null>(null)
@@ -154,16 +157,18 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
 
     const handleSaveMemory = async (summary: string) => {
         if (!preview) return
-        setSaveError('')
         try {
             await approveMemory(preview.previewId, summary)
+            showToast('success', '저장되었어요.', 'middle')
             onFinish?.(1)
         } catch (error) {
             if (error instanceof ApiError && error.status === 404) {
+                // 미리보기는 30분이 지나면 서버가 지워요 (가이드 3절)
                 setPreview(null)
+                showToast('error', '저장할 수 있는 시간이 지났어요.', 'middle')
                 return
             }
-            setSaveError('저장하지 못했어. 연결을 확인하고 다시 시도해줘.')
+            showToast('error', getToastMessage(error), 'middle')
         }
     }
 
@@ -326,7 +331,6 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
                         onSkip={() => onFinish?.(0)}
                         onSave={handleSaveMemory}
                         onClose={() => setPreview(null)}
-                        errorMessage={saveError}
                     />
                 )
             }

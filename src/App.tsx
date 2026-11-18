@@ -21,6 +21,8 @@ import MenuSheet from './pages/Home/components/MenuSheet'
 import type { NatureSound } from './pages/Home/natureSounds'
 import { getPreferences, updatePreferences, type PreferencesUpdate } from './api/preferences'
 import { finishSession, startSession } from './api/session'
+import { useToast } from './components/Toast/toastContext'
+import { getToastMessage } from './api/errors'
 
 
 /** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
@@ -30,6 +32,7 @@ function isPublicPath(path: string) {
 }
 
 function App() {
+  const showToast = useToast()
   const [rawPath, setPath] = useState(window.location.pathname)
   useEffect(() => {
     const handlePopState = () => {
@@ -129,9 +132,11 @@ function App() {
     return () => { cancelled = true }
   }, [isLoggedIn])
 
-  /** 화면은 바로 바꾸고, 서버 저장은 뒤에서 (가이드 6절: 즉시 반응 + 비동기 반영) */
+  /** 화면은 바로 바꾸고, 서버 저장은 뒤에서. 실패하면 토스트로만 알려요 */
   const savePreferences = (body: PreferencesUpdate) => {
-    updatePreferences(body).catch(() => { /* 작업 2에서 토스트로 안내 */ })
+    updatePreferences(body).catch((error) => {
+      showToast('error', getToastMessage(error))
+    })
   }
 
   const handleSoundChange = (sound: NatureSound) => {
@@ -246,7 +251,7 @@ function App() {
           }}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
-        <Memories {...header} onBack={goBack} />
+        <Memories {...header} onBack={goBack} onHome={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
           {...header}
