@@ -18,22 +18,27 @@ interface StepProps {
   onSelect: (id: number) => void;
   onNext: () => void;
   onBack: () => void;
+  onSkip?: () => void;
 }
 
-export default function OnboardingStep({ 
-  step, title, subtitle, bodyImage, eyesImage, options, selectedOption, onSelect, onNext, onBack 
+export default function OnboardingStep({
+  step, title, subtitle, bodyImage, eyesImage, options, selectedOption, onSelect, onNext, onBack, onSkip
 }: StepProps) {
   return (
     <div className={styles.stepContainer}>
-      
+
       {/*  상단 바  */}
       <div className={styles.topBar}>
         <button className={styles.iconBtn} onClick={onBack}>&lt;</button>
         <div className={styles.progress}>
-          <div className={step === 1 ? styles.activePill : styles.inactiveDot} />
-          <div className={step === 2 ? styles.activePill : styles.inactiveDot} />
+          {[1, 2, 3].map((progressStep) => (
+            <div
+              key={progressStep}
+              className={step === progressStep ? styles.activePill : styles.inactiveDot}
+            />
+          ))}
         </div>
-        <button className={styles.skipBtn}>건너뛰기</button>
+        <button className={styles.skipBtn} onClick={onSkip}>건너뛰기</button>
       </div>
 
       {/* 텍스트 영역 */}
@@ -67,13 +72,13 @@ export default function OnboardingStep({
       </div>
 
       {/* 하단 버튼 */}
-      <button 
-        className={styles.nextButton} 
+      <button
+        className={styles.nextButton}
         onClick={onNext}
       >
-        {step === 1 ? '다음' : '몽글이 만나기'}
+        {step < 3 ? '다음' : '몽글이 만나기'}
       </button>
-      
-    </div>
+
+    </div >
   );
 }

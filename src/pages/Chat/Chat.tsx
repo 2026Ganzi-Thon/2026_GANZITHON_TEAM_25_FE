@@ -7,9 +7,11 @@ import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import sendButton from '../../assets/icons/send-button.svg'
 import arrowBack from '../../assets/icons/arrow-back.svg'
-import HeaderActions from '../../components/HeaderActions/HeaderActions'
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Chat.css'
 import { postReflection } from '../../api/reflection'
+import { finishSession, startSession } from '../../api/session'
+import { ApiError } from '../../api/client'
 import {
     approveMemory,
     createMemoryPreview,
@@ -19,6 +21,9 @@ import {
 } from '../../api/memories'
 import RememberSheet from './components/RememberSheet'
 import MemoryPickSheet from './components/MemoryPickSheet'
+import { useToast } from '../../components/Toast/toastContext'
+import { getToastMessage } from '../../api/errors'
+
 
 type Message = {
     id: number
@@ -31,25 +36,33 @@ const INTRO_TEXT = {
     off: ['여기서는 편하게 말해도 돼!', '이 대화는 끝나면 사라져.'],
     on: ['여기서는 편하게 말해도 돼!', '끝나면 기억할 내용만 골라서 남길 수 있어.'],
 }
-
+/** 대화 중 에러 → 몽글이 말투로 안내 (토스트 디자인 나오기 전 임시) */
+function getChatErrorMessage(error: unknown): string {
+    if (error instanceof ApiError) {
+        if (error.status === 429) return '이번 대화에서는 더 들을 수 없어. 그만 털어놓기를 눌러줄래?'
+        if (error.status === 0) return '연결이 잠깐 끊긴 것 같아. 잠시 후 다시 말해줄래?'
+    }
+    return '지금은 대답이 잘 안 떠올라. 잠시 후 다시 말해줄래?'
+}
 type ChatProps = {
     /** 뒤로 가기 */
     onBack?: () => void
     /** 대화 종료 (그만 털어놓기) */
     onFinish?: (savedCount: number) => void
-}
+} & HeaderButtonHandlers
 
 /**
  * 대화 (Figma: 대화 - 이번만 기억하기 171:3177)
  * - 2단계: 배경 · 어두운 막 · 해 · 몽글이 · 상단 바 · 입력창
  * - 다음 단계에서 토글(내용 기억하기), 말풍선, 하단 버튼을 추가
  */
-function Chat({ onBack, onFinish }: ChatProps) {
+function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [remember, setRemember] = useState(false)
     const nextId = useRef(0)
     const logRef = useRef<HTMLOListElement>(null)
+    const showToast = useToast()
 
     // 기억 요약 후보 — 값이 있으면 "이 내용만 기억하기" 시트가 열림
     const [preview, setPreview] = useState<MemoryPreview | null>(null)
@@ -57,11 +70,39 @@ function Chat({ onBack, onFinish }: ChatProps) {
     const [pickList, setPickList] = useState<Memory[] | null>(null)
     // 이번 대화에 꺼낸 기억 id
     const [selectedMemoryIds, setSelectedMemoryIds] = useState<string[]>([])
+    // 몽글이 답장을 기다리는 중 (4~5초)
+    const [sending, setSending] = useState(false)
+    // 세션 id — 첫 메시지를 보낼 때 만들어요 (들어왔다 그냥 나가면 빈 세션이 안 생기게)
+    const sessionIdRef = useRef<string | null>(null)
+    const startSessionPromiseRef = useRef<Promise<string> | null>(null)
+    const leavingRef = useRef(false)
+
+    const ensureSession = async (): Promise<string> => {
+        if (sessionIdRef.current) return sessionIdRef.current
+        if (!startSessionPromiseRef.current) {
+            startSessionPromiseRef.current = startSession('TALK').then(({ sessionId }) => {
+                sessionIdRef.current = sessionId
+                return sessionId
+            }).finally(() => { startSessionPromiseRef.current = null })
+        }
+        return startSessionPromiseRef.current
+    }
+
+    // 화면을 떠나면 세션 종료. 생성 요청이 진행 중이면 생성 완료 후 종료해요.
+    useEffect(() => {
+        leavingRef.current = false
+        return () => {
+            leavingRef.current = true
+            const sessionId = sessionIdRef.current
+            if (sessionId) finishSession(sessionId).catch(() => { })
+            else startSessionPromiseRef.current?.then((id) => finishSession(id)).catch(() => { })
+        }
+    }, [])
     // 새 말풍선이 생기면 맨 아래로 스크롤
     useEffect(() => {
         const log = logRef.current
         if (log) log.scrollTop = log.scrollHeight
-    }, [messages])
+    }, [messages, sending])
 
     const addMessage = (from: Message['from'], text: string) => {
         const id = nextId.current++
@@ -71,36 +112,73 @@ function Chat({ onBack, onFinish }: ChatProps) {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const text = message.trim()
-        if (!text) return
+        if (!text || sending) return
         addMessage('user', text)
         setMessage('')
-
-        const { reply } = await postReflection(text, selectedMemoryIds)
-        addMessage('mongle', reply)
+        setSending(true)
+        try {
+            const sessionId = await ensureSession()
+            if (leavingRef.current) return
+            const { reply, riskDetected, riskResources } = await postReflection(
+                sessionId,
+                text,
+                selectedMemoryIds,
+            )
+            addMessage('mongle', reply)
+            // 위험 신호: 대화는 이어가면서 도움받을 곳을 함께 안내 (강제 화면 전환 X)
+            if (riskDetected && riskResources?.length) {
+                addMessage('mongle', '혼자 버티지 않아도 돼. 이야기 나눌 수 있는 곳이 있어.')
+                riskResources.forEach((r) => addMessage('mongle', `${r.name} ${r.phone}`))
+            }
+        } catch (error) {
+            // 이미 끝난 세션(409)이면 다음 메시지 때 새 세션으로 시작
+            if (error instanceof ApiError && error.status === 409) sessionIdRef.current = null
+            addMessage('mongle', getChatErrorMessage(error))
+        } finally {
+            setSending(false)
+        }
     }
 
-    /** 그만 털어놓기 — OFF거나 한 말이 없으면 바로 종료, ON이면 기억할 요약 확인 */
+    /** 그만 털어놓기 — OFF거나 한 말이 없으면 바로 종료, ON이면 서버가 만든 요약 확인 */
     const handleStop = async () => {
-        const userTexts = messages
-            .filter((item) => item.from === 'user')
-            .map((item) => item.text)
-
-        if (!remember || userTexts.length === 0) {
+        if (sending) return
+        const hasTalked = messages.some((item) => item.from === 'user')
+        const sessionId = sessionIdRef.current
+        if (!remember || !hasTalked || !sessionId) {
             onFinish?.(0)
             return
         }
-        setPreview(await createMemoryPreview(userTexts))
+        try {
+            setPreview(await createMemoryPreview(sessionId))
+        } catch (error) {
+            addMessage('mongle', getChatErrorMessage(error))
+        }
     }
 
     const handleSaveMemory = async (summary: string) => {
         if (!preview) return
-        await approveMemory(preview.previewId, summary)
-        onFinish?.(1)
+        try {
+            await approveMemory(preview.previewId, summary)
+            showToast('success', '저장되었어요.', 'middle')
+            onFinish?.(1)
+        } catch (error) {
+            if (error instanceof ApiError && error.status === 404) {
+                // 미리보기는 30분이 지나면 서버가 지워요 (가이드 3절)
+                setPreview(null)
+                showToast('error', '저장할 수 있는 시간이 지났어요.', 'middle')
+                return
+            }
+            showToast('error', getToastMessage(error), 'middle')
+        }
     }
 
     /** 기억 꺼내기 — 사용자가 직접 눌렀을 때만 기억 목록을 불러옴 (자동 불러오기 금지) */
     const handleOpenPick = async () => {
-        setPickList(await getMemories())
+        try {
+            setPickList(await getMemories())
+        } catch (error) {
+            addMessage('mongle', getChatErrorMessage(error))
+        }
     }
 
     const handleStartWith = (ids: string[]) => {
@@ -132,7 +210,7 @@ function Chat({ onBack, onFinish }: ChatProps) {
                     >
                         <img src={arrowBack} width={35} height={35} alt="" />
                     </button>
-                    <HeaderActions />
+                    <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
                 </header>
                 <div className="chat__memory">
                     <span className="chat__memory-label" aria-hidden="true">
@@ -209,10 +287,15 @@ function Chat({ onBack, onFinish }: ChatProps) {
                             {item.text}
                         </li>
                     ))}
+                    {sending && (
+                        <li className="chat__bubble chat__bubble--mongle" aria-label="몽글이가 생각하는 중">
+                            …
+                        </li>
+                    )}
                 </ol>
 
                 <div className="chat__quick">
-                    <button type="button" className="chat__quick-button" onClick={handleStop}>
+                    <button type="button" className="chat__quick-button" onClick={handleStop} disabled={sending}>
                         그만 털어놓기
                     </button>
                     <button type="button" className="chat__quick-button" onClick={handleOpenPick}>
@@ -224,12 +307,13 @@ function Chat({ onBack, onFinish }: ChatProps) {
                         className="chat__input"
                         type="text"
                         value={message}
+                        maxLength={500}
                         placeholder="편하게 털어내봐요"
                         aria-label="몽글이에게 털어놓기"
                         enterKeyHint="send"
                         onChange={(event) => setMessage(event.target.value)}
                     />
-                    <button type="submit" className="chat__send" aria-label="보내기">
+                    <button type="submit" className="chat__send" aria-label="보내기" disabled={sending}>
                         <img
                             className="chat__send-icon"
                             src={sendButton}
@@ -240,25 +324,29 @@ function Chat({ onBack, onFinish }: ChatProps) {
                     </button>
                 </form>
             </div>
-            {preview && (
-                <RememberSheet
-                    initialSummary={preview.draftSummary}
-                    onSkip={() => onFinish?.(0)}
-                    onSave={handleSaveMemory}
-                    onClose={() => setPreview(null)}
-                />
-            )}
+            {
+                preview && (
+                    <RememberSheet
+                        initialSummary={preview.draftSummary}
+                        onSkip={() => onFinish?.(0)}
+                        onSave={handleSaveMemory}
+                        onClose={() => setPreview(null)}
+                    />
+                )
+            }
 
-            {pickList && (
-                <MemoryPickSheet
-                    memories={pickList}
-                    initialSelectedIds={selectedMemoryIds}
-                    onStartWith={handleStartWith}
-                    onStartWithout={handleStartWithout}
-                    onClose={() => setPickList(null)}
-                />
-            )}
-        </main>
+            {
+                pickList && (
+                    <MemoryPickSheet
+                        memories={pickList}
+                        initialSelectedIds={selectedMemoryIds}
+                        onStartWith={handleStartWith}
+                        onStartWithout={handleStartWithout}
+                        onClose={() => setPickList(null)}
+                    />
+                )
+            }
+        </main >
     )
 }
 

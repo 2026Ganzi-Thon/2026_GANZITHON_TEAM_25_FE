@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import styles from '../../styles/MyMongle.module.css';
-
 import baseAlpacaImg from '../../assets/images/alpaca.png';
 import ribbonHeadImg from '../../assets/deco/ribbon-head.png';
 import flowerHeadImg from '../../assets/deco/flower-head.png';
@@ -10,24 +8,14 @@ import bellNeckImg from '../../assets/deco/bell.png';
 import backIcon from '../../assets/icons/arrow-back.svg';
 import soundIcon from '../../assets/icons/sound-button.svg';
 import menuIcon from '../../assets/icons/menu-button.svg';
-import MenuSheet from '../Home/components/MenuSheet';
-import SoundSheet from '../Home/components/SoundSheet';
+import type { HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions';
 
-interface MyMongleProps {
+interface MyMongleProps extends HeaderButtonHandlers {
   onBack: () => void;
-  onLogout?: () => void;
+  customMongle: { trait: string; tendency: string; accessory: string };
+  setCustomMongle: React.Dispatch<React.SetStateAction<{ trait: string; tendency: string; accessory: string }>>;
 }
-
-const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSoundOpen, setIsSoundOpen] = useState(false);
-  const [sound, setSound] = useState<any>('');
-  const [volume, setVolume] = useState<number>(50);
-  const [vibration, setVibration] = useState<boolean>(true);
-
-  const [trait, setTrait] = useState('멍하니 있기');
-  const [tendency, setTendency] = useState('차분하고 조용함');
-  const [accessory, setAccessory] = useState('리본 (머리)');
+const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMongle }: MyMongleProps) => {
 
   const traits = ['없음', '멍하니 있기', '침 뱉기', '잘 웃기'];
   const tendencies = ['없음', '차분하고 조용함', '부드럽고 다정함', '가끔 장난스러움'];
@@ -41,10 +29,10 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
         </button>
         <h1 className={styles.title}>나의 몽글이</h1>
         <div className={styles.headerRight}>
-          <button className={styles.iconBtn} onClick={() => setIsSoundOpen(true)}>
+          <button className={styles.iconBtn} onClick={onSoundClick}>
             <img src={soundIcon} alt="음량" className={styles.iconImg} />
           </button>
-          <button className={styles.iconBtn} onClick={() => setIsMenuOpen(true)}>
+          <button className={styles.iconBtn} onClick={onMenuClick}>
             <img src={menuIcon} alt="메뉴" className={styles.iconImg} />
           </button>
         </div>
@@ -53,19 +41,19 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
       <div className={styles.characterDisplay}>
         <img src={baseAlpacaImg} alt="알파카 기본" className={styles.baseAlpaca} />
         
-        {accessory === '리본 (머리)' && (
+        {customMongle.accessory === '리본 (머리)' && (
           <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
         )}
-        {accessory === '작은 꽃 (머리)' && (
+        {customMongle.accessory === '작은 꽃 (머리)' && (
           <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
         )}
-        {accessory === '모자' && (
+        {customMongle.accessory === '모자' && (
           <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
         )}
-        {accessory === '리본 (목)' && (
+        {customMongle.accessory === '리본 (목)' && (
           <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
         )}
-        {accessory === '방울 (목)' && (
+        {customMongle.accessory === '방울 (목)' && (
           <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
         )}
       </div>
@@ -77,8 +65,8 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
             {traits.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${trait === item ? styles.activeTag : ''}`}
-                onClick={() => setTrait(item)}
+                className={`${styles.tagBtn} ${customMongle.trait === item ? styles.activeTag : ''}`}
+                onClick={() => setCustomMongle(prev => ({ ...prev, trait: item }))}
               >
                 {item}
               </button>
@@ -92,8 +80,8 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
             {tendencies.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${tendency === item ? styles.activeTag : ''}`}
-                onClick={() => setTendency(item)}
+                className={`${styles.tagBtn} ${customMongle.tendency=== item ? styles.activeTag : ''}`}
+                onClick={() => setCustomMongle(prev => ({ ...prev, tendency: item }))}
               >
                 {item}
               </button>
@@ -107,8 +95,8 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
             {accessories.map(item => (
               <button
                 key={item}
-                className={`${styles.tagBtn} ${accessory === item ? styles.activeTag : ''}`}
-                onClick={() => setAccessory(item)}
+                className={`${styles.tagBtn} ${customMongle.accessory=== item ? styles.activeTag : ''}`}
+                onClick={() => setCustomMongle(prev => ({ ...prev, accessory: item }))}
               >
                 {item}
               </button>
@@ -116,30 +104,7 @@ const MyMongle = ({ onBack, onLogout }: MyMongleProps) => {
           </div>
         </div>
       </div>
-
-      {isMenuOpen && (
-        <MenuSheet 
-          memoryCount={0}
-          vibration={vibration}
-          onVibrationChange={setVibration}
-          onOpenMemories={() => setIsMenuOpen(false)}
-          onOpenMyMongle={() => setIsMenuOpen(false)} 
-          onOpenHelp={() => setIsMenuOpen(false)}
-          onLogout={onLogout}
-          onClose={() => setIsMenuOpen(false)} 
-        />
-      )}
-      
-      {isSoundOpen && (
-        <SoundSheet 
-          sound={sound}
-          volume={volume}
-          onSoundChange={setSound}
-          onVolumeChange={setVolume}
-          onClose={() => setIsSoundOpen(false)} 
-        />
-      )}
-    </div>    
+    </div>
   );
 };
 

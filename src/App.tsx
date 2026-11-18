@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Home from './pages/Home/Home'
 import Login from './pages/Login'
 import './styles/App.css'
 import Onboarding from './pages/Onboarding'
 import MongleAction from './pages/MongleAction'
-import Shave from './pages/Shave';
 import MindOrganize from './pages/MindOrganize/MindOrganize'
 import Chat from './pages/Chat/Chat'
 import MongleNext from './pages/Next';
@@ -17,28 +16,90 @@ import MyMongle from './pages/MyMongle/MyMongle'
 import SignUp from './pages/SignUp/SignUp'
 import { logout } from './api/auth'
 import { getToken, UNAUTHORIZED_EVENT } from './api/client'
+import SoundSheet from './pages/Home/components/SoundSheet'
+import MenuSheet from './pages/Home/components/MenuSheet'
+import type { NatureSound } from './pages/Home/natureSounds'
+import { getPreferences, updatePreferences, type PreferencesUpdate } from './api/preferences'
+import { finishSession, startSession } from './api/session'
+import { useToast } from './components/Toast/toastContext'
+import { getToastMessage } from './api/errors'
+
 
 /** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
 function isPublicPath(path: string) {
   const lower = path.toLowerCase()
   return lower === '/' || lower.startsWith('/signin') || lower.startsWith('/signup')
 }
-/**
- * TODO: 라우터(react-router 등) 도입 전까지 쓰는 임시 화면 전환
- * - /     → 첫화면(로그인)
- * - /home → 홈
- * 브라우저 뒤로가기/앞으로가기도 동작하도록 history API 사용
- */
+
 function App() {
+  const showToast = useToast()
   const [rawPath, setPath] = useState(window.location.pathname)
   useEffect(() => {
-    const handlePopState = () => setPath(window.location.pathname)
+    const handlePopState = () => {
+      setOpenSheet(null)
+      setPath(window.location.pathname)
+    }
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
   const [savedCount, setSavedCount] = useState(0)
   const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
+  // 상단 소리·메뉴 시트 — 모든 화면이 같은 설정을 쓰도록 App 한 곳에서 관리
+  const [openSheet, setOpenSheet] = useState<'sound' | 'menu' | null>(null)
+  const [natureSound, setNatureSound] = useState<NatureSound>('off')
+  const [volume, setVolume] = useState(50)
+  const [vibration, setVibration] = useState(true)
+  const closeSheet = useCallback(() => setOpenSheet(null), [])
+
+  const [customMongle, setCustomMongle] = useState(() => {
+    const saved = localStorage.getItem('myCustomMongle')
+    return saved ? JSON.parse(saved) : { trait: '멍하니 있기', tendency: '차분하고 조용함', accessory: '리본 (머리)' }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('myCustomMongle', JSON.stringify(customMongle))
+  }, [customMongle])
+
+  /* ── 말없이 쉬기(SILENT) 세션 ── */
+  type SilentSession = { id: string | null; ended: boolean }
+  const silentRef = useRef<SilentSession | null>(null)
+
+  /** 홈에서 몽글이를 만질 때 한 번만 시작 */
+  const startSilent = useCallback(() => {
+    if (silentRef.current) return // 이미 쉬는 중이면 그대로 이어가요
+    const session: SilentSession = { id: null, ended: false }
+    silentRef.current = session
+    startSession('SILENT')
+      .then(({ sessionId }) => {
+        session.id = sessionId
+        // 만드는 사이에 이미 나갔다면 바로 종료
+        if (session.ended) finishSession(sessionId).catch(() => { })
+      })
+      .catch(() => {
+        if (silentRef.current === session) silentRef.current = null
+      })
+  }, [])
+
+  /** 쉬는 흐름을 벗어나면 종료 (finish는 여러 번 불러도 200이라 안전) */
+  const finishSilent = useCallback(() => {
+    const session = silentRef.current
+    if (!session) return
+    silentRef.current = null
+    session.ended = true
+    if (session.id) finishSession(session.id).catch(() => { })
+  }, [])
+
+  /** 화면 상단 소리·메뉴 버튼에 그대로 넘기는 묶음 */
+  const header = {
+    onSoundClick: () => setOpenSheet('sound'),
+    onMenuClick: () => setOpenSheet('menu'),
+  }
+
+  /** 메뉴에서 연 화면(도움·기억·내 몽글)은 왔던 화면으로 돌아가요 */
+  const goBack = () => window.history.back()
+
   const navigate = (to: string, phase?: 'noon' | 'sunset') => {
+    setOpenSheet(null)
     if (to === '/action' && phase) setActionPhase(phase)
     window.history.pushState(null, '', to)
     setPath(to)
@@ -55,6 +116,49 @@ function App() {
 
   // 로그인 안 했는데 보호 화면이면 첫화면으로, 로그인했는데 첫화면·로그인·가입이면 홈으로
   const isLoggedIn = getToken() !== null
+
+  // 로그인하면 계정 설정을 불러와요. 실패해도 기본값으로 앱은 계속 써요
+  useEffect(() => {
+    if (!isLoggedIn) return
+    let cancelled = false
+    getPreferences()
+      .then((prefs) => {
+        if (cancelled) return
+        setNatureSound(prefs.natureSound)
+        setVolume(prefs.natureSoundVolume)
+        setVibration(prefs.hapticsEnabled)
+      })
+      .catch(() => { })
+    return () => { cancelled = true }
+  }, [isLoggedIn])
+
+  /** 화면은 바로 바꾸고, 서버 저장은 뒤에서. 실패하면 토스트로만 알려요 */
+  const savePreferences = (body: PreferencesUpdate) => {
+    updatePreferences(body).catch((error) => {
+      showToast('error', getToastMessage(error))
+    })
+  }
+
+  const handleSoundChange = (sound: NatureSound) => {
+    setNatureSound(sound)
+    savePreferences({ natureSound: sound })
+  }
+
+  const handleVibrationChange = (on: boolean) => {
+    setVibration(on)
+    savePreferences({ hapticsEnabled: on })
+  }
+
+  // 슬라이더는 드래그하는 동안 onChange가 수십 번 와요 → 손을 멈춘 뒤 0.4초에 한 번만 저장
+  const volumeTimerRef = useRef<number | undefined>(undefined)
+  const handleVolumeChange = (next: number) => {
+    setVolume(next)
+    window.clearTimeout(volumeTimerRef.current)
+    volumeTimerRef.current = window.setTimeout(
+      () => savePreferences({ natureSoundVolume: next }),
+      400,
+    )
+  }
   const redirectTo = !isLoggedIn && !isPublicPath(rawPath)
     ? '/'
     : isLoggedIn && isPublicPath(rawPath)
@@ -68,8 +172,21 @@ function App() {
     if (redirectTo) window.history.replaceState(null, '', redirectTo)
   }, [redirectTo])
 
+  /** 쉬는 동안 머물 수 있는 화면 (메뉴에서 연 화면도 돌아오니까 포함) */
+  const SILENT_FLOW = ['/action', '/next', '/help', '/memories', '/mymongle']
+
+  useEffect(() => {
+    const lower = path.toLowerCase()
+    if (!SILENT_FLOW.some((p) => lower.startsWith(p))) finishSilent()
+  }, [path, finishSilent])
+
   const handleLogout = () => {
+    finishSilent()
+    window.clearTimeout(volumeTimerRef.current)
     logout()
+    setNatureSound('off')
+    setVolume(50)
+    setVibration(true)
     navigate('/')
   }
 
@@ -78,46 +195,52 @@ function App() {
     <div className="app">
       {path.startsWith('/home') ? (
         <Home
+          {...header}
+          customMongle={customMongle}
           onOrganizeAndTalk={() => navigate('/mind')}
-          onOpenMemories={() => navigate('/memories')}
-          onOpenMyMongle={() => navigate('/mymongle')}
-          onOpenHelp={() => navigate('/help')}
-          onTouchMongle={() => navigate('/action', 'noon')}
-          onLogout={handleLogout}
+          onTouchMongle={() => {
+            startSilent()
+            navigate('/action', 'noon')
+          }}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
-          onBack={() => navigate('/home')}
-          onLogout={handleLogout}
-        />
-      ) : path.toLowerCase().startsWith('/shave') ? (
-        <Shave
-          onBack={() => navigate('/action')}
-          onComplete={() => navigate('/end')}
-          onNextActivity={() => navigate('/next')}
+          {...header} onBack={goBack}
+          customMongle={customMongle}
+          setCustomMongle={setCustomMongle}
         />
       ) : path.toLowerCase().startsWith('/next') ? (
         <MongleNext
+          {...header}
           onBack={() => navigate('/action')}
           onHelp={() => navigate('/help')}
           onMind={() => navigate('/mind')}
         />
       ) : path.toLowerCase().startsWith('/help') ? (
         <MongleHelp
-          onBack={() => navigate('/next')}
+          {...header}
+          onBack={goBack}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
         <Onboarding onComplete={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/action') ? (
-        <MongleAction phase={actionPhase} />
+        <MongleAction
+          {...header}
+          phase={actionPhase}
+          customMongle={customMongle}
+          onNext={() => navigate('/next')}
+          onEnd={() => navigate('/end')}
+        />
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
+          {...header}
           onBack={() => navigate('/home')}
           onEnd={() => navigate('/home')}
           onGoChat={() => navigate('/chat')}
         />
       ) : path.toLowerCase().startsWith('/chat') ? (
         <Chat
+          {...header}
           onBack={() => navigate('/mind')}
           onFinish={(count) => {
             setSavedCount(count)
@@ -126,16 +249,17 @@ function App() {
           }}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
-        <Memories onBack={() => navigate('/home')} />
+        <Memories {...header} onBack={goBack} onHome={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
+          {...header}
           onTouchMongle={() => navigate('/action', 'sunset')}
-          onShave={() => navigate('/shave')}
+          onShave={() => navigate('/action')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
         />
       ) : path.toLowerCase().startsWith('/end') ? (
-        <End savedCount={savedCount} onHome={() => navigate('/home')} />
+        <End {...header} savedCount={savedCount} onHome={() => navigate('/home')} />
       ) : path.toLowerCase().startsWith('/signin') ? (
         <SignIn
           onBack={() => navigate('/')}
@@ -148,6 +272,26 @@ function App() {
           onLoginClick={() => navigate('/signin')}
           onSignUpClick={() => navigate('/signup')}
         />)}
+      {openSheet === 'sound' && (
+        <SoundSheet
+          sound={natureSound}
+          volume={volume}
+          onSoundChange={handleSoundChange}
+          onVolumeChange={handleVolumeChange}
+          onClose={closeSheet}
+        />
+      )}
+      {openSheet === 'menu' && (
+        <MenuSheet
+          vibration={vibration}
+          onVibrationChange={handleVibrationChange}
+          onOpenMemories={() => navigate('/memories')}
+          onOpenMyMongle={() => navigate('/mymongle')}
+          onOpenHelp={() => navigate('/help')}
+          onLogout={handleLogout}
+          onClose={closeSheet}
+        />
+      )}
     </div>
   );
 }

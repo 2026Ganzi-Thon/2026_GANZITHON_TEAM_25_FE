@@ -4,7 +4,7 @@ import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleImage from '../../assets/images/home/mongle-default.png'
 import mongleEyesSmile from '../../assets/images/home/mongle-eyes-smile.png'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
-import HeaderActions from '../../components/HeaderActions/HeaderActions'
+import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/After.css'
 
 type AfterProps = {
@@ -16,10 +16,10 @@ type AfterProps = {
     onNext?: () => void
     /** 여기서 끝내기 */
     onEnd?: () => void
-}
+} & HeaderButtonHandlers
 
 /** 털어낸 후 ① (Figma: 털어낸후 171:3392) — 대화를 마친 직후 */
-function After({ onTouchMongle, onShave, onNext, onEnd }: AfterProps) {
+function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClick }: AfterProps) {
     return (
         <main
             className="after"
@@ -27,7 +27,7 @@ function After({ onTouchMongle, onShave, onNext, onEnd }: AfterProps) {
         >
             <div className="after__frame">
                 <div className="after__actions">
-                    <HeaderActions />
+                    <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
                 </div>
 
                 <div className="after__sun" aria-hidden="true">
@@ -69,7 +69,7 @@ function After({ onTouchMongle, onShave, onNext, onEnd }: AfterProps) {
                         털 깎으며 정리하기
                     </button>
                     <button type="button" className="after__choice" onClick={onNext}>
-                        다음 활동 보기
+                        다음 행동 선택
                     </button>
                 </div>
                 <button type="button" className="after__end" onClick={onEnd}>
