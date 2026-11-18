@@ -72,9 +72,6 @@ function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClic
                         다음 행동 선택
                     </button>
                 </div>
-                <button type="button" className="after__end" onClick={onEnd}>
-                    여기서 끝내기
-                </button>
             </div>
         </main>
     )
