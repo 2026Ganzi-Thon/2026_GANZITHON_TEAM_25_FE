@@ -151,3 +151,8 @@
     text-decoration: underline;
     text-underline-offset: 2px;
 }
+
+.after__character-size {
+    width: 242px; 
+    margin: 0 auto;
+}

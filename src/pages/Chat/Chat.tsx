@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import backgroundNoon from '../../assets/images/background_noon_wide.png'
 import sunImage from '../../assets/images/home/sun.png'
 import mongleImage from '../../assets/images/alpaca/mongle_default_v3.png'
-import mongleEyesSmile from '../../assets/images/alpaca/eyes_smile_matched.png'
 import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import sendButton from '../../assets/icons/send-button.svg'
@@ -23,20 +22,19 @@ import RememberSheet from './components/RememberSheet'
 import MemoryPickSheet from './components/MemoryPickSheet'
 import { useToast } from '../../components/Toast/toastContext'
 import { getToastMessage } from '../../api/errors'
-
+import MongleCharacter from '../../components/MongleCharacter'
 
 type Message = {
     id: number
     from: 'user' | 'mongle'
     text: string
 }
-
 /** 첫 안내 말풍선 — 토글 상태에 따라 문구가 바뀜 */
 const INTRO_TEXT = {
     off: ['여기서는 편하게 말해도 돼!', '이 대화는 끝나면 사라져.'],
     on: ['여기서는 편하게 말해도 돼!', '끝나면 기억할 내용만 골라서 남길 수 있어.'],
 }
-/** 대화 중 에러 → 몽글이 말투로 안내 (토스트 디자인 나오기 전 임시) */
+
 function getChatErrorMessage(error: unknown): string {
     if (error instanceof ApiError) {
         if (error.status === 429) return '이번 대화에서는 더 들을 수 없어. 그만 털어놓기를 눌러줄래?'
@@ -44,19 +42,14 @@ function getChatErrorMessage(error: unknown): string {
     }
     return '지금은 대답이 잘 안 떠올라. 잠시 후 다시 말해줄래?'
 }
+
 type ChatProps = {
-    /** 뒤로 가기 */
     onBack?: () => void
-    /** 대화 종료 (그만 털어놓기) */
     onFinish?: (savedCount: number) => void
+    customMongle?: { similarityTrait: string; comfortStyle: string; accessory: string } 
 } & HeaderButtonHandlers
 
-/**
- * 대화 (Figma: 대화 - 이번만 기억하기 171:3177)
- * - 2단계: 배경 · 어두운 막 · 해 · 몽글이 · 상단 바 · 입력창
- * - 다음 단계에서 토글(내용 기억하기), 말풍선, 하단 버튼을 추가
- */
-function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
+function Chat({ onBack, onFinish, onSoundClick, onMenuClick, customMongle }: ChatProps) {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [remember, setRemember] = useState(false)
@@ -64,15 +57,10 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
     const logRef = useRef<HTMLOListElement>(null)
     const showToast = useToast()
 
-    // 기억 요약 후보 — 값이 있으면 "이 내용만 기억하기" 시트가 열림
     const [preview, setPreview] = useState<MemoryPreview | null>(null)
-    // 꺼낼 기억 목록 — 값이 있으면 "꺼낼 기억 고르기" 시트가 열림
     const [pickList, setPickList] = useState<Memory[] | null>(null)
-    // 이번 대화에 꺼낸 기억 id
     const [selectedMemoryIds, setSelectedMemoryIds] = useState<string[]>([])
-    // 몽글이 답장을 기다리는 중 (4~5초)
     const [sending, setSending] = useState(false)
-    // 세션 id — 첫 메시지를 보낼 때 만들어요 (들어왔다 그냥 나가면 빈 세션이 안 생기게)
     const sessionIdRef = useRef<string | null>(null)
     const startSessionPromiseRef = useRef<Promise<string> | null>(null)
     const leavingRef = useRef(false)
@@ -98,7 +86,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
             else startSessionPromiseRef.current?.then((id) => finishSession(id)).catch(() => { })
         }
     }, [])
-    // 새 말풍선이 생기면 맨 아래로 스크롤
+
     useEffect(() => {
         const log = logRef.current
         if (log) log.scrollTop = log.scrollHeight
@@ -125,7 +113,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
                 selectedMemoryIds,
             )
             addMessage('mongle', reply)
-            // 위험 신호: 대화는 이어가면서 도움받을 곳을 함께 안내 (강제 화면 전환 X)
+             // 위험 신호: 대화는 이어가면서 도움받을 곳을 함께 안내 (강제 화면 전환 X)
             if (riskDetected && riskResources?.length) {
                 addMessage('mongle', '혼자 버티지 않아도 돼. 이야기 나눌 수 있는 곳이 있어.')
                 riskResources.forEach((r) => addMessage('mongle', `${r.name} ${r.phone}`))
@@ -254,20 +242,12 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick }: ChatProps) {
                             height={55}
                             alt=""
                         />
+                        {/* 💡 3. 몸통과 눈을 렌더링하던 img 태그를 지우고 MongleCharacter 컴포넌트로 대체 */}
                         <div className="chat__mongle">
-                            <img
-                                className="chat__mongle-body"
-                                src={mongleImage}
-                                width={242}
-                                height={242}
-                                alt=""
-                            />
-                            <img
-                                className="chat__mongle-eyes"
-                                src={mongleEyesSmile}
-                                width={81}
-                                height={27}
-                                alt=""
+                            <MongleCharacter
+                                bodyImage={mongleImage}
+                                customMongle={customMongle}
+                                wrapperClassName="chat__character-size"
                             />
                         </div>
                     </div>
