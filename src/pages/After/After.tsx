@@ -19,7 +19,7 @@ type AfterProps = {
 } & HeaderButtonHandlers
 
 /** 털어낸 후 ① (Figma: 털어낸후 171:3392) — 대화를 마친 직후 */
-function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClick }: AfterProps) {
+function After({ onTouchMongle, onShave, onNext, onSoundClick, onMenuClick }: AfterProps) {
     return (
         <main
             className="after"
