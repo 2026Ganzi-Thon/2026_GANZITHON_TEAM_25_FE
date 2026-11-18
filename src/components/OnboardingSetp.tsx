@@ -21,7 +21,7 @@ interface StepProps {
   onNext: () => void;
   onBack: () => void;
   onSkip?: () => void;
-  customMongle?: { trait: string; tendency: string; accessory: string };
+  customMongle?: { similarityTrait : string; comfortStyle: string; accessory: string };
 }
 
 export default function OnboardingStep({

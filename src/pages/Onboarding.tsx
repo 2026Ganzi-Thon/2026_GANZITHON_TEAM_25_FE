@@ -8,7 +8,7 @@ import { getUserId } from '../api/client';
 
 interface OnboardingProps {
   onComplete: () => void;
-  customMongle: { trait: string; tendency: string; accessory: string };
+  customMongle: { similarityTrait: string; comfortStyle: string; accessory: string }; 
   setCustomMongle: React.Dispatch<React.SetStateAction<any>>;
 }
 
@@ -124,13 +124,14 @@ export default function Onboarding({ onComplete, customMongle, setCustomMongle }
     }
   };
 
- const handleOptionSelect = (optionId: number) => {
-    setSelectedOption(optionId);
+const handleOptionSelect = (optionId: number) => {
+    setSelectedOption(optionId); 
+
     if (step === 1) {
       const selectedTraitName = traitById[optionId] || '잘 웃기';
       setCustomMongle((prev: any) => ({
         ...prev,
-        trait: selectedTraitName,
+        similarityTrait: selectedTraitName, 
       }));
     } 
     else if (step === 3) {
@@ -141,7 +142,6 @@ export default function Onboarding({ onComplete, customMongle, setCustomMongle }
       }));
     }
   };
-
   const stepData = {
     1: {
       title: <><span className="highlight">몽글이</span>에게<br />나와 닮은 점을 줄 수 있어요</>,
