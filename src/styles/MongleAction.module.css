@@ -1,6 +1,7 @@
 .wrapper {
   min-height: 100vh;
   width: 100%;
+  min-height: 100dvh;
   background-color: #F6F5F0;
   display: flex;
   justify-content: center;
@@ -13,6 +14,7 @@
   width: 100%;
   max-width: var(--app-max-width); 
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   overflow: hidden; 
   display: flex;
@@ -56,6 +58,10 @@
   text-align: center;
   margin-top: 3.8vh;
   margin-bottom: 2vh;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .title {
@@ -292,3 +298,15 @@
     opacity: 1; 
   }
 }
+
+
+.accessory {
+  position: absolute;
+  z-index: 2;
+}
+
+.ribbonHead { top: 1%; left: 32%; width: 25%; }
+.flowerHead { top: 1%; left: 34%; width: 20%; }
+.hat { top: -12%; left: 15%; width: 40%; }
+.ribbonNeck { top: 24%; left: 21%; width: 30%; }
+.bellNeck { top: 29%; left: 24%; width: 25%; }

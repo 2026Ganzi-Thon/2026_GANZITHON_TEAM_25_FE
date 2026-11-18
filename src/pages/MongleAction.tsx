@@ -16,6 +16,12 @@ import iconPet from '../assets/icons/petting.png';
 import iconShake from '../assets/icons/shaking.png';
 import iconSquish from '../assets/icons/press.png';
 
+import ribbonHeadImg from '../assets/deco/ribbon-head.png';
+import flowerHeadImg from '../assets/deco/flower-head.png';
+import hatImg from '../assets/deco/hat.png';
+import ribbonNeckImg from '../assets/deco/ribbon-neck.png';
+import bellNeckImg from '../assets/deco/bell.png';
+
 
 type Mode = 'none' | 'pet' | 'shake' | 'squish';
 
@@ -36,7 +42,7 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function MongleAction({ phase, onNext, onEnd, onSoundClick, onMenuClick }: MongleActionProps) {
+export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick, customMongle }: MongleActionProps) {
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0);
 
@@ -51,7 +57,7 @@ export default function MongleAction({ phase, onNext, onEnd, onSoundClick, onMen
   const hasTriggeredThisDrag = useRef(false);
 
   const textData = {
-    none: { title: "몽글이와 함께 시간을 보내요.", sub: "아래 버튼을 눌러 모드를 선택하고 몽글이를 문질러보세요!" },
+    none: { title: "몽글이와 함께 시간을 보내요.", sub: "버튼을 눌러 모드를 선택하고 몽글이를 문질러보세요!" },
     pet: { title: "몽글이가 눈을 감고 털을 맡겨요.", sub: "털이 살랑살랑 움직여요. 같이 있어줄게요!" },
     shake: { title: "부르르 - 털이 가볍게 날아가요.", sub: "문지르면 털이 바닥에 떨어져요. 같이 있어줄게요." },
     squish: { title: "말랑 - 눌렸다가 다시 몽글", sub: "몽글이가 다시 동그래졌어요. 같이 있어줄게요." }
@@ -188,14 +194,26 @@ export default function MongleAction({ phase, onNext, onEnd, onSoundClick, onMen
               src={eyesMap[mode]} alt="몽글이 표정"
               className={`${styles.mongleEyes} ${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`}
             />
+            {customMongle.accessory === '리본 (머리)' && (
+              <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
+            )}
+            {customMongle.accessory === '작은 꽃 (머리)' && (
+              <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
+            )}
+            {customMongle.accessory === '모자' && (
+              <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
+            )}
+            {customMongle.accessory === '리본 (목)' && (
+              <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
+            )}
+            {customMongle.accessory === '방울 (목)' && (
+              <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
+            )}
           </div>
         </div>
 
         <div className={styles.bottomSection}>
           <div className={styles.pillButtons}>
-            <button className={styles.pillBtn} onClick={onEnd}>
-              여기서 끝내기
-            </button>
             <button className={styles.pillBtn} onClick={onNext}>
               다음 행동 선택
             </button>
