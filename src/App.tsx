@@ -218,7 +218,9 @@ function App() {
           onBack={goBack}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
-        <Onboarding onComplete={() => navigate('/home')} />
+        <Onboarding onComplete={() => navigate('/home')} 
+         customMongle={customMongle}
+         setCustomMongle={setCustomMongle}/>
       ) : path.toLowerCase().startsWith('/action') ? (
         <MongleAction
           {...header}

@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react';
 import styles from '../styles/OnboardingStep.module.css';
 
+import ribbonHeadImg from '../assets/deco/ribbon-head.png';
+import flowerHeadImg from '../assets/deco/flower-head.png';
+import hatImg from '../assets/deco/hat.png';
+import ribbonNeckImg from '../assets/deco/ribbon-neck.png';
+import bellNeckImg from '../assets/deco/bell.png';
+
 interface Option {
   id: number;
   title: string;
@@ -19,10 +25,11 @@ interface StepProps {
   onNext: () => void;
   onBack: () => void;
   onSkip?: () => void;
+  customMongle?: { trait: string; tendency: string; accessory: string };
 }
 
 export default function OnboardingStep({
-  step, title, subtitle, bodyImage, eyesImage, options, selectedOption, onSelect, onNext, onBack, onSkip
+  step, title, subtitle, bodyImage, eyesImage, options, selectedOption,customMongle, onSelect, onNext, onBack, onSkip
 }: StepProps) {
   return (
     <div className={styles.stepContainer}>
@@ -55,6 +62,21 @@ export default function OnboardingStep({
       <div className={styles.imageWrapper}>
         <img src={bodyImage} alt="몽글이 몸" className={styles.mongleBody} />
         <img src={eyesImage} alt="몽글이 표정" className={styles.mongleEyes} />
+        {customMongle?.accessory === '리본(머리)' && (
+          <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
+        )}
+        {customMongle?.accessory === '작은 꽃(머리)' && (
+          <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
+        )}
+        {customMongle?.accessory === '모자' && (
+          <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
+        )}
+        {customMongle?.accessory === '리본(목)' && (
+          <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
+        )}
+        {customMongle?.accessory === '방울(목)' && (
+          <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
+        )}
       </div>
 
       {/* 선택 카드 목록 */}
