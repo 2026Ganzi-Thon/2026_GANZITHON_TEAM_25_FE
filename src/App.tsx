@@ -53,7 +53,7 @@ function App() {
 
   const [customMongle, setCustomMongle] = useState(() => {
     const saved = localStorage.getItem('myCustomMongle')
-    return saved ? JSON.parse(saved) : { similarityTrait: '멍하니 있기', comfortStyle: '차분하고 조용함', accessory: '리본 (머리)' }
+    return saved ? JSON.parse(saved) : { similarityTrait: '멍하니 있기', comfortStyle: '차분하고 조용함', accessory: '리본(머리)' }
   })
 
   useEffect(() => {
@@ -223,9 +223,9 @@ function App() {
           onBack={goBack}
         />
       ) : path.toLowerCase().startsWith('/onboarding') ? (
-        <Onboarding onComplete={() => navigate('/home')} 
-         customMongle={customMongle}
-         setCustomMongle={setCustomMongle}/>
+        <Onboarding onComplete={() => navigate('/home')}
+          customMongle={customMongle}
+          setCustomMongle={setCustomMongle} />
       ) : path.toLowerCase().startsWith('/action') ? (
         <MongleAction
           {...header}
