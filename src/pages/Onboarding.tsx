@@ -124,10 +124,16 @@ export default function Onboarding({ onComplete, customMongle, setCustomMongle }
     }
   };
 
-  const handleOptionSelect = (optionId: number) => {
-    setSelectedOption(optionId); 
-
-    if (step === 3) {
+ const handleOptionSelect = (optionId: number) => {
+    setSelectedOption(optionId);
+    if (step === 1) {
+      const selectedTraitName = traitById[optionId] || '잘 웃기';
+      setCustomMongle((prev: any) => ({
+        ...prev,
+        trait: selectedTraitName,
+      }));
+    } 
+    else if (step === 3) {
       const selectedAccessoryName = accessoryById[optionId] || '없음';
       setCustomMongle((prev: any) => ({
         ...prev,
