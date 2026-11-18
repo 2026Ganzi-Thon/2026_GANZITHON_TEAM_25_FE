@@ -16,8 +16,9 @@ interface MyMongleProps extends HeaderButtonHandlers {
 
 const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMongle }: MyMongleProps) => {
 
-  const traits = ['없음', '멍하니 있기', '침 뱉기', '잘 웃기'];
-  const tendencies = ['없음', '차분하고 조용함', '부드럽고 다정함', '가끔 장난스러움'];
+  // 특징·성향은 서버 허용 값에 '없음'이 없어서(400 VALIDATION_ERROR) 선택지에서 뺐어요. '없음'은 장식만 가능해요.
+  const traits = ['멍하니 있기', '침 뱉기', '잘 웃기'];
+  const tendencies = ['차분하고 조용함', '부드럽고 다정함', '가끔 장난스러움'];
   // 띄어쓰기가 컴포넌트와 안 맞아서 나는 오류를 방지하기 위해 띄어쓰기를 없앴습니다. ('리본(머리)')
   const accessories = ['없음', '리본(머리)', '작은 꽃(머리)', '모자', '리본(목)', '방울(목)'];
   // 화면은 바로 바꾸고, 서버에도 저장해요
