@@ -215,7 +215,7 @@ function App() {
           onBack={() => navigate('/action')}
           onHelp={() => navigate('/help')}
           onMind={() => navigate('/mind')}
-          onLogout={handleLogout}
+          onLogout={() => navigate('/end')}
         />
       ) : path.toLowerCase().startsWith('/help') ? (
         <MongleHelp
