@@ -31,7 +31,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 45%; /* 지평선 높이 고정 — 넓은 화면에서도 몽글이가 풀밭 위에 서 있도록 */
+  object-position: center 45%; 
   z-index: -1;
 }
 
@@ -140,13 +140,13 @@
 }
 
 .eyesPet {
-  width: 24%;  
-  top: 21%;    
+  width: 24% !important;
+  top: 21% !important;
 }
 
 .eyesShake {
-  width: 25%;  
-  top: 17%;   
+  width: 25% !important;  
+  top: 17% !important;   
 }
 
 .pet {
@@ -299,14 +299,6 @@
   }
 }
 
-
-.accessory {
-  position: absolute;
-  z-index: 2;
+.actionSize {
+  width: 100%;
 }
-
-.ribbonHead { top: 1%; left: 32%; width: 25%; }
-.flowerHead { top: 1%; left: 34%; width: 20%; }
-.hat { top: -12%; left: 15%; width: 40%; }
-.ribbonNeck { top: 24%; left: 21%; width: 30%; }
-.bellNeck { top: 29%; left: 24%; width: 25%; }

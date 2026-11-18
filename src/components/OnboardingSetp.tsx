@@ -1,16 +1,7 @@
 import type { ReactNode } from 'react';
 import styles from '../styles/OnboardingStep.module.css';
 
-import ribbonHeadImg from '../assets/deco/ribbon-head.png';
-import flowerHeadImg from '../assets/deco/flower-head.png';
-import hatImg from '../assets/deco/hat.png';
-import ribbonNeckImg from '../assets/deco/ribbon-neck.png';
-import bellNeckImg from '../assets/deco/bell.png';
-
-import mongleBlankBody from '../assets/images/alpaca/blank.png';
-import eyesSmile from '../assets/images/alpaca/eyes_smile_matched.png'; 
-import eyesSpit from '../assets/images/alpaca/mongle_spit.png';
-import eyesSquint from '../assets/images/alpaca/mongle_eyes_wry.png';
+import MongleCharacter from './MongleCharacter'; 
 
 interface Option {
   id: number;
@@ -23,7 +14,7 @@ interface StepProps {
   title: ReactNode;
   subtitle: string;
   bodyImage: string;
-  eyesImage: string;
+  eyesImage?: string; 
   options: Option[];
   selectedOption: number | null;
   onSelect: (id: number) => void;
@@ -34,31 +25,14 @@ interface StepProps {
 }
 
 export default function OnboardingStep({
-  step, title, subtitle, bodyImage, options, selectedOption,customMongle, onSelect, onNext, onBack, onSkip
+  step, title, subtitle, bodyImage, options, selectedOption, customMongle, onSelect, onNext, onBack, onSkip
 }: StepProps) {
 
-  let currentBody = bodyImage; 
-  let eyesContent = null;
-  
-  if (customMongle?.trait === '멍하니 있기') {
-    currentBody = mongleBlankBody; 
-  } 
-  else if (customMongle?.trait === '침 뱉기') {
-    eyesContent = (
-      <>
-        <img src={eyesSquint} alt="질끈 감은 눈" className={styles.squintEyes} />
-        <img src={eyesSpit} alt="침방울" className={styles.spit} />
-        <img src={eyesSpit} alt="침방울" className={styles.spit2} />
-      </>
-    );
-  } 
-  else {
-    eyesContent = <img src={eyesSmile} alt="웃는 표정" className={styles.mongleEyes} />;
-  }
+
   return (
     <div className={styles.stepContainer}>
 
-      {/*  상단 바  */}
+      {/* 상단 바 */}
       <div className={styles.topBar}>
         <button className={styles.iconBtn} onClick={onBack}>&lt;</button>
         <div className={styles.progress}>
@@ -82,26 +56,11 @@ export default function OnboardingStep({
         </p>
       </div>
 
-      {/* 알파카 이미지 */}
-      <div className={styles.imageWrapper}>
-        <img src={currentBody} alt="몽글이 몸" className={styles.mongleBody} />
-        {eyesContent}
-        {customMongle?.accessory === '리본(머리)' && (
-          <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
-        )}
-        {customMongle?.accessory === '작은 꽃(머리)' && (
-          <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
-        )}
-        {customMongle?.accessory === '모자' && (
-          <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
-        )}
-        {customMongle?.accessory === '리본(목)' && (
-          <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
-        )}
-        {customMongle?.accessory === '방울(목)' && (
-          <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
-        )}
-      </div>
+      <MongleCharacter 
+        bodyImage={bodyImage} 
+        customMongle={customMongle} 
+        wrapperClassName={styles.onboardingSize} // "온보딩에서는 50% 크기로 작게 그려!" 라고 지시
+      />
 
       {/* 선택 카드 목록 */}
       <div className={styles.optionsContainer}>
@@ -125,6 +84,6 @@ export default function OnboardingStep({
         {step < 3 ? '다음' : '몽글이 만나기'}
       </button>
 
-    </div >
+    </div>
   );
 }
