@@ -1,0 +1,60 @@
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  position: relative; 
+  margin: 0 auto;
+}
+
+.mongleBody {
+  width: 100%; 
+  height: auto;
+  display: block;
+}
+.mongleEyes {
+  position: absolute;
+  width: 33.4%; 
+  height: auto;
+  top: 17%; 
+  left: 35.6%;
+  z-index: 1;
+  transform: translateX(-50%); 
+}
+
+.squintEyes {
+  position: absolute;
+  width: 43px; 
+  height: auto;
+  top: 17%; 
+  left: 36%; 
+  transform: translateX(-50%); 
+  z-index: 2; 
+}
+
+.spit {
+  position: absolute;
+  width: 40px; 
+  height: auto;
+  top: 22%; 
+  left: 2%; 
+  z-index: 2; 
+}
+
+.spit2 {
+  position: absolute;
+  width: 45px; 
+  height: auto;
+  top: 26%; 
+  left: 8%; 
+  z-index: 2; 
+}
+
+.accessory {
+  position: absolute;
+  z-index: 2;
+}
+
+.ribbonHead { top: 1%; left: 32%; width: 25%; }
+.flowerHead { top: 1%; left: 34%; width: 20%; }
+.hat { top: -12%; left: 15%; width: 40%; }
+.ribbonNeck { top: 24%; left: 21%; width: 30%; }
+.bellNeck { top: 29%; left: 24%; width: 25%; }

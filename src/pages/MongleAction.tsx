@@ -16,12 +16,7 @@ import iconPet from '../assets/icons/petting.png';
 import iconShake from '../assets/icons/shaking.png';
 import iconSquish from '../assets/icons/press.png';
 
-import ribbonHeadImg from '../assets/deco/ribbon-head.png';
-import flowerHeadImg from '../assets/deco/flower-head.png';
-import hatImg from '../assets/deco/hat.png';
-import ribbonNeckImg from '../assets/deco/ribbon-neck.png';
-import bellNeckImg from '../assets/deco/bell.png';
-
+import MongleCharacter from '../components/MongleCharacter';
 
 type Mode = 'none' | 'pet' | 'shake' | 'squish';
 
@@ -30,7 +25,7 @@ type MongleActionProps = {
   onShave?: () => void;
   onNext?: () => void;
   onEnd?: () => void;
-  customMongle: { trait: string; tendency: string; accessory: string };
+  customMongle: { trait: string; tendency: string; accessory: string }; 
 } & HeaderButtonHandlers;
 
 interface WoolAnim {
@@ -186,29 +181,15 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
               </>
             )}
 
-            <img
-              src={mongleBody} alt="몽글이 몸"
-              className={`${styles.mongleBody} ${isDragging && mode === 'shake' ? styles.wiggleMotion : ''}`}
+            <MongleCharacter 
+              bodyImage={mongleBody}
+              customMongle={customMongle}
+              overrideEyes={mode === 'none' ? null : eyesMap[mode]} 
+              bodyClassName={isDragging && mode === 'shake' ? styles.wiggleMotion : ''}
+              eyesClassName={`${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`}
+              wrapperClassName={styles.actionSize}
             />
-            <img
-              src={eyesMap[mode]} alt="몽글이 표정"
-              className={`${styles.mongleEyes} ${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`}
-            />
-            {customMongle.accessory === '리본 (머리)' && (
-              <img src={ribbonHeadImg} alt="머리 리본" className={`${styles.accessory} ${styles.ribbonHead}`} />
-            )}
-            {customMongle.accessory === '작은 꽃 (머리)' && (
-              <img src={flowerHeadImg} alt="머리 꽃" className={`${styles.accessory} ${styles.flowerHead}`} />
-            )}
-            {customMongle.accessory === '모자' && (
-              <img src={hatImg} alt="모자" className={`${styles.accessory} ${styles.hat}`} />
-            )}
-            {customMongle.accessory === '리본 (목)' && (
-              <img src={ribbonNeckImg} alt="목 리본" className={`${styles.accessory} ${styles.ribbonNeck}`} />
-            )}
-            {customMongle.accessory === '방울 (목)' && (
-              <img src={bellNeckImg} alt="목 방울" className={`${styles.accessory} ${styles.bellNeck}`} />
-            )}
+
           </div>
         </div>
 
