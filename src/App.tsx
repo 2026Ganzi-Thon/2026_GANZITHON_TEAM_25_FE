@@ -225,7 +225,6 @@ function App() {
           phase={actionPhase}
           customMongle={customMongle}
           onNext={() => navigate('/next')}
-          onEnd={() => navigate('/end')}
         />
       ) : path.toLowerCase().startsWith('/mind') ? (
         <MindOrganize
