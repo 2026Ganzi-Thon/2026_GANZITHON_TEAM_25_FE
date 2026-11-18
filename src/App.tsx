@@ -249,6 +249,7 @@ function App() {
             setActionPhase('sunset')
             navigate('/after')
           }}
+          customMongle={customMongle}
         />
       ) : path.toLowerCase().startsWith('/memories') ? (
         <Memories {...header} onBack={goBack} onHome={() => navigate('/home')} />
@@ -259,6 +260,7 @@ function App() {
           onShave={() => navigate('/action')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}
+          customMongle={customMongle}
         />
       ) : path.toLowerCase().startsWith('/end') ? (
         <End {...header} savedCount={savedCount} onHome={() => navigate('/home')} />

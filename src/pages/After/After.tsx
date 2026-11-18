@@ -6,6 +6,7 @@ import mongleEyesSmile from '../../assets/images/home/mongle-eyes-smile.png'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/After.css'
+import MongleCharacter from '../../components/MongleCharacter';
 
 type AfterProps = {
     /** 몽글이를 눌렀을 때 — 말없이 쉬기 */
@@ -16,10 +17,11 @@ type AfterProps = {
     onNext?: () => void
     /** 여기서 끝내기 */
     onEnd?: () => void
+    customMongle?: { similarityTrait: string; comfortStyle: string; accessory: string };
 } & HeaderButtonHandlers
 
 /** 털어낸 후 ① (Figma: 털어낸후 171:3392) — 대화를 마친 직후 */
-function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClick }: AfterProps) {
+function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClick, customMongle }: AfterProps) {
     return (
         <main
             className="after"
@@ -58,8 +60,12 @@ function After({ onTouchMongle, onShave, onNext, onEnd, onSoundClick, onMenuClic
                             aria-label="몽글이 만지기 — 말없이 쉬기"
                             onClick={onTouchMongle}
                         >
-                            <img className="after__mongle-body" src={mongleImage} width={242} height={242} alt="" />
-                            <img className="after__mongle-eyes" src={mongleEyesSmile} width={81} height={27} alt="" />
+                            <MongleCharacter
+                                bodyImage={mongleImage}
+                                customMongle={customMongle}
+                                overrideEyes={mongleEyesSmile} 
+                                wrapperClassName="after__character-size"
+                            />
                         </button>
                     </div>
                 </div>

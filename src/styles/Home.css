@@ -223,20 +223,14 @@
   opacity: 0.5;
 }
 
-.accessory {
-  position: absolute;
-  z-index: 2;
-}
-
-.ribbonHead { top: 1%; left: 32%; width: 25%; }
-.flowerHead { top: 1%; left: 34%; width: 20%; }
-.hat { top: -12%; left: 15%; width: 40%; }
-.ribbonNeck { top: 24%; left: 21%; width: 30%; }
-.bellNeck { top: 29%; left: 24%; width: 25%; }
-
 @keyframes home-bubble-in {
   from {
     opacity: 0;
     transform: translateY(4px) scale(0.96);
   }
+}
+
+.home__character-size {
+  width: 242px; 
+  margin: 0 auto;
 }

@@ -128,6 +128,8 @@
     gap: 11px;
     width: 100%;
     padding: 0 27px calc(60px + env(safe-area-inset-bottom)) 23px;
+
+    align-items: center;
 }
 
 .chat__input {
@@ -140,6 +142,8 @@
     background: var(--color-white);
     box-shadow: 0 4px 11.4px rgba(0, 0, 0, 0.16);
     font-size: 16px;
+    width: 100%; 
+    padding-right: 60px !important;
 }
 
 .chat__input::placeholder {
@@ -157,6 +161,8 @@
     flex: none;
     width: 55px;
     height: 55px;
+    position: absolute; 
+    right: 25px;
 }
 
 .chat__send-icon {
@@ -300,4 +306,11 @@
 
 .chat__quick-button:active {
     transform: scale(0.96);
+}
+
+.chat__character-size {
+    width: 242px; 
+    margin: 0 auto;
+    position: relative;
+    z-index: 0;
 }
