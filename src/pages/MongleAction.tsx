@@ -33,6 +33,7 @@ interface WoolAnim {
   targetX: number;
   targetY: number;
   targetRot: number;
+  scale: number;
 }
 
 export default function MongleAction({ onNext, onSoundClick, onMenuClick, customMongle }: MongleActionProps) {
@@ -49,7 +50,7 @@ export default function MongleAction({ onNext, onSoundClick, onMenuClick, custom
   const [dragStartX, setDragStartX] = useState(0);
   const dragAccumulator = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
-  const hasTriggeredThisDrag = useRef(false);
+
   const [isPressed, setIsPressed] = useState(false);
 
   const textData = {
@@ -77,7 +78,6 @@ export default function MongleAction({ onNext, onSoundClick, onMenuClick, custom
     setDragStartX(e.clientX);
     dragAccumulator.current = 0;
     setDragOffset(0);
-    hasTriggeredThisDrag.current = false;
     if (mode === 'squish') setIsPressed(true);
   };
 
@@ -94,9 +94,9 @@ export default function MongleAction({ onNext, onSoundClick, onMenuClick, custom
     dragAccumulator.current += diff;
     setDragStartX(currentX);
 
-    if (mode === 'shake' && dragAccumulator.current > 60 && !hasTriggeredThisDrag.current) {
+if (mode === 'shake' && dragAccumulator.current > 150) {
       triggerShear();
-      hasTriggeredThisDrag.current = true;
+      dragAccumulator.current = 0;
     }
   };
 
@@ -106,15 +106,27 @@ export default function MongleAction({ onNext, onSoundClick, onMenuClick, custom
     setDragOffset(0);
   };
 
-  const triggerShear = () => {
-    const startX = Math.random() * 80 - 40;
-    const startY = Math.random() * 80 - 40;
-    const targetX = Math.random() * 160 - 80;
-    const targetY = Math.random() * 60 - 10;
-    const targetRot = Math.random() * 180 - 90;
+const triggerShear = () => {
+    const count = Math.floor(Math.random() * 2) + 1;
+    const newWools: WoolAnim[] = [];
 
-    const newId = woolIdCounter.current++;
-    setFlyingWools(prev => [...prev, { id: newId, startX, startY, targetX, targetY, targetRot }]);
+for (let i = 0; i < count; i++) {
+      newWools.push({
+        id: woolIdCounter.current++,
+        startX: Math.random() * 140 - 70,    
+        startY: Math.random() * 100 - 50,
+        targetX: Math.random() * 260 - 130,  
+        targetY: Math.random() * 35 - 65,  
+        targetRot: Math.random() * 360 - 180,
+        scale: 1.1 + Math.random() * 0.5,
+      });
+    }
+
+    setFlyingWools(prev => [...prev, ...newWools].slice(-20));
+    const createdIds = newWools.map(wool => wool.id);
+    setTimeout(() => {
+      setFlyingWools(prev => prev.filter(wool => !createdIds.includes(wool.id)));
+    }, 3300);
   };
 
   const characterStyle = {
@@ -181,7 +193,7 @@ export default function MongleAction({ onNext, onSoundClick, onMenuClick, custom
                     key={wool.id} src={woolParticle} className={styles.flyingWool} alt="깎인 털"
                     style={{
                       '--start-x': `${wool.startX}px`, '--start-y': `${wool.startY}px`,
-                      '--target-x': `${wool.targetX}px`, '--target-y': `${wool.targetY}px`, '--target-rot': `${wool.targetRot}deg`
+                      '--target-x': `${wool.targetX}px`, '--target-y': `${wool.targetY}px`, '--target-rot': `${wool.targetRot}deg`, '--wool-scale': wool.scale,
                     } as React.CSSProperties}
                   />
                 ))}

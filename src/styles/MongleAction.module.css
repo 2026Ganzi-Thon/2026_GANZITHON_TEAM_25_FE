@@ -282,7 +282,10 @@
   left: 45%;
   z-index: 10;
   pointer-events: none; 
-  animation: floatDrop 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: 
+    floatDrop 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+    woolFadeOut 0.8s ease-out 2.5s forwards; 
+  scale: var(--wool-scale, 1);
 }
 
 @keyframes floatDrop {
@@ -305,4 +308,13 @@
 
 .actionSize {
   width: 100%;
+}
+
+@keyframes woolFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
