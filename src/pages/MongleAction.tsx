@@ -1,8 +1,7 @@
 import { useState, useRef, type PointerEvent } from 'react';
 import styles from '../styles/MongleAction.module.css';
-
-import bgImage from '../assets/images/background_noon_wide.png';
-import bgSunsetImage from '../assets/images/background_sunset_wide.png';
+import { useHomeTime } from '../hooks/useHomeTime'
+import { getBackgroundByPhase } from '../utils/timeBackground'
 import mongleBody from '../assets/images/alpaca/mongle_default_v3.png';
 import woolParticle from '../assets/images/tuft/tuft-01.png';
 import eyesDefault from '../assets/images/alpaca/eyes_v2.png';
@@ -21,11 +20,10 @@ import MongleCharacter from '../components/MongleCharacter';
 type Mode = 'none' | 'pet' | 'shake' | 'squish';
 
 type MongleActionProps = {
-  phase: 'noon' | 'sunset';
   onShave?: () => void;
   onNext?: () => void;
   onEnd?: () => void;
-  customMongle: { similarityTrait: string; comfortStyle: string; accessory: string }; 
+  customMongle: { similarityTrait: string; comfortStyle: string; accessory: string };
 } & HeaderButtonHandlers;
 
 interface WoolAnim {
@@ -37,7 +35,9 @@ interface WoolAnim {
   targetRot: number;
 }
 
-export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick, customMongle }: MongleActionProps) {
+export default function MongleAction({ onNext, onSoundClick, onMenuClick, customMongle }: MongleActionProps) {
+  const timeState = useHomeTime()
+  const backgroundImage = getBackgroundByPhase(timeState.phase)
   const [mode, setMode] = useState<Mode>('none');
   const [animKey, setAnimKey] = useState(0);
 
@@ -124,7 +124,12 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
 
   return (
     <div className={styles.wrapper}>
-      <img src={phase === 'sunset' ? bgSunsetImage : bgImage} alt="" aria-hidden="true" className={styles.bgImage} />
+      <img
+        src={backgroundImage}
+        alt=""
+        aria-hidden="true"
+        className={styles.bgImage}
+      />
       <div className={styles.container}>
 
         <div className={styles.topBar}>
@@ -183,10 +188,10 @@ export default function MongleAction({ phase, onNext, onSoundClick, onMenuClick,
               </>
             )}
 
-            <MongleCharacter 
+            <MongleCharacter
               bodyImage={mongleBody}
               customMongle={customMongle}
-              overrideEyes={mode === 'none' ? null : eyesMap[mode]} 
+              overrideEyes={mode === 'none' ? null : eyesMap[mode]}
               bodyClassName={isDragging && mode === 'shake' ? styles.wiggleMotion : ''}
               eyesClassName={`${mode === 'pet' ? styles.eyesPet : ''} ${mode === 'shake' ? styles.eyesShake : ''}`}
               wrapperClassName={styles.actionSize}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import backgroundNoon from '../../assets/images/background_noon_wide.png'
+import moonImage from '../../assets/images/moon.png'
+import moonGlow from '../../assets/icons/moon-glow.svg'
 import sunImage from '../../assets/images/home/sun.png'
 import mongleImage from '../../assets/images/alpaca/mongle_default_v3.png'
 import sunGlow from '../../assets/icons/sun-glow.svg'
@@ -23,6 +24,8 @@ import MemoryPickSheet from './components/MemoryPickSheet'
 import { useToast } from '../../components/Toast/toastContext'
 import { getToastMessage } from '../../api/errors'
 import MongleCharacter from '../../components/MongleCharacter'
+import { useHomeTime } from '../../hooks/useHomeTime'
+import { getBackgroundByPhase } from '../../utils/timeBackground'
 
 type Message = {
     id: number
@@ -46,10 +49,13 @@ function getChatErrorMessage(error: unknown): string {
 type ChatProps = {
     onBack?: () => void
     onFinish?: (savedCount: number) => void
-    customMongle?: { similarityTrait: string; comfortStyle: string; accessory: string } 
+    customMongle?: { similarityTrait: string; comfortStyle: string; accessory: string }
 } & HeaderButtonHandlers
 
 function Chat({ onBack, onFinish, onSoundClick, onMenuClick, customMongle }: ChatProps) {
+    const timeState = useHomeTime()
+    const isNight = timeState.phase === 'night'
+    const backgroundImage = getBackgroundByPhase(timeState.phase)
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [remember, setRemember] = useState(false)
@@ -113,7 +119,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick, customMongle }: Cha
                 selectedMemoryIds,
             )
             addMessage('mongle', reply)
-             // 위험 신호: 대화는 이어가면서 도움받을 곳을 함께 안내 (강제 화면 전환 X)
+            // 위험 신호: 대화는 이어가면서 도움받을 곳을 함께 안내 (강제 화면 전환 X)
             if (riskDetected && riskResources?.length) {
                 addMessage('mongle', '혼자 버티지 않아도 돼. 이야기 나눌 수 있는 곳이 있어.')
                 riskResources.forEach((r) => addMessage('mongle', `${r.name} ${r.phone}`))
@@ -184,7 +190,7 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick, customMongle }: Cha
     return (
         <main
             className="chat"
-            style={{ backgroundImage: `url(${backgroundNoon})` }}
+            style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             {/* 배경 · 해 · 몽글이만 어둡게 덮는 막 (Figma: rgba(0,0,0,0.25)) — 넓은 화면에서도 배경 전체를 덮도록 프레임 바깥에 둠 */}
             <div className="chat__dim" aria-hidden="true" />
@@ -217,20 +223,17 @@ function Chat({ onBack, onFinish, onSoundClick, onMenuClick, customMongle }: Cha
                     </button>
                 </div>
                 <div className="chat__sun" aria-hidden="true">
-                    <img
-                        className="chat__sun-glow"
-                        src={sunGlow}
-                        width={153}
-                        height={153}
-                        alt=""
-                    />
-                    <img
-                        className="chat__sun-image"
-                        src={sunImage}
-                        width={188}
-                        height={188}
-                        alt=""
-                    />
+                    {isNight ? (
+                        <>
+                            <img key="moon-glow" className="chat__sun-glow" src={moonGlow} width={153} height={152} alt="" />
+                            <img key="moon" className="chat__sun-image" src={moonImage} width={188} height={188} alt="" />
+                        </>
+                    ) : (
+                        <>
+                            <img key="sun-glow" className="chat__sun-glow" src={sunGlow} width={153} height={153} alt="" />
+                            <img key="sun" className="chat__sun-image" src={sunImage} width={188} height={188} alt="" />
+                        </>
+                    )}
                 </div>
 
                 <div className="chat__stage">

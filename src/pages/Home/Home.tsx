@@ -1,23 +1,27 @@
-import { useState } from 'react'
-import backgroundNoon from '../../assets/images/background_noon_wide.png'
+import { useState, type CSSProperties } from 'react'
+import { getBackgroundByPhase } from '../../utils/timeBackground'
 import sunImage from '../../assets/images/home/sun.png'
+import moonImage from '../../assets/images/moon.png'
+import moonGlow from '../../assets/icons/moon-glow.svg'
 import mongleImage from '../../assets/images/home/mongle-default.png'
 import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/Home.css'
+import { useHomeTime } from '../../hooks/useHomeTime'
 
 // 💡 1. 불필요해진 장식/눈 이미지 import 6줄을 싹 지우고 화가 컴포넌트 하나만 부릅니다!
 import MongleCharacter from '../../components/MongleCharacter'
 
 /** talk: 대화 모드(기본) / rest: 말없이 쉬기 모드 */
 type HomeMode = 'talk' | 'rest'
+
 type HomeProps = {
   /** 몽글이 탭 → "내 마음 정리하고 대화하기" */
   onOrganizeAndTalk?: () => void
   /** 말없이 쉬기 모드에서 몽글이를 만졌을 때 (털어내기 화면 진입) */
   onTouchMongle?: () => void
-  
+
   // 💡 2. 백엔드 명세서에 맞춘 최신 이름(similarityTrait, comfortStyle)으로 업데이트!
   customMongle: { similarityTrait: string; comfortStyle: string; accessory: string };
 } & HeaderButtonHandlers
@@ -34,6 +38,20 @@ function Home({
   onMenuClick,
   customMongle
 }: HomeProps) {
+  const timeState = useHomeTime()
+
+  const isNight = timeState.phase === 'night'
+
+  const backgroundImage = getBackgroundByPhase(timeState.phase)
+
+  const sunXPercent = isNight
+    ? 50
+    : 25 + timeState.sunProgress * 50
+
+  const sunY = isNight
+    ? 0
+    : 30 - Math.sin(Math.PI * timeState.sunProgress) * 30
+
   const [mode, setMode] = useState<HomeMode>('talk')
   const [showChoices, setShowChoices] = useState(false)
   const handleMongleClick = () => {
@@ -54,16 +72,32 @@ function Home({
   return (
     <main
       className={`home home--${mode}`}
-      style={{ backgroundImage: `url(${backgroundNoon})` }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="home__frame">
         <div className="home__actions">
           <HeaderActions onSoundClick={onSoundClick} onMenuClick={onMenuClick} />
         </div>
 
-        <div className="home__sun" aria-hidden="true">
-          <img className="home__sun-glow" src={sunGlow} width={153} height={153} alt="" />
-          <img className="home__sun-image" src={sunImage} width={188} height={188} alt="" />
+        <div
+          className="home__sun"
+          aria-hidden="true"
+          style={{
+            '--sun-x': `${sunXPercent}%`,
+            '--sun-y': `${sunY}px`,
+          } as CSSProperties}
+        >
+          {isNight ? (
+            <>
+              <img key="moon-glow" className="home__sun-glow" src={moonGlow} width={153} height={152} alt="" />
+              <img key="moon" className="home__sun-image" src={moonImage} width={188} height={188} alt="" />
+            </>
+          ) : (
+            <>
+              <img key="sun-glow" className="home__sun-glow" src={sunGlow} width={153} height={153} alt="" />
+              <img key="sun" className="home__sun-image" src={sunImage} width={188} height={188} alt="" />
+            </>
+          )}
         </div>
 
         <p className="home__guide" aria-live="polite">
@@ -106,14 +140,14 @@ function Home({
               aria-expanded={mode === 'talk' ? showChoices : undefined}
               onClick={handleMongleClick}
             >
-              
+
               {/* 💡 3. 길고 복잡하게 나열되어 있던 눈/몸통/장식 <img> 태그 7개를 단 한 줄로 교체! */}
-              <MongleCharacter 
+              <MongleCharacter
                 bodyImage={mongleImage}
                 customMongle={customMongle}
-                wrapperClassName="home__character-size" 
+                wrapperClassName="home__character-size"
               />
-              
+
             </button>
           </div>
         </div>
