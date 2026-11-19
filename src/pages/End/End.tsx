@@ -1,4 +1,5 @@
-import backgroundNight from '../../assets/images/background_night_wide.png'
+import sunImage from '../../assets/images/home/sun.png'
+import sunGlow from '../../assets/icons/sun-glow.svg'
 import moonImage from '../../assets/images/moon.png'
 import moonGlow from '../../assets/icons/moon-glow.svg'
 import mongleImage from '../../assets/images/home/mongle-default.png'
@@ -6,6 +7,8 @@ import mongleEyesSleepy from '../../assets/images/alpaca/eyes_sleepy_matched.png
 import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/End.css'
+import { useHomeTime } from '../../hooks/useHomeTime'
+import { getBackgroundByPhase } from '../../utils/timeBackground'
 
 type EndProps = {
     /** 이번 대화에서 기억한 요약 개수 */
@@ -16,10 +19,13 @@ type EndProps = {
 
 /** 털어낸 후 ② 종료 화면 (Figma: 털어낸후 171:3420) */
 function End({ savedCount, onHome, onSoundClick, onMenuClick }: EndProps) {
+    const timeState = useHomeTime()
+    const isNight = timeState.phase === 'night'
+    const backgroundImage = getBackgroundByPhase(timeState.phase)
     return (
         <main
             className="end"
-            style={{ backgroundImage: `url(${backgroundNight})` }}
+            style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <div className="end__frame">
                 <div className="end__actions">
@@ -27,8 +33,17 @@ function End({ savedCount, onHome, onSoundClick, onMenuClick }: EndProps) {
                 </div>
 
                 <div className="end__moon" aria-hidden="true">
-                    <img className="end__moon-glow" src={moonGlow} width={153} height={152} alt="" />
-                    <img className="end__moon-image" src={moonImage} width={167} height={167} alt="" />
+                    {isNight ? (
+                        <>
+                            <img key="moon-glow" className="end__moon-glow" src={moonGlow} width={153} height={152} alt="" />
+                            <img key="moon" className="end__moon-image" src={moonImage} width={167} height={167} alt="" />
+                        </>
+                    ) : (
+                        <>
+                            <img key="sun-glow" className="end__moon-glow" src={sunGlow} width={153} height={153} alt="" />
+                            <img key="sun" className="end__moon-image" src={sunImage} width={167} height={167} alt="" />
+                        </>
+                    )}
                 </div>
 
                 <h1 className="end__title">오늘은 여기까지.</h1>

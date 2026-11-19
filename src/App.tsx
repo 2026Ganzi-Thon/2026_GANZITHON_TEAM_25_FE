@@ -43,7 +43,6 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
   const [savedCount, setSavedCount] = useState(0)
-  const [actionPhase, setActionPhase] = useState<'noon' | 'sunset'>('noon')
   // 상단 소리·메뉴 시트 — 모든 화면이 같은 설정을 쓰도록 App 한 곳에서 관리
   const [openSheet, setOpenSheet] = useState<'sound' | 'menu' | null>(null)
   const [natureSound, setNatureSound] = useState<NatureSound>('off')
@@ -98,9 +97,8 @@ function App() {
   /** 메뉴에서 연 화면(도움·기억·내 몽글)은 왔던 화면으로 돌아가요 */
   const goBack = () => window.history.back()
 
-  const navigate = (to: string, phase?: 'noon' | 'sunset') => {
+  const navigate = (to: string) => {
     setOpenSheet(null)
-    if (to === '/action' && phase) setActionPhase(phase)
     window.history.pushState(null, '', to)
     setPath(to)
   }
@@ -200,12 +198,13 @@ function App() {
           onOrganizeAndTalk={() => navigate('/mind')}
           onTouchMongle={() => {
             startSilent()
-            navigate('/action', 'noon')
+            navigate('/action')
           }}
         />
       ) : path.toLowerCase().startsWith('/mymongle') ? (
         <MyMongle
-          {...header} onBack={goBack}
+          {...header}
+          onBack={goBack}
           customMongle={customMongle}
           setCustomMongle={setCustomMongle}
         />
@@ -229,7 +228,6 @@ function App() {
       ) : path.toLowerCase().startsWith('/action') ? (
         <MongleAction
           {...header}
-          phase={actionPhase}
           customMongle={customMongle}
           onNext={() => navigate('/next')}
         />
@@ -246,7 +244,6 @@ function App() {
           onBack={() => navigate('/mind')}
           onFinish={(count) => {
             setSavedCount(count)
-            setActionPhase('sunset')
             navigate('/after')
           }}
           customMongle={customMongle}
@@ -256,7 +253,7 @@ function App() {
       ) : path.toLowerCase().startsWith('/after') ? (
         <After
           {...header}
-          onTouchMongle={() => navigate('/action', 'sunset')}
+          onTouchMongle={() => navigate('/action')}
           onShave={() => navigate('/action')}
           onNext={() => navigate('/next')}
           onEnd={() => navigate('/end')}

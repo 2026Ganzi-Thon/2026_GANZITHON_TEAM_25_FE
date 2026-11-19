@@ -1,4 +1,5 @@
-import backgroundSunset from '../../assets/images/background_sunset_wide.png'
+import moonImage from '../../assets/images/moon.png'
+import moonGlow from '../../assets/icons/moon-glow.svg'
 import sunImage from '../../assets/images/home/sun.png'
 import sunGlow from '../../assets/icons/sun-glow.svg'
 import mongleImage from '../../assets/images/home/mongle-default.png'
@@ -7,6 +8,8 @@ import mongleShadow from '../../assets/icons/mongle-shadow.svg'
 import HeaderActions, { type HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions'
 import '../../styles/After.css'
 import MongleCharacter from '../../components/MongleCharacter';
+import { useHomeTime } from '../../hooks/useHomeTime'
+import { getBackgroundByPhase } from '../../utils/timeBackground'
 
 type AfterProps = {
     /** 몽글이를 눌렀을 때 — 말없이 쉬기 */
@@ -22,10 +25,13 @@ type AfterProps = {
 
 /** 털어낸 후 ① (Figma: 털어낸후 171:3392) — 대화를 마친 직후 */
 function After({ onTouchMongle, onShave, onNext, onSoundClick, onMenuClick, customMongle }: AfterProps) {
+    const timeState = useHomeTime()
+    const isNight = timeState.phase === 'night'
+    const backgroundImage = getBackgroundByPhase(timeState.phase)
     return (
         <main
             className="after"
-            style={{ backgroundImage: `url(${backgroundSunset})` }}
+            style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <div className="after__frame">
                 <div className="after__actions">
@@ -33,8 +39,17 @@ function After({ onTouchMongle, onShave, onNext, onSoundClick, onMenuClick, cust
                 </div>
 
                 <div className="after__sun" aria-hidden="true">
-                    <img className="after__sun-glow" src={sunGlow} width={153} height={153} alt="" />
-                    <img className="after__sun-image" src={sunImage} width={188} height={188} alt="" />
+                    {isNight ? (
+                        <>
+                            <img key="moon-glow" className="after__sun-glow" src={moonGlow} width={153} height={152} alt="" />
+                            <img key="moon" className="after__sun-image" src={moonImage} width={188} height={188} alt="" />
+                        </>
+                    ) : (
+                        <>
+                            <img key="sun-glow" className="after__sun-glow" src={sunGlow} width={153} height={153} alt="" />
+                            <img key="sun" className="after__sun-image" src={sunImage} width={188} height={188} alt="" />
+                        </>
+                    )}
                 </div>
 
                 <h1 className="after__title">털어놓은 마음, 털을 한번에 털어냈어요!</h1>
@@ -63,7 +78,7 @@ function After({ onTouchMongle, onShave, onNext, onSoundClick, onMenuClick, cust
                             <MongleCharacter
                                 bodyImage={mongleImage}
                                 customMongle={customMongle}
-                                overrideEyes={mongleEyesSmile} 
+                                overrideEyes={mongleEyesSmile}
                                 wrapperClassName="after__character-size"
                             />
                         </button>
