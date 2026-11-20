@@ -23,6 +23,7 @@ import { getPreferences, updatePreferences, type PreferencesUpdate } from './api
 import { finishSession, startSession } from './api/session'
 import { useToast } from './components/Toast/toastContext'
 import { getToastMessage } from './api/errors'
+import { useNatureSoundPlayer } from './hooks/useNatureSoundPlayer'
 
 
 /** 로그인 없이 볼 수 있는 화면: 첫화면·로그인·회원가입 */
@@ -49,6 +50,8 @@ function App() {
   const [volume, setVolume] = useState(50)
   const [vibration, setVibration] = useState(true)
   const closeSheet = useCallback(() => setOpenSheet(null), [])
+  // 자연음 재생기 — 화면을 옮겨 다녀도 소리가 이어지도록 App 한 곳에서 들고 있어요
+  const player = useNatureSoundPlayer()
 
   const [customMongle, setCustomMongle] = useState(() => {
     const saved = localStorage.getItem('myCustomMongle')
@@ -125,10 +128,17 @@ function App() {
         setNatureSound(prefs.natureSound)
         setVolume(prefs.natureSoundVolume)
         setVibration(prefs.hapticsEnabled)
+        player.setVolume(prefs.natureSoundVolume)
+        // 자동 재생을 켜 둔 계정만 앱을 켤 때 소리를 이어서 틀어요. 브라우저가 막으면 처음 누르는 순간에 틀어요
+        if (prefs.natureSoundAutoPlayEnabled && prefs.natureSound !== 'off') {
+          player.play(prefs.natureSound).then((result) => {
+            if (result === 'blocked' && !cancelled) player.playOnFirstGesture(prefs.natureSound)
+          })
+        }
       })
       .catch(() => { })
     return () => { cancelled = true }
-  }, [isLoggedIn])
+  }, [isLoggedIn, player])
 
   /** 화면은 바로 바꾸고, 서버 저장은 뒤에서. 실패하면 토스트로만 알려요 */
   const savePreferences = (body: PreferencesUpdate) => {
@@ -139,7 +149,12 @@ function App() {
 
   const handleSoundChange = (sound: NatureSound) => {
     setNatureSound(sound)
-    savePreferences({ natureSound: sound })
+    if (sound !== natureSound) savePreferences({ natureSound: sound })
+    // 누른 그 자리에서 바로 재생해야 브라우저가 막지 않아요 (같은 소리를 다시 누르면 이어서 재생)
+    player.cancelPending()
+    player.play(sound).then((result) => {
+      if (result === 'error') showToast('error', '소리를 재생하지 못했어요. 잠시 후 다시 시도해 주세요.')
+    })
   }
 
   const handleVibrationChange = (on: boolean) => {
@@ -151,6 +166,7 @@ function App() {
   const volumeTimerRef = useRef<number | undefined>(undefined)
   const handleVolumeChange = (next: number) => {
     setVolume(next)
+    player.setVolume(next)
     window.clearTimeout(volumeTimerRef.current)
     volumeTimerRef.current = window.setTimeout(
       () => savePreferences({ natureSoundVolume: next }),
@@ -181,6 +197,8 @@ function App() {
   const handleLogout = () => {
     finishSilent()
     window.clearTimeout(volumeTimerRef.current)
+    player.cancelPending()
+    player.stop()
     logout()
     setNatureSound('off')
     setVolume(50)

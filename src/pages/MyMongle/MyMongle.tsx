@@ -7,7 +7,7 @@ import soundIcon from '../../assets/icons/sound-button.svg';
 import menuIcon from '../../assets/icons/menu-button.svg';
 import type { HeaderButtonHandlers } from '../../components/HeaderActions/HeaderActions';
 
-// 💡 1. 명세서를 최신 이름(similarityTrait, comfortStyle)으로 업데이트!
+// 1. 명세서를 최신 이름(similarityTrait, comfortStyle)으로 업데이트!
 interface MyMongleProps extends HeaderButtonHandlers {
   onBack: () => void;
   customMongle: { similarityTrait: string; comfortStyle: string; accessory: string };
@@ -46,7 +46,7 @@ const MyMongle = ({ onBack, onSoundClick, onMenuClick, customMongle, setCustomMo
       </header>
 
       <div className={styles.characterDisplay}>
-        {/* 💡 2. 길었던 장식 img 태그들을 싹 지우고 화가 컴포넌트로 교체! */}
+        {/* 2. 길었던 장식 img 태그들을 싹 지우고 화가 컴포넌트로 교체! */}
         <MongleCharacter
           bodyImage={mongleBody}
           customMongle={customMongle}
