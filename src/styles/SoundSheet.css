@@ -117,6 +117,18 @@ display: flex;
   font-variant-numeric: tabular-nums;
 }
 
+/* ── 음원 출처 (CC BY·공공누리 제1유형은 출처 표시 필수) ── */
+.sound-sheet__credits {
+  order: 5;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text);
+  font-size: 10px;
+  line-height: 1.5;
+  opacity: 0.6;
+}
+
 @keyframes sound-sheet-pop {
   from {
     opacity: 0;

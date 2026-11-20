@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import closeIcon from '../../../assets/icons/close-sound.svg'
 import soundOnIcon from '../../../assets/icons/sound-on.svg'
 import Overlay from '../../../components/Overlay/Overlay'
-import { NATURE_SOUND_OPTIONS, type NatureSound } from '../natureSounds'
+import { NATURE_SOUND_CREDITS, NATURE_SOUND_OPTIONS, type NatureSound } from '../natureSounds'
 import '../../../styles/SoundSheet.css'
 
 type SoundSheetProps = {
@@ -84,6 +84,12 @@ function SoundSheet({
             {volume}
           </span>
         </div>
+
+        <ul className="sound-sheet__credits" aria-label="자연음 출처">
+          {NATURE_SOUND_CREDITS.map((credit) => (
+            <li key={credit}>{credit}</li>
+          ))}
+        </ul>
       </section>
     </Overlay>
   )
